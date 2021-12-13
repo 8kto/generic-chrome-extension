@@ -1,0 +1,40 @@
+#!/bin/sh
+# Extract a ticket number from the branch name and use it
+# as a prefix for the commit message.
+#
+# Uses env vars:
+#   SKIP_FOCK_PREPARE_COMMIT_HOOK=true for skipping the hook
+#   TICKET_NO_DEL=": " for setting the ticket number suffix e.g. "TICKET-888: " (part after the numbers). Space by default.
+
+if [ "${SKIP_FOCK_PREPARE_COMMIT_HOOK:-}" = "true" ]
+then
+  exit 0
+fi
+
+TICKET_NO=$(git rev-parse --abbrev-ref HEAD | grep -iEo '(\w+)\-[0-9]+' -m 1 | head -1 | tr '[:lower:]' '[:upper:]')
+
+# Use TICKET_NO_DEL env var to set the delimiter for the ticket no and the commit message
+# Space will be insterted by default
+DEL="${TICKET_NO_DEL:-  }"
+
+# Exit when no ticket number in the branch name
+if [ -z "$TICKET_NO" ]
+then
+  exit 0
+fi
+
+# Do not apply when reverting or merging or fixupping or squashing
+if grep -iEq '^(Revert|Merge|fixup!|squash!)' "$1"
+then
+  exit 0
+fi
+
+# Prevent duplication on amended comments
+if grep -qE "^\s*$TICKET_NO" "$1"
+then
+  exit 0
+fi
+
+# Insert ticket no in the beginning of the first line
+echo "$TICKET_NO$DEL$(cat "$1")" > "$1"
+
