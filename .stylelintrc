@@ -1,0 +1,31 @@
+{
+  "extends": ["stylelint-config-standard", "stylelint-prettier/recommended"],
+  "ignoreFiles": [],
+  "rules": {
+    "at-rule-no-unknown": [
+      true,
+      {
+        "ignoreAtRules": [
+          "content",
+          "each",
+          "else",
+          "error",
+          "for",
+          "function",
+          "if",
+          "include",
+          "mixin",
+          "return",
+          "use",
+          "warn",
+          "while"
+        ]
+      }
+    ],
+    "declaration-property-value-disallowed-list": [
+      {
+        "/^background/": ["inherit"]
+      }
+    ]
+  }
+}
