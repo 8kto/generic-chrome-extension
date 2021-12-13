@@ -4,7 +4,7 @@ class Template {
    * @param {Experiment} experiment
    * @return {string}
    */
-  formatExperiment(experiment) {
+  static formatExperiment(experiment) {
     const enabled = experiment.e ? 'Enabled' : 'Disabled'
     const variation = experiment.v.v_name
 
@@ -15,7 +15,7 @@ class Template {
    * @param {string} experimentName
    * @param {Experiment} experiment
    */
-  getFormControl(experimentName, experiment) {
+  static getFormControl(experimentName, experiment) {
     return `<input type="checkbox" value="${experimentName}" id="${experimentName}" ${
       experiment.e ? 'checked' : ''
     } />`
@@ -26,7 +26,7 @@ class Template {
    * @param {Record<string, Experiment>} experiments
    * @return {HTMLUListElement}
    */
-  renderExperimentsList(container, experiments) {
+  static renderExperimentsList(container, experiments) {
     const list = Object.entries(experiments).map(([name, experiment]) => {
       return [
         this.getFormControl(name, experiment),
@@ -39,5 +39,12 @@ class Template {
     container.innerHTML = `<ul id="expList">${options.join('\n')}</ul>`
 
     return document.getElementById('expList')
+  }
+
+  static displayMessageOnResetCookie() {
+    const container = document.getElementById('container')
+
+    container.innerHTML =
+      '<div class="message message--info">Cookies cleared. Please reload the page to fetch the fresh feature flags</div>'
   }
 }
