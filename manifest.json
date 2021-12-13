@@ -9,9 +9,7 @@
     "48": "/images/get_started48.png",
     "128": "/images/get_started128.png"
   },
-  "background": {
-    "service_worker": "background.js"
-  },
+  "background": {},
   "options_page": "components/options/index.html",
   "permissions": ["storage", "activeTab", "scripting"],
   "host_permissions": ["*://shop-apotheke.com/*", "http://localhost/*"],
