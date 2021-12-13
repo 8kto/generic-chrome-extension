@@ -27,7 +27,15 @@ class Template {
    * @return {HTMLUListElement}
    */
   static renderExperimentsList(container, experiments) {
-    const list = Object.entries(experiments).map(([name, experiment]) => {
+    const entries = Object.entries(experiments || {})
+
+    if (!entries.length) {
+      this.displayMessage('No experiment entries found')
+
+      return
+    }
+
+    const list = entries.map(([name, experiment]) => {
       return [
         this.getFormControl(name, experiment),
         `<label class="expName" for="${name}">${name}</label>:`,
@@ -42,9 +50,14 @@ class Template {
   }
 
   static displayMessageOnResetCookie() {
+    this.displayMessage(
+      'Cookies cleared. Please reload the page to fetch the fresh feature flags'
+    )
+  }
+
+  static displayMessage(msg) {
     const container = document.getElementById('container')
 
-    container.innerHTML =
-      '<div class="message message--info">Cookies cleared. Please reload the page to fetch the fresh feature flags</div>'
+    container.innerHTML = `<div class="message message--info">${msg}</div>`
   }
 }
