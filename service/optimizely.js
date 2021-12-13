@@ -1,10 +1,15 @@
+// eslint-disable-next-line no-unused-vars
 class Optimizely {
+  /**
+   * @param {string} cookies Document cookies
+   */
   constructor(cookies) {
     this.cookies = cookies
+    /** @type {Record<string, Experiment>} */
+    this.experiments = {}
   }
 
-  getExperiments() {
-    let experiments = {}
+  extractExperiments() {
     const experimentsCookie = this.cookies
       .split(';')
       .filter(i => i.match(/feature-flag-cookie/))
@@ -13,13 +18,42 @@ class Optimizely {
       const json = experimentsCookie.shift().replace(/^[^{]+/, '')
 
       try {
-        experiments = JSON.parse(json)
+        this.experiments = JSON.parse(json)
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error(error)
       }
     }
 
-    return experiments
+    return this.experiments
+  }
+
+  /**
+   * @return {Record<string, Experiment>}
+   */
+  getExperiments() {
+    return this.experiments
+  }
+
+  /**
+   *
+   * @param {string} experimentName
+   * @param {boolean} status Enabled/Disabled
+   */
+  setExperimentStatus(experimentName, status) {
+    this.experiments[experimentName].e = Boolean(status)
+
+    return this
   }
 }
+
+/**
+ * @typedef Variant
+ * @property {string} v_name
+ */
+
+/**
+ * @typedef Experiment
+ * @property {boolean} e
+ * @property {Variant} v
+ */
