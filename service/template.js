@@ -16,9 +16,9 @@ class Template {
    * @param {Experiment} experiment
    */
   getFormControl(experimentName, experiment) {
-    return `<input type="checkbox" value="${experimentName}" id="${experimentName}" checked="${Boolean(
-      experiment.e ? 'checked' : 'false'
-    )}" />`
+    return `<input type="checkbox" value="${experimentName}" id="${experimentName}" ${
+      experiment.e ? 'checked' : ''
+    } />`
   }
 
   /**
