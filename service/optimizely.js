@@ -1,24 +1,25 @@
 class Optimizely {
+  constructor(cookies) {
+    this.cookies = cookies
+  }
+
   getExperiments() {
     let experiments = {}
-    const experimentsCookie = document.cookie
+    const experimentsCookie = this.cookies
       .split(';')
       .filter(i => i.match(/feature-flag-cookie/))
 
-    console.log(experimentsCookie)
-    debugger
-    let json
     if (experimentsCookie.length) {
-      json = experimentsCookie.shift().replace(/^[^{]+/, '')
+      const json = experimentsCookie.shift().replace(/^[^{]+/, '')
 
       try {
-        console.log(json)
         experiments = JSON.parse(json)
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error(error)
       }
     }
 
-    return { cookies: document.cookie, experiments, experimentsCookie, json }
+    return experiments
   }
 }
