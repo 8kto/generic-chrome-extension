@@ -18,7 +18,27 @@ class Template {
   static getFormControl(experimentName, experiment) {
     return `<input type="checkbox" value="${experimentName}" id="${experimentName}" ${
       experiment.e ? 'checked' : ''
-    } />`
+    } title="Enable / Disable" />`
+  }
+
+  /**
+   * @param {string} experimentName
+   * @return {string}
+   */
+  static getFormControlLabel(experimentName) {
+    return `<label class="expName" for="${experimentName}">${experimentName}</label>:`
+  }
+
+  /**
+   * @param {Experiment} experiment
+   * @return {string}
+   */
+  static getVariablesList(experiment) {
+    const options = Object.entries(experiment.v).map(([name, val]) => {
+      return `<li><span class="expVariant__var">${name}</span> ${val}</li>`
+    })
+
+    return `<ul>${options.join('')}</ul>`
   }
 
   /**
@@ -35,15 +55,17 @@ class Template {
       return
     }
 
-    const list = entries.map(([name, experiment]) => {
+    const options = entries.map(([name, experiment]) => {
       return [
+        '<li class="expList__item">',
         this.getFormControl(name, experiment),
-        `<label class="expName" for="${name}">${name}</label>:`,
+        this.getFormControlLabel(name),
         this.formatExperiment(experiment),
+        this.getVariablesList(experiment),
+        '</li>',
       ].join(' ')
     })
 
-    const options = list.map(item => `<li class="expList__item">${item}</li>`)
     container.innerHTML = `<ul id="expList">${options.join('\n')}</ul>`
 
     return document.getElementById('expList')
@@ -61,3 +83,7 @@ class Template {
     container.innerHTML = `<div class="message message--info">${msg}</div>`
   }
 }
+
+/**
+ * TODO add accordions for details
+ */
