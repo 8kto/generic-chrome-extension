@@ -1,0 +1,9 @@
+{
+  "name": "sa-optimizely-tool",
+  "version": "0.1",
+  "description": "Chrome extension for the Optimizely experiments dealing",
+  "main": "index.js",
+  "author": "Igor Ivlev <igor.ivlev@verkstedt.com>",
+  "license": "proprietary",
+  "private": true
+}
