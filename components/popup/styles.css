@@ -24,3 +24,11 @@
 .expStatus {
   color: lightgray;
 }
+
+.message {
+  padding: 1rem 0;
+}
+
+.message--info {
+  color: green;
+}
