@@ -12,7 +12,9 @@
   "background": {
     "service_worker": "background.js"
   },
-  "permissions": ["storage"],
+  "options_page": "components/options/index.html",
+  "permissions": ["storage", "activeTab", "scripting"],
+  "host_permissions": ["*://shop-apotheke.com/*", "http://localhost/*"],
   "action": {
     "default_popup": "components/popup/index.html",
     "default_icon": {
