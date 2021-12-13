@@ -1,9 +1,24 @@
 {
   "name": "sa-optimizely-tool",
   "version": "0.1",
-  "description": "Chrome extension for the Optimizely experiments dealing",
+  "description": "Chrome extension for the Optimizely experiments management",
   "main": "index.js",
   "author": "Igor Ivlev <igor.ivlev@verkstedt.com>",
   "license": "proprietary",
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-only-error": "^1.0.2",
+    "eslint-plugin-prettier": "^4.0.0",
+    "husky": "^7.0.4",
+    "lint-staged": "^12.1.2",
+    "prettier": "^2.4.1",
+    "stylelint": "^13.13.1",
+    "stylelint-config-prettier": "^9.0.3",
+    "stylelint-config-standard": "^22.0.0",
+    "stylelint-prettier": "^1.2.0"
+  }
 }
