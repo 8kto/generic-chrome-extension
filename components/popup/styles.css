@@ -1,0 +1,9 @@
+.component-wrapper {
+  width: 500px;
+  padding: 0.5rem 1rem;
+  margin: 0;
+}
+
+.component-wrapper h1 {
+  font-size: 1.2rem;
+}
