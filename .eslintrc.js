@@ -12,7 +12,7 @@ module.exports = {
     'es6': true,
   },
   globals: {
-    chrome: true
+    chrome: true,
   },
   rules: {
     'curly': 'error',

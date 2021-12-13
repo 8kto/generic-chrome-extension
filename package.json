@@ -6,6 +6,13 @@
   "author": "Igor Ivlev <igor.ivlev@verkstedt.com>",
   "license": "proprietary",
   "private": true,
+  "scripts": {
+    "prepare": "husky install",
+    "format": "prettier --write \"./**/*.{js,json,html,css}\"",
+    "lint": "yarn lint:styles && yarn lint:js",
+    "lint:js": "eslint --ext=.js,.jsx,.mjs .",
+    "lint:styles": "stylelint ./components"
+  },
   "devDependencies": {
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
