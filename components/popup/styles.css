@@ -1,9 +1,26 @@
-.component-wrapper {
+.componentWrapper {
   width: 500px;
   padding: 0.5rem 1rem;
   margin: 0;
 }
 
-.component-wrapper h1 {
+.componentWrapper h1 {
   font-size: 1.2rem;
+}
+
+#expList {
+  padding-left: 0;
+  list-style-type: none;
+}
+
+.expName {
+  font-weight: bold;
+}
+
+.expVariant {
+  color: olivedrab;
+}
+
+.expStatus {
+  color: lightgray;
 }
