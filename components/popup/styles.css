@@ -17,8 +17,16 @@
   font-weight: bold;
 }
 
+.expName:hover {
+  cursor: pointer;
+}
+
 .expVariant {
   color: olivedrab;
+}
+
+.expVariant:hover {
+  cursor: help;
 }
 
 .expStatus {
@@ -44,10 +52,10 @@
 
 .message-reload {
   border-bottom: 1px dashed;
-  margin-left: 1rem;
-  color: orange;
+  margin-left: 0.5rem;
+  color: dodgerblue;
 }
 
-.message-reload:hover{
-  cursor: progress;
+.message-reload:hover {
+  cursor: pointer;
 }

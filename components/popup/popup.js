@@ -6,6 +6,9 @@ const getActiveTabId = async () => {
   return tab.id
 }
 
+/**
+ * Bind all controls in the popup with the event handlers
+ */
 const bindPopupControls = async () => {
   const resetBtn = document.getElementById('reset-feature-flags-cookie')
   const tabId = await getActiveTabId()
@@ -16,13 +19,22 @@ const bindPopupControls = async () => {
 
   const reloadBtn = document.querySelector('.message-reload')
   if (reloadBtn) {
-    // todo reload experiments list as well
-    reloadBtn.addEventListener('click', () => chrome.tabs.reload(tabId))
+    reloadBtn.addEventListener('click', () => {
+      chrome.tabs.reload(tabId)
+      Template.hideReloadMessage()
+    })
   }
 }
 
+/**
+ * Enable form controls that enable or disable experiments
+ *
+ * @param {HTMLElement} listElement
+ * @param {number} tabId
+ * @param {Optimizely} optimizelyService
+ */
 const bindExperimentSwitchers = ({ listElement, tabId, optimizelyService }) => {
-  const handleListItemClick = event => {
+  const handleListItemClick = async event => {
     /** @type {HTMLElement} */
     const { target } = event
 
@@ -31,7 +43,7 @@ const bindExperimentSwitchers = ({ listElement, tabId, optimizelyService }) => {
         .setExperimentStatus(target.value, target.checked)
         .getExperiments()
 
-      chrome.scripting.executeScript({
+      await chrome.scripting.executeScript({
         args: [experiments],
         target: { tabId },
         // NB: it is not the usual closure, it doesn't capture any context
@@ -39,12 +51,20 @@ const bindExperimentSwitchers = ({ listElement, tabId, optimizelyService }) => {
           document.cookie = `feature-flag-cookie=${JSON.stringify(payload)}`
         },
       })
+
+      Template.displayReloadMessage()
     }
   }
 
   listElement.addEventListener('click', handleListItemClick)
 }
 
+/**
+ * Activate update feature for variable lists
+ *
+ * @param {HTMLElement} listElement
+ * @param {number} tabId
+ */
 const bindExperimentVariablesHandlers = ({ listElement, tabId }) => {
   const callbackUI = data => {
     Template.displayReloadMessage()
@@ -55,7 +75,10 @@ const bindExperimentVariablesHandlers = ({ listElement, tabId }) => {
       target: { tabId },
       function: data => {
         // NB: it is not the usual closure, it doesn't capture any context
-        chrome.runtime.sendMessage({ type: 'onVariableSet', payload: data })
+        chrome.runtime.sendMessage({
+          type: 'onVariableSet',
+          payload: { data, cookies: document.cookie },
+        })
       },
     })
   }
@@ -66,8 +89,8 @@ const bindExperimentVariablesHandlers = ({ listElement, tabId }) => {
     const { varType, varName, expName } = target.dataset
     const value = target.textContent.trim()
     const payload = {
-      expName,
-      varName,
+      experimentName: expName,
+      variableName: varName,
     }
 
     switch (varType) {
@@ -79,12 +102,19 @@ const bindExperimentVariablesHandlers = ({ listElement, tabId }) => {
         break
       }
 
+      case 'variant': {
+        alert('TBD')
+
+        break
+      }
+
       default:
-        payload.newValue = 'test'
         break
     }
 
-    callbackUI(payload)
+    if (payload.newValue !== undefined) {
+      callbackUI(payload)
+    }
   }
 
   const variableElements = listElement.querySelectorAll('[data-var-type]')
@@ -94,6 +124,8 @@ const bindExperimentVariablesHandlers = ({ listElement, tabId }) => {
 }
 
 /**
+ * Render the UI and bind event handlers for the experiments list
+ *
  * @param {Message} message
  * @param {number} tabId
  */
@@ -138,6 +170,36 @@ const resetFeatureFlags = tabId => {
   })
 }
 
+/**
+ * @param {Message} message
+ * @param {number} tabId
+ */
+const applyFeatureFlagUpdates = (message, tabId) => {
+  const { payload } = message
+  const { experimentName, variableName, newValue } = payload.data
+  const optimizelyService = new Optimizely(payload.cookies)
+
+  optimizelyService.extractExperiments()
+  const updatedFeatureFlags = optimizelyService
+    .setExperimentVariable(experimentName, variableName, newValue)
+    .getExperiments()
+
+  chrome.scripting.executeScript({
+    target: { tabId },
+    args: [JSON.stringify(updatedFeatureFlags)],
+    // NB: it is not the usual closure, it doesn't capture any context
+    function: payload => {
+      document.cookie =
+        'feature-flag-cookie=;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;'
+      document.cookie = `feature-flag-cookie=${payload}`
+      // chrome.runtime.sendMessage({ type: 'onFeatureFlagsReset' })
+    },
+  })
+}
+
+/**
+ * Function is called every time the extension icon is clicked in the browser tray
+ */
 const main = async () => {
   const tabId = await getActiveTabId()
 
@@ -161,13 +223,15 @@ const main = async () => {
         handleOnPopupOpen(message, tabId)
         break
 
-      case 'onFeatureFlagsReset':
-        Template.displayMessageOnResetCookie()
+      case 'onVariableSet':
+        applyFeatureFlagUpdates(message, tabId)
         break
 
-      case 'onVariableSet':
-        alert(JSON.stringify(message.payload, null, '  '))
+      case 'onFeatureFlagsReset': {
+        Template.displayMessageOnResetCookie()
+        Template.displayReloadMessage()
         break
+      }
 
       default:
         throw new Error(`Unknown message type: ${message.type}`)
@@ -184,3 +248,6 @@ main()
  * @property {string} type
  * @property {any} payload
  */
+
+// todo handle errors when ff cookie is corrupted
+// todo reload experiments list after editing
