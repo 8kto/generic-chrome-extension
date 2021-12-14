@@ -30,15 +30,34 @@ class Template {
   }
 
   /**
+   * @param {string} experimentName
    * @param {Experiment} experiment
    * @return {string}
    */
-  static getVariablesList(experiment) {
+  static getVariablesList(experimentName, experiment) {
     const options = Object.entries(experiment.v).map(([name, val]) => {
-      return `<li><span class="expVariant__var">${name}</span> ${val}</li>`
+      const type = this.getVariableType(name, val)
+
+      return `<li>
+          <span class="expVariant__var">${name}</span>
+          <span
+            class="expVariant__varType"
+            data-exp-name="${experimentName}"
+            data-var-name="${name}"
+            data-var-type="${type}"
+          >${val}</span>
+        </li>`
     })
 
     return `<ul>${options.join('')}</ul>`
+  }
+
+  static getVariableType(name, value) {
+    if (name === 'v_name') {
+      return 'variant'
+    }
+
+    return typeof value
   }
 
   /**
@@ -52,7 +71,7 @@ class Template {
     if (!entries.length) {
       this.displayMessage('No experiment entries found')
 
-      return
+      return null
     }
 
     const options = entries.map(([name, experiment]) => {
@@ -61,7 +80,7 @@ class Template {
         this.getFormControl(name, experiment),
         this.getFormControlLabel(name),
         this.formatExperiment(experiment),
-        this.getVariablesList(experiment),
+        this.getVariablesList(name, experiment),
         '</li>',
       ].join(' ')
     })
@@ -82,8 +101,13 @@ class Template {
 
     container.innerHTML = `<div class="message message--info">${msg}</div>`
   }
+
+  static displayReloadMessage() {
+    document.querySelector('.message-reload').removeAttribute('hidden')
+  }
 }
 
 /**
  * TODO add accordions for details
+ * TODO help block for the release toggle?
  */

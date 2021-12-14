@@ -36,3 +36,18 @@
 .expVariant__var {
   color: cadetblue;
 }
+
+.expVariant__varType:hover {
+  border-bottom: 1px dashed;
+  cursor: pointer;
+}
+
+.message-reload {
+  border-bottom: 1px dashed;
+  margin-left: 1rem;
+  color: orange;
+}
+
+.message-reload:hover{
+  cursor: progress;
+}

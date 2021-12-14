@@ -8,24 +8,20 @@ const getActiveTabId = async () => {
 
 const bindPopupControls = async () => {
   const resetBtn = document.getElementById('reset-feature-flags-cookie')
-  if (resetBtn) {
-    const tabId = await getActiveTabId()
+  const tabId = await getActiveTabId()
 
+  if (resetBtn) {
     resetBtn.addEventListener('click', () => resetFeatureFlags(tabId))
+  }
+
+  const reloadBtn = document.querySelector('.message-reload')
+  if (reloadBtn) {
+    // todo reload experiments list as well
+    reloadBtn.addEventListener('click', () => chrome.tabs.reload(tabId))
   }
 }
 
-/**
- * @param {Message} message
- * @param {number} tabId
- */
-const handleOnPopupOpen = (message, tabId) => {
-  const container = document.getElementById('container')
-  const optimizelyService = new Optimizely(message.payload)
-  const experiments = optimizelyService.extractExperiments()
-
-  const expListElement = Template.renderExperimentsList(container, experiments)
-
+const bindExperimentSwitchers = ({ listElement, tabId, optimizelyService }) => {
   const handleListItemClick = event => {
     /** @type {HTMLElement} */
     const { target } = event
@@ -46,7 +42,77 @@ const handleOnPopupOpen = (message, tabId) => {
     }
   }
 
-  expListElement.addEventListener('click', handleListItemClick)
+  listElement.addEventListener('click', handleListItemClick)
+}
+
+const bindExperimentVariablesHandlers = ({ listElement, tabId }) => {
+  const callbackUI = data => {
+    Template.displayReloadMessage()
+
+    // Pass prepared cookies from the extension to the page
+    chrome.scripting.executeScript({
+      args: [data],
+      target: { tabId },
+      function: data => {
+        // NB: it is not the usual closure, it doesn't capture any context
+        chrome.runtime.sendMessage({ type: 'onVariableSet', payload: data })
+      },
+    })
+  }
+
+  const handleVariableClick = event => {
+    /** @type {HTMLElement} */
+    const { target } = event
+    const { varType, varName, expName } = target.dataset
+    const value = target.textContent.trim()
+    const payload = {
+      expName,
+      varName,
+    }
+
+    switch (varType) {
+      case 'boolean': {
+        const newValue = (value !== 'true').toString()
+        payload.newValue = newValue
+        target.textContent = newValue
+
+        break
+      }
+
+      default:
+        payload.newValue = 'test'
+        break
+    }
+
+    callbackUI(payload)
+  }
+
+  const variableElements = listElement.querySelectorAll('[data-var-type]')
+  variableElements.forEach(element =>
+    element.addEventListener('click', handleVariableClick)
+  )
+}
+
+/**
+ * @param {Message} message
+ * @param {number} tabId
+ */
+const handleOnPopupOpen = (message, tabId) => {
+  const container = document.getElementById('container')
+  // TODO review service, make static methods?
+  const optimizelyService = new Optimizely(message.payload)
+  const experiments = optimizelyService.extractExperiments()
+
+  const expListElement = Template.renderExperimentsList(container, experiments)
+  if (expListElement) {
+    bindExperimentSwitchers({
+      listElement: expListElement,
+      tabId,
+      optimizelyService,
+    })
+
+    bindExperimentVariablesHandlers({ listElement: expListElement, tabId })
+  }
 }
 
 /**
@@ -99,10 +165,12 @@ const main = async () => {
         Template.displayMessageOnResetCookie()
         break
 
-      default:
-        // eslint-disable-next-line no-console
-        console.error(`Unknown message type: ${message.type}`)
+      case 'onVariableSet':
+        alert(JSON.stringify(message.payload, null, '  '))
         break
+
+      default:
+        throw new Error(`Unknown message type: ${message.type}`)
     }
   })
 

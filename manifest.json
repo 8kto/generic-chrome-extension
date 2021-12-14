@@ -11,7 +11,7 @@
   },
   "background": {},
   "options_page": "components/options/index.html",
-  "permissions": ["storage", "activeTab", "scripting"],
+  "permissions": ["storage", "activeTab", "scripting", "tabs"],
   "host_permissions": ["*://shop-apotheke.com/*", "http://localhost/*"],
   "action": {
     "default_popup": "components/popup/index.html",
