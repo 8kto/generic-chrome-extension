@@ -72,3 +72,5 @@ class Optimizely {
  * @property {boolean} e
  * @property {Variant} v
  */
+
+// TODO review service, make static methods?

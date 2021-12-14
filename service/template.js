@@ -77,7 +77,7 @@ class Template {
     const entries = Object.entries(experiments || {})
 
     if (!entries.length) {
-      this.displayMessage('No experiment entries found')
+      this.clearAndDisplayMessage('No experiment entries found')
 
       return null
     }
@@ -98,14 +98,7 @@ class Template {
     return document.getElementById('expList')
   }
 
-  static displayMessageOnResetCookie() {
-    // TODO add reload btn
-    this.displayMessage(
-      'Cookies cleared. Please reload the page to fetch the fresh feature flags'
-    )
-  }
-
-  static displayMessage(msg) {
+  static clearAndDisplayMessage(msg) {
     const container = document.getElementById('container')
 
     container.innerHTML = `<div class="message message--info">${msg}</div>`
@@ -115,8 +108,10 @@ class Template {
     document.querySelector('.message-reload').removeAttribute('hidden')
   }
 
-  static hideReloadMessage() {
-    document.querySelector('.message-reload').setAttribute('hidden', 'hidden')
+  static hideResetCookiesButton() {
+    document
+      .getElementById('reset-feature-flags-cookie')
+      .setAttribute('hidden', 'hidden')
   }
 }
 
