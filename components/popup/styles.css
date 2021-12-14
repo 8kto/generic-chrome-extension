@@ -52,10 +52,13 @@
 
 .message-reload {
   border-bottom: 1px dashed;
-  margin-left: 0.5rem;
   color: dodgerblue;
 }
 
 .message-reload:hover {
   cursor: pointer;
+}
+
+#reset-feature-flags-cookie {
+  margin-right: 0.5rem;
 }

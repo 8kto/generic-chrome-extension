@@ -19,15 +19,15 @@ const bindPopupControls = async () => {
 
   const reloadBtn = document.querySelector('.message-reload')
   if (reloadBtn) {
-    reloadBtn.addEventListener('click', () => {
-      chrome.tabs.reload(tabId)
-      Template.hideReloadMessage()
+    reloadBtn.addEventListener('click', async () => {
+      await chrome.tabs.reload(tabId)
+      window.close()
     })
   }
 }
 
 /**
- * Enable form controls that enable or disable experiments
+ * Bind form controls that enable or disable experiments
  *
  * @param {HTMLElement} listElement
  * @param {number} tabId
@@ -60,7 +60,7 @@ const bindExperimentSwitchers = ({ listElement, tabId, optimizelyService }) => {
 }
 
 /**
- * Activate update feature for variable lists
+ * Activate update feature for the variable lists
  *
  * @param {HTMLElement} listElement
  * @param {number} tabId
@@ -131,7 +131,6 @@ const bindExperimentVariablesHandlers = ({ listElement, tabId }) => {
  */
 const handleOnPopupOpen = (message, tabId) => {
   const container = document.getElementById('container')
-  // TODO review service, make static methods?
   const optimizelyService = new Optimizely(message.payload)
   const experiments = optimizelyService.extractExperiments()
 
@@ -154,7 +153,7 @@ const resetFeatureFlags = tabId => {
   chrome.scripting.executeScript({
     target: { tabId },
     // NB: it is not the usual closure, it doesn't capture any context
-    function: () => {
+    function() {
       ;[
         `feature-flag-cookie`,
         `feature-flag-user-token`,
@@ -192,7 +191,6 @@ const applyFeatureFlagUpdates = (message, tabId) => {
       document.cookie =
         'feature-flag-cookie=;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;'
       document.cookie = `feature-flag-cookie=${payload}`
-      // chrome.runtime.sendMessage({ type: 'onFeatureFlagsReset' })
     },
   })
 }
@@ -200,7 +198,7 @@ const applyFeatureFlagUpdates = (message, tabId) => {
 /**
  * Function is called every time the extension icon is clicked in the browser tray
  */
-const main = async () => {
+const init = async () => {
   const tabId = await getActiveTabId()
 
   // Pass cookies from the page to the handlers
@@ -228,7 +226,8 @@ const main = async () => {
         break
 
       case 'onFeatureFlagsReset': {
-        Template.displayMessageOnResetCookie()
+        Template.hideResetCookiesButton()
+        Template.clearAndDisplayMessage('Feature flags cookies are cleaned.')
         Template.displayReloadMessage()
         break
       }
@@ -241,13 +240,10 @@ const main = async () => {
   bindPopupControls()
 }
 
-main()
+init()
 
 /**
  * @typedef Message
  * @property {string} type
  * @property {any} payload
  */
-
-// todo handle errors when ff cookie is corrupted
-// todo reload experiments list after editing
