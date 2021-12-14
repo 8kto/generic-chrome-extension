@@ -6,7 +6,7 @@
   "author": "Igor Ivlev <igor.ivlev@verkstedt.com>",
   "license": "proprietary",
   "private": true,
-   "engines": {
+  "engines": {
     "node": "14.17.0"
   },
   "scripts": {
