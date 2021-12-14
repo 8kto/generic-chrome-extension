@@ -103,17 +103,18 @@ const bindExperimentVariablesHandlers = ({ listElement, tabId }) => {
       }
 
       case 'variant': {
-        const options = Template.getOptionsList(
-          getVariantsOptions(value),
-          value
-        )
-        const clone = target.cloneNode()
-        target.parentNode.replaceChild(options, target)
+        const selectElement = getVariantsDropdown({
+          value,
+          payload,
+          callbackUI,
+        })
+        target.parentNode.replaceChild(selectElement, target)
 
         break
       }
 
       default:
+        alert('Currently, only booleans and variations are supported')
         break
     }
 
@@ -126,6 +127,21 @@ const bindExperimentVariablesHandlers = ({ listElement, tabId }) => {
   variableElements.forEach(element =>
     element.addEventListener('click', handleVariableClick)
   )
+}
+
+// todo clean up mess with the deps
+const getVariantsDropdown = ({ value, payload, callbackUI }) => {
+  const selectElement = Template.getOptionsList(
+    getVariantsOptions(value),
+    value
+  )
+
+  selectElement.addEventListener('change', event => {
+    payload.newValue = event.target.value
+    callbackUI(payload)
+  })
+
+  return selectElement
 }
 
 /**
@@ -273,3 +289,5 @@ init()
  * @property {string} type
  * @property {any} payload
  */
+
+// TODO tab with the ff source ?
