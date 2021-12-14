@@ -103,7 +103,12 @@ const bindExperimentVariablesHandlers = ({ listElement, tabId }) => {
       }
 
       case 'variant': {
-        alert('TBD')
+        const options = Template.getOptionsList(
+          getVariantsOptions(value),
+          value
+        )
+        const clone = target.cloneNode()
+        target.parentNode.replaceChild(options, target)
 
         break
       }
@@ -121,6 +126,27 @@ const bindExperimentVariablesHandlers = ({ listElement, tabId }) => {
   variableElements.forEach(element =>
     element.addEventListener('click', handleVariableClick)
   )
+}
+
+/**
+ * @param {string} presentOption
+ * @return {string[]}
+ */
+const getVariantsOptions = presentOption => {
+  const getOptions = (prefix, num) =>
+    new Array(num).fill(null).map((_, i) => `${prefix}${i + 1}`)
+
+  if (presentOption === 'default') {
+    return ['default', ...getOptions('v', 3), ...getOptions('variation_', 3)]
+  }
+
+  let options = []
+  const matchedPrefix = presentOption.match(/^(variation_|v)\d/)
+  if (matchedPrefix) {
+    options = ['default', ...getOptions(matchedPrefix[1], 3)]
+  }
+
+  return options
 }
 
 /**

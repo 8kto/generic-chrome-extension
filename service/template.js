@@ -47,6 +47,7 @@ class Template {
           <span class="expVariant__var">${name}</span>
           <span
             class="expVariant__varType"
+            title="Click to edit"
             data-exp-name="${experimentName}"
             data-var-name="${name}"
             data-var-type="${type}"
@@ -96,6 +97,25 @@ class Template {
     container.innerHTML = `<ul id="expList">${options.join('\n')}</ul>`
 
     return document.getElementById('expList')
+  }
+
+  /**
+   * @param {string[]} options
+   * @param {string} selectedOption
+   * @return {HTMLSelectElement}
+   */
+  static getOptionsList(options, selectedOption) {
+    const list = document.createElement('select')
+    list.innerHTML = options
+      .map(
+        opt =>
+          `<option value="${opt}" ${
+            opt === selectedOption ? 'selected' : ''
+          }>${opt}</option>`
+      )
+      .join('')
+
+    return list
   }
 
   static clearAndDisplayMessage(msg) {
