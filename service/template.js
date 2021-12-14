@@ -7,8 +7,13 @@ class Template {
   static formatExperiment(experiment) {
     const enabled = experiment.e ? 'Enabled' : 'Disabled'
     const variation = experiment.v.v_name
+      ? experiment.v.v_name
+      : 'Variation is NA'
+    const title = experiment.v.v_name
+      ? `Active variation is "${variation}" [${enabled}]`
+      : 'No v_name variable set'
 
-    return `<span class="expVariant">${variation}</span> <span class="expStatus">${enabled}</span>`
+    return `<span class="expVariant" title='${title}'>${variation}</span>`
   }
 
   /**
@@ -56,6 +61,9 @@ class Template {
     if (name === 'v_name') {
       return 'variant'
     }
+    if (value === 'false' || value === 'true') {
+      return 'boolean'
+    }
 
     return typeof value
   }
@@ -91,6 +99,7 @@ class Template {
   }
 
   static displayMessageOnResetCookie() {
+    // TODO add reload btn
     this.displayMessage(
       'Cookies cleared. Please reload the page to fetch the fresh feature flags'
     )
@@ -104,6 +113,10 @@ class Template {
 
   static displayReloadMessage() {
     document.querySelector('.message-reload').removeAttribute('hidden')
+  }
+
+  static hideReloadMessage() {
+    document.querySelector('.message-reload').setAttribute('hidden', 'hidden')
   }
 }
 

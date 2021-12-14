@@ -45,6 +45,21 @@ class Optimizely {
 
     return this
   }
+
+  /**
+   * @param {string} experimentName
+   * @param {string} variableName
+   * @param {any} value
+   */
+  setExperimentVariable(experimentName, variableName, value) {
+    const experiment = this.experiments[experimentName]
+
+    if (experiment) {
+      experiment.v[variableName] = value
+    }
+
+    return this
+  }
 }
 
 /**
