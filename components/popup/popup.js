@@ -335,5 +335,3 @@ init()
  */
 
 // todo clean up mess with the deps
-// TODO help block for the release toggle?
-// todo accordion for the long vars list
