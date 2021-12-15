@@ -3,6 +3,10 @@ body {
   color: var(--primary-color);
 }
 
+code {
+  background: lightgray;
+}
+
 /* width */
 ::-webkit-scrollbar {
   width: 10px;
