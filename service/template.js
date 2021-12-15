@@ -124,7 +124,7 @@ class Template {
     container.innerHTML = `<div class="message message--info">${msg}</div>`
   }
 
-  static displayReloadMessage() {
+  static displayReloadButton() {
     document.getElementById('reload-tab').removeAttribute('hidden')
   }
 

@@ -52,7 +52,7 @@ const bindExperimentSwitchers = ({ listElement, tabId, optimizelyService }) => {
         },
       })
 
-      Template.displayReloadMessage()
+      Template.displayReloadButton()
     }
   }
 
@@ -67,7 +67,7 @@ const bindExperimentSwitchers = ({ listElement, tabId, optimizelyService }) => {
  */
 const bindExperimentVariablesHandlers = ({ listElement, tabId }) => {
   const callbackUI = data => {
-    Template.displayReloadMessage()
+    Template.displayReloadButton()
 
     // Pass prepared cookies from the extension to the page
     chrome.scripting.executeScript({
@@ -247,7 +247,7 @@ const handleJsonTab = experiments => {
   textarea.innerHTML = JSON.stringify(experiments, null, '  ')
 
   textarea.addEventListener('input', () => {
-    Template.displayReloadMessage()
+    Template.displayReloadButton()
   })
 }
 
@@ -286,7 +286,7 @@ const init = async () => {
       case 'onFeatureFlagsReset': {
         Template.hideResetCookiesButton()
         Template.clearAndDisplayMessage('Feature flags cookies are cleaned.')
-        Template.displayReloadMessage()
+        Template.displayReloadButton()
         break
       }
 
