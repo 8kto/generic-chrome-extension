@@ -1,4 +1,6 @@
-# Igel 🦔
+# Igel: SA Optimizely Tool
+![](./images/igel.jpg)
+
 `Igel` is Chrome extension for the Optimizely experiments management.
 
 ## Install
