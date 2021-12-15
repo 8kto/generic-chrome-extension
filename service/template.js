@@ -125,7 +125,7 @@ class Template {
   }
 
   static displayReloadMessage() {
-    document.querySelector('.message-reload').removeAttribute('hidden')
+    document.getElementById('reload-tab').removeAttribute('hidden')
   }
 
   static hideResetCookiesButton() {

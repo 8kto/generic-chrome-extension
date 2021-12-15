@@ -17,7 +17,7 @@ const bindPopupControls = async () => {
     resetBtn.addEventListener('click', () => resetFeatureFlags(tabId))
   }
 
-  const reloadBtn = document.querySelector('.message-reload')
+  const reloadBtn = document.getElementById('reload-tab')
   if (reloadBtn) {
     reloadBtn.addEventListener('click', async () => {
       await chrome.tabs.reload(tabId)

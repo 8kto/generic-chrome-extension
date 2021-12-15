@@ -2,6 +2,8 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="../../shared/styles/variables.css" />
+    <link rel="stylesheet" href="../../shared/styles/common.css" />
     <link rel="stylesheet" href="../../shared/styles/reset.css" />
     <link rel="stylesheet" href="../../shared/styles/tabs.css" />
     <link rel="stylesheet" href="./styles.css" />
@@ -26,7 +28,7 @@
           <div class="message message--info">Loading...</div>
         </div>
         <input id="reset-feature-flags-cookie" class="button" type="button" value="Reset feature flags cookie" />
-        <span class="message-reload" hidden title="Click to reload page">🔄 Apply (Reload page)</span>
+        <input id="reload-tab" class="button" title="Click to reload page" type="button" value="🔄 Apply" hidden />
       </div>
 
       <div id="experiments-json" class="tabContent">
