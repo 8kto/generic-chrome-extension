@@ -1,0 +1,24 @@
+.tab {
+  overflow: hidden;
+  border-bottom: 1px solid #ccc;
+}
+
+.tab .tabTitle {
+  float: left;
+  width: 5rem;
+  font-size: 15px;
+}
+
+.tab .tabTitle.active {
+  background-color: #ccc;
+}
+
+.tabContent {
+  display: none;
+  padding: 0.5rem;
+  border-top: none;
+}
+
+.tabContent.active {
+  display: block;
+}
