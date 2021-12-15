@@ -1,0 +1,28 @@
+/* HTML tags */
+body {
+  color: var(--primary-color);
+  min-height: auto;
+}
+
+/* Common components styles */
+.button {
+  color: var(--active-color);
+  border: none;
+  outline: none;
+  cursor: pointer;
+  transition: 0.3s;
+  padding: 0.5rem 1rem;
+  background: aliceblue;
+}
+
+.button:hover {
+  background-color: var(--active-bg-color);
+}
+
+.message {
+  padding: 1rem 0;
+}
+
+.message--info {
+  color: green;
+}

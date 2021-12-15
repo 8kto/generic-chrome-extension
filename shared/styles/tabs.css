@@ -1,16 +1,17 @@
 .tab {
   overflow: hidden;
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid var(--active-bg-color);
 }
 
 .tab .tabTitle {
+  color: var(--secondary-color);
   float: left;
   width: 5rem;
   font-size: 15px;
 }
 
 .tab .tabTitle.active {
-  background-color: #ccc;
+  background-color: var(--active-bg-color);
 }
 
 .tabContent {
