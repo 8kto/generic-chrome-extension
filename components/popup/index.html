@@ -19,10 +19,13 @@
       <!-- Tabs -->
       <div class="tab">
         <button class="tabTitle active button" data-target="experiments-list">
-          List
+          📜 List
         </button>
         <button class="tabTitle button" data-target="experiments-json">
-          JSON
+          ⚙️ JSON
+        </button>
+        <button class="tabTitle button" data-target="experiments-docs">
+          👓️ Docs
         </button>
       </div>
 
@@ -53,6 +56,9 @@
 
       <!-- Experiments JSON -->
       <div id="experiments-json" class="tabContent">
+        <p class="message">
+          You can edit raw feature flags JSON here.
+        </p>
         <textarea
           class="form-control--textarea"
           id="experiments-json-container"
@@ -67,6 +73,17 @@
           value="🔄 Apply"
           hidden
         />
+      </div>
+
+      <!-- Docs -->
+      <div id="experiments-docs" class="tabContent">
+        <p class="message">
+          Find out more at these URLs:
+        </p>
+        <ul>
+          <li><a href="https://github.com/RedTecLab/igel-chrome-sa-optimizely-tool">Igel: Chrome extension repository</a></li>
+          <li><a href="https://github.com/RedTecLab/fock/blob/master/docs/08_Optimizely.md">Optimizely in Fock</a></li>
+        </ul>
       </div>
 
     </div>
