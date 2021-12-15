@@ -306,5 +306,4 @@ init()
  * @property {any} payload
  */
 
-// TODO tab with the ff source ?
 // todo links to docs: repo, fock docs

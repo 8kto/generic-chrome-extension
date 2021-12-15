@@ -136,6 +136,5 @@ class Template {
 }
 
 /**
- * TODO add accordions for details
  * TODO help block for the release toggle?
  */
