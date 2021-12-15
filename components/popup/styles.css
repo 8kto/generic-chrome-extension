@@ -44,3 +44,7 @@
 #reset-feature-flags-cookie {
   margin-right: 0.5rem;
 }
+
+.tabContent p:not(.message) {
+  margin-bottom: 1rem;
+}

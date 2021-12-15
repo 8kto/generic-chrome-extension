@@ -44,6 +44,7 @@ code {
 
 .message {
   padding: 1rem 0;
+  margin-bottom: 0;
 }
 
 .message--info {
