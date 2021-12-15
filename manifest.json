@@ -11,9 +11,6 @@
     "96": "/images/igel96.png",
     "128": "/images/igel128.png"
   },
-  "browser_action": {
-    "default_icon": "/images/igel16.png"
-  },
   "permissions": ["storage", "activeTab", "scripting", "tabs"],
   "host_permissions": ["*://shop-apotheke.com/*", "http://localhost/*"],
   "action": {
