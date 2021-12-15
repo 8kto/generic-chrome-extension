@@ -1,25 +1,29 @@
 {
   "name": "Igel: SA Optimizely Tool",
   "description": "Manage the available Optimizely experiments",
+  "homepage_url": "https://github.com/RedTecLab/igel-chrome-sa-optimizely-tool",
   "version": "1.0",
   "manifest_version": 3,
   "icons": {
     "16": "/images/igel16.png",
     "32": "/images/igel32.png",
     "48": "/images/igel48.png",
+    "96": "/images/igel96.png",
     "128": "/images/igel128.png"
   },
-  "background": {},
-  "options_page": "components/options/index.html",
+  "browser_action": {
+    "default_icon": "/images/igel16.png"
+  },
   "permissions": ["storage", "activeTab", "scripting", "tabs"],
   "host_permissions": ["*://shop-apotheke.com/*", "http://localhost/*"],
   "action": {
     "default_popup": "components/popup/index.html",
     "default_icon": {
-      "16": "/images/get_started16.png",
-      "32": "/images/get_started32.png",
-      "48": "/images/get_started48.png",
-      "128": "/images/get_started128.png"
+      "16": "/images/igel16.png",
+      "32": "/images/igel32.png",
+      "48": "/images/igel48.png",
+      "96": "/images/igel96.png",
+      "128": "/images/igel128.png"
     }
   }
 }

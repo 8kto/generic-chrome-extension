@@ -3,9 +3,12 @@
   "version": "0.1",
   "description": "Chrome extension for the Optimizely experiments management",
   "main": "index.js",
-  "author": "Igor Ivlev <igor.ivlev@verkstedt.com>",
   "license": "proprietary",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:RedTecLab/igel-chrome-sa-optimizely-tool.git"
+  },
   "engines": {
     "node": "14.17.0"
   },
