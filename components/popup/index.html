@@ -26,11 +26,28 @@
         </button>
       </div>
 
+      <div id="messages">
+        <div class="message message--info">Loading...</div>
+      </div>
+
       <!-- Tab content -->
       <div id="experiments-list" class="tabContent active">
-        <div id="container">
-          <div class="message message--info">Loading...</div>
-        </div>
+        <div id="container"></div>
+
+        <input
+          id="reset-feature-flags-cookie"
+          class="button"
+          type="button"
+          value="Reset feature flags"
+        />
+        <input
+          id="reload-tab"
+          class="button"
+          title="Click to reload page and fetch updated feature flags"
+          type="button"
+          value="🔄 Apply"
+          hidden
+        />
       </div>
 
       <div id="experiments-json" class="tabContent">
@@ -40,22 +57,16 @@
           cols="36"
           rows="20"
         ></textarea>
+        <input
+          id="save-json"
+          class="button"
+          title="Click to reload page and fetch updated feature flags"
+          type="button"
+          value="🔄 Apply"
+          hidden
+        />
       </div>
 
-      <input
-        id="reset-feature-flags-cookie"
-        class="button"
-        type="button"
-        value="Reset feature flags"
-      />
-      <input
-        id="reload-tab"
-        class="button"
-        title="Click to reload page and fetch updated feature flags"
-        type="button"
-        value="🔄 Apply"
-        hidden
-      />
     </div>
 
     <script src="popup.js"></script>

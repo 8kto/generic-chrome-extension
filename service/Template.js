@@ -20,7 +20,7 @@ class Template {
    * @param {string} experimentName
    * @param {Experiment} experiment
    */
-  static getFormControl(experimentName, experiment) {
+  static getCheckboxFormControl(experimentName, experiment) {
     return `<input type="checkbox" value="${experimentName}" id="${experimentName}" ${
       experiment.e ? 'checked' : ''
     } title="Enable / Disable" />`
@@ -78,7 +78,7 @@ class Template {
     const entries = Object.entries(experiments || {})
 
     if (!entries.length) {
-      this.clearAndDisplayMessage('No experiment entries found')
+      this.showMessage('No experiment entries found')
 
       return null
     }
@@ -86,7 +86,7 @@ class Template {
     const options = entries.map(([name, experiment]) => {
       return [
         '<li class="expList__item">',
-        this.getFormControl(name, experiment),
+        this.getCheckboxFormControl(name, experiment),
         this.getFormControlLabel(name),
         this.formatExperiment(experiment),
         this.getVariablesList(name, experiment),
@@ -118,13 +118,24 @@ class Template {
     return list
   }
 
-  static clearAndDisplayMessage(msg) {
-    const container = document.getElementById('container')
+  static clearAndShowMessage(msg, mode) {
+    const container = document.getElementById('messages')
+    const className = `message ${
+      mode === 'alert' ? 'message--alert' : 'message--info'
+    }`
 
-    container.innerHTML = `<div class="message message--info">${msg}</div>`
+    container.innerHTML = `<div class="${className}">${msg}</div>`
   }
 
-  static displayReloadButton() {
+  static showMessage(msg) {
+    this.clearAndShowMessage(msg, 'info')
+  }
+
+  static showError(msg) {
+    this.clearAndShowMessage(msg, 'alert')
+  }
+
+  static showReloadButton() {
     document.getElementById('reload-tab').removeAttribute('hidden')
   }
 

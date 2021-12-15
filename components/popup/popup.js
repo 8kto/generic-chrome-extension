@@ -52,7 +52,7 @@ const bindExperimentSwitchers = ({ listElement, tabId, optimizelyService }) => {
         },
       })
 
-      Template.displayReloadButton()
+      Template.showReloadButton()
     }
   }
 
@@ -67,7 +67,7 @@ const bindExperimentSwitchers = ({ listElement, tabId, optimizelyService }) => {
  */
 const bindExperimentVariablesHandlers = ({ listElement, tabId }) => {
   const callbackUI = data => {
-    Template.displayReloadButton()
+    Template.showReloadButton()
 
     // Pass prepared cookies from the extension to the page
     chrome.scripting.executeScript({
@@ -187,7 +187,7 @@ const handleOnPopupOpen = (message, tabId) => {
     bindExperimentVariablesHandlers({ listElement: expListElement, tabId })
   }
 
-  handleJsonTab(experiments)
+  handleJsonTab(experiments, tabId)
 }
 
 /**
@@ -241,13 +241,40 @@ const applyFeatureFlagUpdates = (message, tabId) => {
 
 /**
  * @param {Record<string, Experiment>} experiments
+ * @param {number} tabId
  */
-const handleJsonTab = experiments => {
+const handleJsonTab = (experiments, tabId) => {
+  /** @type {HTMLTextAreaElement} */
   const textarea = document.getElementById('experiments-json-container')
   textarea.innerHTML = JSON.stringify(experiments, null, '  ')
 
-  textarea.addEventListener('input', () => {
-    Template.displayReloadButton()
+  const saveJsonBtn = document.getElementById('save-json')
+
+  textarea.addEventListener('input', () =>
+    saveJsonBtn.removeAttribute('hidden')
+  )
+  saveJsonBtn.addEventListener('click', () => {
+    let jsonRaw
+
+    try {
+      // Drop beatified formatting
+      jsonRaw = JSON.stringify(JSON.parse(textarea.value))
+    } catch (_) {
+      Template.showError('Invalid JSON provided')
+
+      return
+    }
+
+    chrome.scripting.executeScript({
+      args: [jsonRaw],
+      target: { tabId },
+      // NB: it is not the usual closure, it doesn't capture any context
+      function(payload) {
+        document.cookie =
+          'feature-flag-cookie=;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;'
+        document.cookie = `feature-flag-cookie=${payload}`
+      },
+    })
   })
 }
 
@@ -285,8 +312,8 @@ const init = async () => {
 
       case 'onFeatureFlagsReset': {
         Template.hideResetCookiesButton()
-        Template.clearAndDisplayMessage('Feature flags cookies are cleaned.')
-        Template.displayReloadButton()
+        Template.showMessage('Feature flags cookies are cleaned.')
+        Template.showReloadButton()
         break
       }
 

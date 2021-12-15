@@ -27,6 +27,10 @@ body {
   color: green;
 }
 
+.message--alert {
+  color: darkred;
+}
+
 .form-control--textarea {
   border: 1px solid var(--active-bg-color);
   margin: 0;
