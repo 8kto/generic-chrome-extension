@@ -3,20 +3,37 @@
   <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="../../shared/styles/reset.css" />
+    <link rel="stylesheet" href="../../shared/styles/tabs.css" />
     <link rel="stylesheet" href="./styles.css" />
+
+    <script src="../../shared/js/tabs.js"></script>
+    <script src="../../service/optimizely.js"></script>
+    <script src="../../service/template.js"></script>
   </head>
   <body>
     <div class="componentWrapper">
-      <h1>Optimizely experiments</h1>
-      <div id="container">
-        <div class="message message--info">Loading...</div>
+      <h1 class="componentTitle">Optimizely experiments</h1>
+
+      <!-- Tab links -->
+      <div class="tab">
+        <button class="tabTitle active button" data-target="experiments-list">List</button>
+        <button class="tabTitle button" data-target="experiments-json">JSON</button>
       </div>
-      <input id="reset-feature-flags-cookie" type="button" value="Reset feature flags cookie" />
-      <span class="message-reload" hidden title="Click to reload page">🔄 Apply (Reload page)</span>
+
+      <!-- Tab content -->
+      <div id="experiments-list" class="tabContent active">
+        <div id="container">
+          <div class="message message--info">Loading...</div>
+        </div>
+        <input id="reset-feature-flags-cookie" class="button" type="button" value="Reset feature flags cookie" />
+        <span class="message-reload" hidden title="Click to reload page">🔄 Apply (Reload page)</span>
+      </div>
+
+      <div id="experiments-json" class="tabContent">
+        <pre>Test</pre>
+      </div>
     </div>
 
-    <script src="../../service/optimizely.js"></script>
-    <script src="../../service/template.js"></script>
     <script src="popup.js"></script>
   </body>
 </html>

@@ -1,11 +1,29 @@
-.componentWrapper {
-  width: 350px;
-  padding: 0.5rem 1rem;
-  margin: 0;
+body {
+  min-height: auto;
 }
 
-.componentWrapper h1 {
+.componentWrapper {
+  width: 350px;
+  padding: 0.75rem;
+  margin: 0;
+  font-size: 13px;
+}
+
+.componentTitle {
+  margin: 0 0 1rem;
   font-size: 1.2rem;
+}
+
+.button {
+  border: none;
+  outline: none;
+  cursor: pointer;
+  transition: 0.3s;
+  padding: 0.5rem 1rem;
+}
+
+.button:hover {
+  background-color: #ddd;
 }
 
 #expList {

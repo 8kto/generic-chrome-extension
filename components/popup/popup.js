@@ -1,4 +1,4 @@
-/*global Optimizely, Template*/
+/*global Optimizely, Template, initTabs*/
 
 const getActiveTabId = async () => {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
@@ -241,6 +241,8 @@ const applyFeatureFlagUpdates = (message, tabId) => {
  * Function is called every time the extension icon is clicked in the browser tray
  */
 const init = async () => {
+  initTabs()
+
   const tabId = await getActiveTabId()
 
   // Pass cookies from the page to the handlers
@@ -291,3 +293,4 @@ init()
  */
 
 // TODO tab with the ff source ?
+// todo links to docs: repo, fock docs
