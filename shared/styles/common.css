@@ -26,3 +26,8 @@ body {
 .message--info {
   color: green;
 }
+
+.form-control--textarea {
+  border: 1px solid var(--active-bg-color);
+  margin: 0;
+}

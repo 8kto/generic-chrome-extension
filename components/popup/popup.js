@@ -186,6 +186,8 @@ const handleOnPopupOpen = (message, tabId) => {
 
     bindExperimentVariablesHandlers({ listElement: expListElement, tabId })
   }
+
+  handleJsonTab(experiments)
 }
 
 /**
@@ -234,6 +236,18 @@ const applyFeatureFlagUpdates = (message, tabId) => {
         'feature-flag-cookie=;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;'
       document.cookie = `feature-flag-cookie=${payload}`
     },
+  })
+}
+
+/**
+ * @param {Record<string, Experiment>} experiments
+ */
+const handleJsonTab = experiments => {
+  const textarea = document.getElementById('experiments-json-container')
+  textarea.innerHTML = JSON.stringify(experiments, null, '  ')
+
+  textarea.addEventListener('input', () => {
+    Template.displayReloadMessage()
   })
 }
 

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <link rel="stylesheet" href="../../shared/styles/variables.css" />
     <link rel="stylesheet" href="../../shared/styles/common.css" />
     <link rel="stylesheet" href="../../shared/styles/reset.css" />
@@ -18,8 +18,12 @@
 
       <!-- Tab links -->
       <div class="tab">
-        <button class="tabTitle active button" data-target="experiments-list">List</button>
-        <button class="tabTitle button" data-target="experiments-json">JSON</button>
+        <button class="tabTitle active button" data-target="experiments-list">
+          List
+        </button>
+        <button class="tabTitle button" data-target="experiments-json">
+          JSON
+        </button>
       </div>
 
       <!-- Tab content -->
@@ -27,13 +31,31 @@
         <div id="container">
           <div class="message message--info">Loading...</div>
         </div>
-        <input id="reset-feature-flags-cookie" class="button" type="button" value="Reset feature flags cookie" />
-        <input id="reload-tab" class="button" title="Click to reload page" type="button" value="🔄 Apply" hidden />
       </div>
 
       <div id="experiments-json" class="tabContent">
-        <pre>Test</pre>
+        <textarea
+          class="form-control--textarea"
+          id="experiments-json-container"
+          cols="36"
+          rows="20"
+        ></textarea>
       </div>
+
+      <input
+        id="reset-feature-flags-cookie"
+        class="button"
+        type="button"
+        value="Reset feature flags"
+      />
+      <input
+        id="reload-tab"
+        class="button"
+        title="Click to reload page and fetch updated feature flags"
+        type="button"
+        value="🔄 Apply"
+        hidden
+      />
     </div>
 
     <script src="popup.js"></script>
