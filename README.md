@@ -1,4 +1,5 @@
-# Chrome extension for the Optimizely experiments management
+# Igel 🦔
+`Igel` is Chrome extension for the Optimizely experiments management.
 
 ## Install
 1. Checkout repo to the local machine.
