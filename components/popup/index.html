@@ -2,9 +2,9 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <link rel="stylesheet" href="../../shared/styles/reset.css" />
     <link rel="stylesheet" href="../../shared/styles/variables.css" />
     <link rel="stylesheet" href="../../shared/styles/common.css" />
-    <link rel="stylesheet" href="../../shared/styles/reset.css" />
     <link rel="stylesheet" href="../../shared/styles/tabs.css" />
     <link rel="stylesheet" href="./styles.css" />
 
@@ -16,7 +16,7 @@
     <div class="componentWrapper">
       <h1 class="componentTitle">Optimizely experiments</h1>
 
-      <!-- Tab links -->
+      <!-- Tabs -->
       <div class="tab">
         <button class="tabTitle active button" data-target="experiments-list">
           List
@@ -30,7 +30,8 @@
         <div class="message message--info">Loading...</div>
       </div>
 
-      <!-- Tab content -->
+      <!-- Tabs content -->
+      <!-- Experiments list -->
       <div id="experiments-list" class="tabContent active">
         <div id="container"></div>
 
@@ -50,6 +51,7 @@
         />
       </div>
 
+      <!-- Experiments JSON -->
       <div id="experiments-json" class="tabContent">
         <textarea
           class="form-control--textarea"

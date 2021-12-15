@@ -118,6 +118,10 @@ class Template {
     return list
   }
 
+  static clearMessages() {
+    document.getElementById('messages').innerHTML = ''
+  }
+
   static clearAndShowMessage(msg, mode) {
     const container = document.getElementById('messages')
     const className = `message ${
@@ -145,7 +149,3 @@ class Template {
       .setAttribute('hidden', 'hidden')
   }
 }
-
-/**
- * TODO help block for the release toggle?
- */

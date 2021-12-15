@@ -47,7 +47,7 @@ const bindExperimentSwitchers = ({ listElement, tabId, optimizelyService }) => {
         args: [experiments],
         target: { tabId },
         // NB: it is not the usual closure, it doesn't capture any context
-        function: payload => {
+        function(payload) {
           document.cookie = `feature-flag-cookie=${JSON.stringify(payload)}`
         },
       })
@@ -73,7 +73,7 @@ const bindExperimentVariablesHandlers = ({ listElement, tabId }) => {
     chrome.scripting.executeScript({
       args: [data],
       target: { tabId },
-      function: data => {
+      function(data) {
         // NB: it is not the usual closure, it doesn't capture any context
         chrome.runtime.sendMessage({
           type: 'onVariableSet',
@@ -129,7 +129,6 @@ const bindExperimentVariablesHandlers = ({ listElement, tabId }) => {
   )
 }
 
-// todo clean up mess with the deps
 const getVariantsDropdown = ({ value, payload, callbackUI }) => {
   const selectElement = Template.getOptionsList(
     getVariantsOptions(value),
@@ -145,24 +144,22 @@ const getVariantsDropdown = ({ value, payload, callbackUI }) => {
 }
 
 /**
+ * Guess the prefix from the present option and return
+ * the list of possible variant names
+ *
  * @param {string} presentOption
  * @return {string[]}
  */
 const getVariantsOptions = presentOption => {
+  const matchedPrefix = presentOption.match(/^(variation_|v)\d/)
   const getOptions = (prefix, num) =>
     new Array(num).fill(null).map((_, i) => `${prefix}${i + 1}`)
 
-  if (presentOption === 'default') {
+  if (presentOption === 'default' || !matchedPrefix) {
     return ['default', ...getOptions('v', 3), ...getOptions('variation_', 3)]
   }
 
-  let options = []
-  const matchedPrefix = presentOption.match(/^(variation_|v)\d/)
-  if (matchedPrefix) {
-    options = ['default', ...getOptions(matchedPrefix[1], 3)]
-  }
-
-  return options
+  return ['default', ...getOptions(matchedPrefix[1], 3)]
 }
 
 /**
@@ -231,7 +228,7 @@ const applyFeatureFlagUpdates = (message, tabId) => {
     target: { tabId },
     args: [JSON.stringify(updatedFeatureFlags)],
     // NB: it is not the usual closure, it doesn't capture any context
-    function: payload => {
+    function(payload) {
       document.cookie =
         'feature-flag-cookie=;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;'
       document.cookie = `feature-flag-cookie=${payload}`
@@ -246,14 +243,14 @@ const applyFeatureFlagUpdates = (message, tabId) => {
 const handleJsonTab = (experiments, tabId) => {
   /** @type {HTMLTextAreaElement} */
   const textarea = document.getElementById('experiments-json-container')
-  textarea.innerHTML = JSON.stringify(experiments, null, '  ')
-
   const saveJsonBtn = document.getElementById('save-json')
 
+  textarea.innerHTML = JSON.stringify(experiments, null, '  ')
   textarea.addEventListener('input', () =>
     saveJsonBtn.removeAttribute('hidden')
   )
-  saveJsonBtn.addEventListener('click', () => {
+
+  saveJsonBtn.addEventListener('click', async () => {
     let jsonRaw
 
     try {
@@ -265,7 +262,7 @@ const handleJsonTab = (experiments, tabId) => {
       return
     }
 
-    chrome.scripting.executeScript({
+    await chrome.scripting.executeScript({
       args: [jsonRaw],
       target: { tabId },
       // NB: it is not the usual closure, it doesn't capture any context
@@ -275,6 +272,9 @@ const handleJsonTab = (experiments, tabId) => {
         document.cookie = `feature-flag-cookie=${payload}`
       },
     })
+
+    await chrome.tabs.reload(tabId)
+    window.close()
   })
 }
 
@@ -282,6 +282,7 @@ const handleJsonTab = (experiments, tabId) => {
  * Function is called every time the extension icon is clicked in the browser tray
  */
 const init = async () => {
+  Template.clearMessages()
   initTabs()
 
   const tabId = await getActiveTabId()
@@ -289,7 +290,7 @@ const init = async () => {
   // Pass cookies from the page to the handlers
   chrome.scripting.executeScript({
     target: { tabId },
-    function: () => {
+    function() {
       // NB: it is not the usual closure, it doesn't capture any context
       chrome.runtime.sendMessage({
         type: 'onPopupOpen',
@@ -334,3 +335,5 @@ init()
  */
 
 // todo links to docs: repo, fock docs
+// todo clean up mess with the deps
+// TODO help block for the release toggle?
