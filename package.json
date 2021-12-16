@@ -18,7 +18,8 @@
     "lint": "yarn lint:styles && yarn lint:js",
     "lint:js": "eslint --ext=.js,.jsx,.mjs .",
     "lint:styles": "stylelint **/*.css",
-    "bump": "mversion"
+    "bump": "mversion",
+    "bump:patch": "bump patch -t"
   },
   "devDependencies": {
     "eslint": "^7.32.0",
