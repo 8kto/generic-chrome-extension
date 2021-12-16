@@ -1,0 +1,4 @@
+{
+  "commitMessage": "Version updated: %s",
+  "tagName": "v%s"
+}
