@@ -17,7 +17,8 @@
     "format": "prettier --write \"./**/*.{js,json,html}\" && stylelint **/*.css --fix",
     "lint": "yarn lint:styles && yarn lint:js",
     "lint:js": "eslint --ext=.js,.jsx,.mjs .",
-    "lint:styles": "stylelint **/*.css"
+    "lint:styles": "stylelint **/*.css",
+    "bump": "mversion"
   },
   "devDependencies": {
     "eslint": "^7.32.0",

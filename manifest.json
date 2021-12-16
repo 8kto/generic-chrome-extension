@@ -10,7 +10,12 @@
     "48": "/images/igel48.png",
     "128": "/images/igel128.png"
   },
-  "permissions": ["storage", "activeTab", "scripting", "tabs"],
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting",
+    "tabs"
+  ],
   "host_permissions": [
     "http://localhost/*",
     "*://www.shop-apotheke.com/*",
