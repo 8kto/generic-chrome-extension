@@ -1,7 +1,7 @@
 # Igel: SA Optimizely Tool
 ![](./images/igel350.jpg)
 
-`Igel` is Chrome extension for the Optimizely experiments management.
+`Igel` is **Chrome** extension for the Optimizely experiments management.
 
 ## Features
 <details>
@@ -23,6 +23,7 @@ The `Docs` tab contains some important notes about the current implementation an
 2. Using [this manual](https://developer.chrome.com/docs/extensions/mv3/getstarted/), install the project folder through the "Load unpacked" action.
 3. Find the newly installed extension in the browser tray with extensions, pin it. 
 
+Alternatively, you can install `.crx` extension file through the browser UI. For that, check the [releases page](https://github.com/RedTecLab/igel-chrome-sa-optimizely-tool/releases) (last availalbe version can be staled).
 
 ## Development
 1. Install dependencies: `yarn`
