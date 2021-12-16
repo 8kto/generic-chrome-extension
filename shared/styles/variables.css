@@ -3,5 +3,6 @@
   --secondary-color: #395878;
   --active-color: dodgerblue;
   --muted-bg-color: aliceblue;
-  --active-bg-color: #d9ecff;
+  --foreground-bg-color: #d9ecff;
+  --active-bg-color: #95c6ff;
 }

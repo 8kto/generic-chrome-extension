@@ -7,6 +7,15 @@ code {
   background: lightgray;
 }
 
+a {
+  color: var(--active-color);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--secondary-color);
+}
+
 /* width */
 ::-webkit-scrollbar {
   width: 10px;
@@ -19,12 +28,12 @@ code {
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: var(--active-bg-color);
+  background: var(--foreground-bg-color);
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--active-color);
+  background: var(--active-bg-color);
 }
 
 /* Common components styles */
@@ -39,7 +48,7 @@ code {
 }
 
 .button:hover {
-  background-color: var(--active-bg-color);
+  background-color: var(--foreground-bg-color);
 }
 
 .message {
@@ -56,6 +65,6 @@ code {
 }
 
 .form-control--textarea {
-  border: 1px solid var(--active-bg-color);
+  border: 1px solid var(--foreground-bg-color);
   margin: 0;
 }

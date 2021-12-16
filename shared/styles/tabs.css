@@ -1,6 +1,6 @@
 .tab {
   overflow: hidden;
-  border-bottom: 1px solid var(--active-bg-color);
+  border-bottom: 1px solid var(--foreground-bg-color);
 }
 
 .tab .tabTitle {
@@ -11,7 +11,7 @@
 }
 
 .tab .tabTitle.active {
-  background-color: var(--active-bg-color);
+  background-color: var(--foreground-bg-color);
 }
 
 .tabContent {
