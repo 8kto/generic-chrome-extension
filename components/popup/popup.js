@@ -313,7 +313,9 @@ const init = async () => {
 
       case 'onFeatureFlagsReset': {
         Template.hideResetCookiesButton()
-        Template.showMessage('Feature flags cookies are cleaned.')
+        Template.showMessage(
+          'Feature flags cookies are cleaned. Click "Apply" to reload page and fetch the new ones.'
+        )
         Template.showReloadButton()
         break
       }
