@@ -3,12 +3,20 @@
 
 `Igel` is Chrome extension for the Optimizely experiments management.
 
-## How does it look?
+## Features
 <details>
+<summary>How does it look?</summary>
 
 ![](./images/ui-tab-list.png)
 
 </details>
+
+The `List` tab lets you control experiments by turning them on or off, selecting a variation, and setting boolean variables for the release toggles.
+
+The `JSON` tab is for editing raw feature flags JSON: it's preformatted, so it's still more convenient than the native Developer tools section.
+
+The `Docs` tab contains some important notes about the current implementation and limitations.
+
 
 ## Install
 1. Checkout repo to the local machine.
