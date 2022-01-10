@@ -222,7 +222,7 @@ const resetFeatureFlags = tabId => {
       ].forEach(cookieName => {
         // Make the cookies stale
         document.cookie =
-          cookieName + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;'
+          cookieName + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;'
       })
 
       chrome.runtime.sendMessage({ type: 'onFeatureFlagsReset' })
@@ -250,7 +250,7 @@ const applyFeatureFlagUpdates = (message, tabId) => {
     // NB: it is not the usual closure, it doesn't capture any context
     function(payload) {
       document.cookie =
-        'feature-flag-cookie=;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;'
+        'feature-flag-cookie=;expires=Thu, 01 Jan 1970 00:00:00 GMT;'
       document.cookie = `feature-flag-cookie=${payload}`
     },
   })
