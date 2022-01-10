@@ -65,6 +65,7 @@ a:hover {
 }
 
 .form-control--textarea {
+  background-color: var(--muted-bg-color);
   border: 1px solid var(--foreground-bg-color);
   margin: 0;
 }

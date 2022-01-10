@@ -298,27 +298,7 @@ const handleJsonTab = (experiments, tabId) => {
   })
 }
 
-/**
- * Function is called every time the extension icon is clicked in the browser tray
- */
-const init = async () => {
-  Template.clearMessages()
-  initTabs()
-
-  const tabId = await getActiveTabId()
-
-  // Pass cookies from the page to the handlers
-  chrome.scripting.executeScript({
-    target: { tabId },
-    function() {
-      // NB: it is not the usual closure, it doesn't capture any context
-      chrome.runtime.sendMessage({
-        type: 'onPopupOpen',
-        payload: document.cookie,
-      })
-    },
-  })
-
+const handleEvents = tabId => {
   // Handle message from the page in the extension script:
   // extension and the document (active tab) don't share cookies and other context.
   chrome.runtime.onMessage.addListener(message => {
@@ -344,7 +324,33 @@ const init = async () => {
         throw new Error(`Unknown message type: ${message.type}`)
     }
   })
+}
 
+const passCookiesFromDocumentToExtension = tabId => {
+  // Pass cookies from the page to the handlers
+  chrome.scripting.executeScript({
+    target: { tabId },
+    // NB: it is not the usual closure, it doesn't capture any context
+    function() {
+      chrome.runtime.sendMessage({
+        type: 'onPopupOpen',
+        payload: document.cookie,
+      })
+    },
+  })
+}
+
+/**
+ * Function is called every time the extension icon is clicked in the browser tray
+ */
+const init = async () => {
+  Template.clearMessages()
+  initTabs()
+
+  const tabId = await getActiveTabId()
+
+  passCookiesFromDocumentToExtension(tabId)
+  handleEvents(tabId)
   bindPopupControls()
 }
 
