@@ -136,7 +136,20 @@ const getVariantsDropdown = ({ value, payload, callbackUI }) => {
   )
 
   selectElement.addEventListener('change', event => {
-    payload.newValue = event.target.value
+    const { target } = event
+    let { value } = target
+
+    if (value && value.toLowerCase() === 'custom') {
+      value = prompt('Enter the custom variation', '')
+
+      if (value) {
+        const selectedOption = target.options[target.selectedIndex]
+        selectedOption.textContent = value
+        selectedOption.value = value
+      }
+    }
+
+    payload.newValue = value
     callbackUI(payload)
   })
 
@@ -152,14 +165,21 @@ const getVariantsDropdown = ({ value, payload, callbackUI }) => {
  */
 const getVariantsOptions = presentOption => {
   const matchedPrefix = presentOption.match(/^(variation_|v)\d/)
+
   const getOptions = (prefix, num) =>
     new Array(num).fill(null).map((_, i) => `${prefix}${i + 1}`)
 
+  const decorateOptionsList = options => ['default', ...options, 'Custom']
+
+  // We cannot guess the correct prefix, so generate all possible
   if (presentOption === 'default' || !matchedPrefix) {
-    return ['default', ...getOptions('v', 3), ...getOptions('variation_', 3)]
+    return decorateOptionsList([
+      ...getOptions('v', 3),
+      ...getOptions('variation_', 3),
+    ])
   }
 
-  return ['default', ...getOptions(matchedPrefix[1], 3)]
+  return decorateOptionsList(getOptions(matchedPrefix[1], 3))
 }
 
 /**
