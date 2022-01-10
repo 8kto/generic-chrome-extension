@@ -136,7 +136,20 @@ const getVariantsDropdown = ({ value, payload, callbackUI }) => {
   )
 
   selectElement.addEventListener('change', event => {
-    payload.newValue = event.target.value
+    const { target } = event
+    let { value } = target
+
+    if (value && value.toLowerCase() === 'custom') {
+      value = prompt('Enter the custom variation', '')
+
+      if (value) {
+        const selectedOption = target.options[target.selectedIndex]
+        selectedOption.textContent = value
+        selectedOption.value = value
+      }
+    }
+
+    payload.newValue = value
     callbackUI(payload)
   })
 
@@ -152,14 +165,21 @@ const getVariantsDropdown = ({ value, payload, callbackUI }) => {
  */
 const getVariantsOptions = presentOption => {
   const matchedPrefix = presentOption.match(/^(variation_|v)\d/)
+
   const getOptions = (prefix, num) =>
     new Array(num).fill(null).map((_, i) => `${prefix}${i + 1}`)
 
+  const decorateOptionsList = options => ['default', ...options, 'Custom']
+
+  // We cannot guess the correct prefix, so generate all possible
   if (presentOption === 'default' || !matchedPrefix) {
-    return ['default', ...getOptions('v', 3), ...getOptions('variation_', 3)]
+    return decorateOptionsList([
+      ...getOptions('v', 3),
+      ...getOptions('variation_', 3),
+    ])
   }
 
-  return ['default', ...getOptions(matchedPrefix[1], 3)]
+  return decorateOptionsList(getOptions(matchedPrefix[1], 3))
 }
 
 /**
@@ -202,7 +222,7 @@ const resetFeatureFlags = tabId => {
       ].forEach(cookieName => {
         // Make the cookies stale
         document.cookie =
-          cookieName + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;'
+          cookieName + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;'
       })
 
       chrome.runtime.sendMessage({ type: 'onFeatureFlagsReset' })
@@ -230,7 +250,7 @@ const applyFeatureFlagUpdates = (message, tabId) => {
     // NB: it is not the usual closure, it doesn't capture any context
     function(payload) {
       document.cookie =
-        'feature-flag-cookie=;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;'
+        'feature-flag-cookie=;expires=Thu, 01 Jan 1970 00:00:00 GMT;'
       document.cookie = `feature-flag-cookie=${payload}`
     },
   })
@@ -278,27 +298,7 @@ const handleJsonTab = (experiments, tabId) => {
   })
 }
 
-/**
- * Function is called every time the extension icon is clicked in the browser tray
- */
-const init = async () => {
-  Template.clearMessages()
-  initTabs()
-
-  const tabId = await getActiveTabId()
-
-  // Pass cookies from the page to the handlers
-  chrome.scripting.executeScript({
-    target: { tabId },
-    function() {
-      // NB: it is not the usual closure, it doesn't capture any context
-      chrome.runtime.sendMessage({
-        type: 'onPopupOpen',
-        payload: document.cookie,
-      })
-    },
-  })
-
+const handleEvents = tabId => {
   // Handle message from the page in the extension script:
   // extension and the document (active tab) don't share cookies and other context.
   chrome.runtime.onMessage.addListener(message => {
@@ -324,8 +324,43 @@ const init = async () => {
         throw new Error(`Unknown message type: ${message.type}`)
     }
   })
+}
 
+const passCookiesFromDocumentToExtension = tabId => {
+  // Pass cookies from the page to the handlers
+  chrome.scripting.executeScript({
+    target: { tabId },
+    // NB: it is not the usual closure, it doesn't capture any context
+    function() {
+      chrome.runtime.sendMessage({
+        type: 'onPopupOpen',
+        payload: document.cookie,
+      })
+    },
+  })
+}
+
+const updateExtensionVersion = () => {
+  const versionContainer = document.getElementById('igel-version')
+  if (versionContainer) {
+    const manifest = chrome.runtime.getManifest()
+    versionContainer.innerText = manifest.version
+  }
+}
+
+/**
+ * Function is called every time the extension icon is clicked in the browser tray
+ */
+const init = async () => {
+  Template.clearMessages()
+  initTabs()
+
+  const tabId = await getActiveTabId()
+
+  passCookiesFromDocumentToExtension(tabId)
+  handleEvents(tabId)
   bindPopupControls()
+  updateExtensionVersion()
 }
 
 init()

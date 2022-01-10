@@ -45,11 +45,12 @@
           class="button"
           type="button"
           value="Reset feature flags"
+          title="Clear cookies and reload page to fetch the new ones"
         />
         <input
           id="reload-tab"
           class="button"
-          title="Click to reload page and fetch updated feature flags"
+          title="Click to apply changes, reload page, and fetch updated feature flags"
           type="button"
           value="🔄 Apply"
           hidden
@@ -64,6 +65,8 @@
           id="experiments-json-container"
           cols="36"
           rows="20"
+          autocomplete="off"
+          spellcheck="false"
         ></textarea>
         <input
           id="save-json"
@@ -97,17 +100,22 @@
             <a
               href="https://github.com/RedTecLab/igel-chrome-sa-optimizely-tool"
               target="_blank"
-              >Igel: Chrome extension repository</a
             >
+              Igel: Chrome extension repository
+            </a>
           </li>
           <li>
             <a
               href="https://github.com/RedTecLab/fock/blob/master/docs/08_Optimizely.md"
               target="_blank"
-              >Optimizely in Fock</a
-            >
+              >Optimizely in Fock
+            </a>
           </li>
         </ul>
+
+        <p>
+          <strong>Version</strong>: <span id="igel-version"></span>
+        </p>
       </div>
     </div>
 
