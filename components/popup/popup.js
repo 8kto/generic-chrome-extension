@@ -340,6 +340,14 @@ const passCookiesFromDocumentToExtension = tabId => {
   })
 }
 
+const updateExtensionVersion = () => {
+  const versionContainer = document.getElementById('igel-version')
+  if (versionContainer) {
+    const manifest = chrome.runtime.getManifest()
+    versionContainer.innerText = manifest.version
+  }
+}
+
 /**
  * Function is called every time the extension icon is clicked in the browser tray
  */
@@ -352,6 +360,7 @@ const init = async () => {
   passCookiesFromDocumentToExtension(tabId)
   handleEvents(tabId)
   bindPopupControls()
+  updateExtensionVersion()
 }
 
 init()
