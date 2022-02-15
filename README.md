@@ -11,11 +11,15 @@
 
 </details>
 
-The `List` tab lets you control experiments by turning them on or off, selecting a variation, and setting boolean variables for the release toggles.
+* The `List` tab lets you control experiments by turning them on or off, selecting a variation, and setting boolean variables for the release toggles.
 
-The `JSON` tab is for editing raw feature flags JSON: it's preformatted, so it's still more convenient than the native Developer tools section.
+* The `JSON` tab is for editing raw feature flags JSON: it's preformatted, so it's still more convenient than the native Developer tools section. 
+This tab is used when you need to manually modify some experiment's properties, or add/remove it completely. 
+However, a new experiment can be added via the button, read further.
 
-The `Docs` tab contains some important notes about the current implementation and limitations.
+* The `Docs` tab contains some important notes about the current implementation and limitations.
+
+* Tab ➕ allows you to add a new experiment.
 
 
 ## Install
