@@ -7,8 +7,16 @@
 
 .componentTitle {
   color: var(--secondary-color);
-  margin: 0 0 1rem;
+  margin: 0 0 0.5rem;
   font-size: 1.2rem;
+}
+
+#feature-branch-container:not(:empty) {
+  margin: 0 0 0.5rem;
+}
+
+#feature-branch-container:not(:empty):hover {
+  cursor: help;
 }
 
 #expList {

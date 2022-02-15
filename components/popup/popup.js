@@ -305,6 +305,7 @@ const handleEvents = tabId => {
     switch (message.type) {
       case 'onPopupOpen':
         handleOnPopupOpen(message, tabId)
+        updateFeatureBranchTitle(message.payload)
         break
 
       case 'onVariableSet':
@@ -345,6 +346,20 @@ const updateExtensionVersion = () => {
   if (versionContainer) {
     const manifest = chrome.runtime.getManifest()
     versionContainer.innerText = manifest.version
+  }
+}
+
+/**
+ * @param {string} cookies document.cookies
+ */
+const updateFeatureBranchTitle = cookies => {
+  const container = document.getElementById('feature-branch-container')
+
+  if (container) {
+    const matched = cookies.match(/x-featurebranch=([^;$]+)[;$]/)
+    if (matched[1]) {
+      container.innerText = matched[1]
+    }
   }
 }
 
