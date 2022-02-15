@@ -18,6 +18,12 @@
         Optimizely experiments <span title="Igel: SA Optimizely Tool">🦔</span>
       </h1>
 
+      <!-- Current feature branch (preview server) -->
+      <div
+        id="feature-branch-container"
+        title="Current feature branch name (preview server)"
+      ></div>
+
       <!-- Tabs -->
       <div class="tab">
         <button class="tabTitle active button" data-target="experiments-list">
@@ -28,6 +34,13 @@
         </button>
         <button class="tabTitle button" data-target="experiments-docs">
           👓️ Docs
+        </button>
+        <button
+          id="button--add-new"
+          class="tabTitle button"
+          title="Add new experiment"
+        >
+          ➕
         </button>
       </div>
 
@@ -113,9 +126,7 @@
           </li>
         </ul>
 
-        <p>
-          <strong>Version</strong>: <span id="igel-version"></span>
-        </p>
+        <p><strong>Version</strong>: <span id="igel-version"></span></p>
       </div>
     </div>
 

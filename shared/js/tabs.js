@@ -17,8 +17,10 @@ const initTabs = () => {
     link.addEventListener('click', event => {
       const currentTarget = event.currentTarget
 
-      openTab(currentTarget.dataset.target)
-      currentTarget.classList.add('active')
+      if (currentTarget.dataset.target) {
+        openTab(currentTarget.dataset.target)
+        currentTarget.classList.add('active')
+      }
     })
   })
 }

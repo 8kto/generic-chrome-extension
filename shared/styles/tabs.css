@@ -6,8 +6,9 @@
 .tab .tabTitle {
   color: var(--secondary-color);
   float: left;
-  width: 6rem;
+  width: 25%;
   font-size: 15px;
+  padding: 0.5rem 0.65rem;
 }
 
 .tab .tabTitle.active {

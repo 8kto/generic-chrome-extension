@@ -129,6 +129,65 @@ const bindExperimentVariablesHandlers = ({ listElement, tabId }) => {
   )
 }
 
+/**
+ * @param {Optimizely} optimizelyService
+ * @param {number} tabId
+ */
+const bindAddNewExperimentClick = (optimizelyService, tabId) => {
+  const addNewExperimentBtn = document.getElementById('button--add-new')
+  if (addNewExperimentBtn) {
+    addNewExperimentBtn.addEventListener('click', async () => {
+      let name, variant
+
+      if (optimizelyService.isAvailable()) {
+        name = prompt('Enter the new experiment name')
+        variant =
+          name &&
+          prompt(
+            `Enter the new experiment's variant (the page will be reloaded)`,
+            'default'
+          )
+      } else {
+        alert('No experiment entries found')
+
+        return
+      }
+
+      if (!variant || !name) {
+        alert('No valid experiment data provided')
+
+        return
+      }
+
+      const experiments = optimizelyService.addNewExperiment(name, variant)
+      let jsonRaw
+      try {
+        jsonRaw = JSON.stringify(experiments)
+      } catch (error) {
+        Template.showError('Invalid Experiments JSON provided')
+        // eslint-disable-next-line no-console
+        console.error(error)
+
+        return
+      }
+
+      await chrome.scripting.executeScript({
+        args: [jsonRaw],
+        target: { tabId },
+        // NB: it is not the usual closure, it doesn't capture any context
+        function(payload) {
+          document.cookie =
+            'feature-flag-cookie=;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;'
+          document.cookie = `feature-flag-cookie=${payload}`
+        },
+      })
+
+      await chrome.tabs.reload(tabId)
+      window.close()
+    })
+  }
+}
+
 const getVariantsDropdown = ({ value, payload, callbackUI }) => {
   const selectElement = Template.getOptionsList(
     getVariantsOptions(value),
@@ -205,6 +264,7 @@ const handleOnPopupOpen = (message, tabId) => {
   }
 
   handleJsonTab(experiments, tabId)
+  bindAddNewExperimentClick(optimizelyService, tabId)
 }
 
 /**
@@ -305,6 +365,7 @@ const handleEvents = tabId => {
     switch (message.type) {
       case 'onPopupOpen':
         handleOnPopupOpen(message, tabId)
+        updateFeatureBranchTitle(message.payload)
         break
 
       case 'onVariableSet':
@@ -345,6 +406,20 @@ const updateExtensionVersion = () => {
   if (versionContainer) {
     const manifest = chrome.runtime.getManifest()
     versionContainer.innerText = manifest.version
+  }
+}
+
+/**
+ * @param {string} cookies document.cookies
+ */
+const updateFeatureBranchTitle = cookies => {
+  const container = document.getElementById('feature-branch-container')
+
+  if (container) {
+    const matched = cookies.match(/x-featurebranch=([^;$]+)[;$]/)
+    if (matched && matched[1]) {
+      container.innerText = matched[1]
+    }
   }
 }
 
