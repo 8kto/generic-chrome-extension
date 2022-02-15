@@ -60,6 +60,25 @@ class Optimizely {
 
     return this
   }
+
+  /**
+   * @param name
+   * @param variant
+   * @return {Record<string, Experiment>}
+   */
+  addNewExperiment(name, variant) {
+    /** @type {Experiment} */
+    this.experiments[name] = {
+      e: true,
+      v: { v_name: variant },
+    }
+
+    return this.experiments
+  }
+
+  isAvailable() {
+    return Boolean(Object.keys(this.experiments || {}).length)
+  }
 }
 
 /**
