@@ -357,7 +357,7 @@ const updateFeatureBranchTitle = cookies => {
 
   if (container) {
     const matched = cookies.match(/x-featurebranch=([^;$]+)[;$]/)
-    if (matched[1]) {
+    if (matched && matched[1]) {
       container.innerText = matched[1]
     }
   }
