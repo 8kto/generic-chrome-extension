@@ -1,5 +1,5 @@
 # Igel: SA Optimizely Tool
-![](./images/igel350.jpg)
+![](src/images/igel350.jpg)
 
 `Igel` is **Chrome** extension for the Optimizely experiments management.
 
@@ -7,7 +7,7 @@
 <details>
 <summary>How does it look?</summary>
 
-![](./images/ui-tab-list.png)
+![](src/images/ui-tab-list.png)
 
 </details>
 
