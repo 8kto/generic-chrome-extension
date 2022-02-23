@@ -193,13 +193,25 @@ const bindAddNewExperimentClick = (optimizelyService, tabId) => {
  * @param {string} presentOption
  * @return {string[]}
  */
-export const getVariantsOptions = presentOption => {
-  const matchedPrefix = presentOption.match(/^(variation_|v)\d/)
+export const getVariantsOptions = (presentOption = '') => {
+  const matchedPrefix =
+    presentOption && presentOption.match(/^(variation_|v)\d/)
 
   const getOptions = (prefix, num) =>
     new Array(num).fill(null).map((_, i) => `${prefix}${i + 1}`)
 
-  const decorateOptionsList = options => ['default', ...options, 'Custom']
+  const decorateOptionsList = options => {
+    const res = ['default', ...options, 'Custom']
+
+    if (
+      presentOption &&
+      !presentOption.match(/^(?:default|(?:variation_|v)\d+)$/)
+    ) {
+      res.unshift(presentOption)
+    }
+
+    return res
+  }
 
   // We cannot guess the correct prefix, so generate all possible
   if (presentOption === 'default' || !matchedPrefix) {
