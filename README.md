@@ -22,14 +22,22 @@ However, a new experiment can be added via the button, read further.
 * Tab ➕ allows you to add a new experiment.
 
 
-## Install
+## Install and update
+Preferred way: 
 1. Checkout repo to the local machine.
 2. Using [this manual](https://developer.chrome.com/docs/extensions/mv3/getstarted/), install the project folder through the "Load unpacked" action.
-3. Find the newly installed extension in the browser tray with extensions, pin it. 
+3. Find the newly installed extension in the browser tray with extensions, pin it.
 
-Alternatively, you can install `.crx` extension file through the browser UI. For that, check the [releases page](https://github.com/RedTecLab/igel-chrome-sa-optimizely-tool/releases) (last availalbe version can be staled).
+**Alternatively**, you can install `.crx` extension file through the browser UI. For that, check the [releases page](https://github.com/RedTecLab/igel-chrome-sa-optimizely-tool/releases) (last available version can be staled).
+
+Since the repository is private, it's not possible to automatically get the latest version, 
+so for now, the only way to check for updates is to open the repository page and check for the latest release.
+
 
 ## Development
 1. Install dependencies: `yarn`
 2. [Add code completion for the `chrome` libs](https://newbedev.com/how-do-i-use-webstorm-for-chrome-extension-development).
 3. Check [official documentation](https://developer.chrome.com/docs/extensions/mv3/devguide/)
+
+
+**PR and issue reports are welcome!**
