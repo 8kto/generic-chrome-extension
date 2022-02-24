@@ -47,5 +47,29 @@ describe('helpers test', () => {
         ...completeSet,
       ])
     })
+
+    it('returns options extended up to the current variant', () => {
+      expect(getVariantsOptions('variation_6')).toStrictEqual([
+        'default',
+        'variation_1',
+        'variation_2',
+        'variation_3',
+        'variation_4',
+        'variation_5',
+        'variation_6',
+        'Custom',
+      ])
+
+      expect(getVariantsOptions('v6')).toStrictEqual([
+        'default',
+        'v1',
+        'v2',
+        'v3',
+        'v4',
+        'v5',
+        'v6',
+        'Custom',
+      ])
+    })
   })
 })
