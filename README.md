@@ -38,6 +38,6 @@ so for now, the only way to check for updates is to open the repository page and
 1. Install dependencies: `yarn`
 2. [Add code completion for the `chrome` libs](https://newbedev.com/how-do-i-use-webstorm-for-chrome-extension-development).
 3. Check [official documentation](https://developer.chrome.com/docs/extensions/mv3/devguide/)
+4. Run tests with `yarn test`
 
-
-**PR and issue reports are welcome!**
+**PRs and issue reports are welcome!**
