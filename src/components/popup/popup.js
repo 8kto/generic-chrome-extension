@@ -1,3 +1,10 @@
+/**
+ * @fileOverview A wrapper for the popup dialog. Binds the event handlers and dynamic layout.
+ */
+
+/**
+ * @return {Promise<number>}
+ */
 const getActiveTabId = async () => {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
 
@@ -64,7 +71,7 @@ const bindExperimentSwitchers = ({ listElement, tabId, optimizelyService }) => {
  * @param {number} tabId
  */
 const bindExperimentVariablesHandlers = ({ listElement, tabId }) => {
-  const callbackUI = data => {
+  const handleOnVariableSet = data => {
     Template.showReloadButton()
 
     // Pass prepared cookies from the extension to the page
@@ -104,7 +111,7 @@ const bindExperimentVariablesHandlers = ({ listElement, tabId }) => {
         const selectElement = getVariantsDropdown({
           value,
           payload,
-          callbackUI,
+          handleOnVariableSet,
         })
         target.parentNode.replaceChild(selectElement, target)
 
@@ -117,7 +124,7 @@ const bindExperimentVariablesHandlers = ({ listElement, tabId }) => {
     }
 
     if (payload.newValue !== undefined) {
-      callbackUI(payload)
+      handleOnVariableSet(payload)
     }
   }
 
@@ -174,9 +181,7 @@ const bindAddNewExperimentClick = (optimizelyService, tabId) => {
         target: { tabId },
         // NB: it is not the usual closure, it doesn't capture any context
         function(payload) {
-          document.cookie =
-            'feature-flag-cookie=;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;'
-          document.cookie = `feature-flag-cookie=${payload}`
+          document.cookie = `feature-flag-cookie=${payload}; path=/;`
         },
       })
 
@@ -228,7 +233,13 @@ export const getVariantsOptions = (presentOption = '') => {
   )
 }
 
-const getVariantsDropdown = ({ value, payload, callbackUI }) => {
+/**
+ * @param {string} value
+ * @param {Record<string, string>} payload
+ * @param {Function} handleOnVariableSet
+ * @return {HTMLSelectElement}
+ */
+const getVariantsDropdown = ({ value, payload, handleOnVariableSet }) => {
   const selectElement = Template.getOptionsList(
     getVariantsOptions(value),
     value
@@ -249,7 +260,7 @@ const getVariantsDropdown = ({ value, payload, callbackUI }) => {
     }
 
     payload.newValue = value
-    callbackUI(payload)
+    handleOnVariableSet(payload)
   })
 
   return selectElement
@@ -294,9 +305,8 @@ const resetFeatureFlags = tabId => {
         `feature-flag-user-token`,
         `feature-flag-targeting`,
       ].forEach(cookieName => {
-        // Make the cookies stale
         document.cookie =
-          cookieName + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;'
+          cookieName + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;'
       })
 
       chrome.runtime.sendMessage({ type: 'onFeatureFlagsReset' })
@@ -323,9 +333,7 @@ const applyFeatureFlagUpdates = (message, tabId) => {
     args: [JSON.stringify(updatedFeatureFlags)],
     // NB: it is not the usual closure, it doesn't capture any context
     function(payload) {
-      document.cookie =
-        'feature-flag-cookie=;expires=Thu, 01 Jan 1970 00:00:00 GMT;'
-      document.cookie = `feature-flag-cookie=${payload}`
+      document.cookie = `feature-flag-cookie=${payload}; path=/;`
     },
   })
 }
@@ -361,9 +369,7 @@ const handleJsonTab = (experiments, tabId) => {
       target: { tabId },
       // NB: it is not the usual closure, it doesn't capture any context
       function(payload) {
-        document.cookie =
-          'feature-flag-cookie=;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;'
-        document.cookie = `feature-flag-cookie=${payload}`
+        document.cookie = `feature-flag-cookie=${payload}; path=/;`
       },
     })
 
