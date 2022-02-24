@@ -41,3 +41,11 @@ so for now, the only way to check for updates is to open the repository page and
 4. Run tests with `yarn test`
 
 **PRs and issue reports are welcome!**
+
+
+## Release
+1. Run `yarn bump:patch` or `yarn bump [minor|major] -t` for increasing the current version and adding a git tag.
+2. Commit updated files
+3. Push with `git push --tags`
+4. Prepare a [new release](https://github.com/RedTecLab/igel-chrome-sa-optimizely-tool/releases/new) in GitHub using the last tag
+5. Usually, a release contains a built Chrome extension: it can be made locally according to the [docs](https://developer.chrome.com/docs/extensions/mv3/linux_hosting/#create)
