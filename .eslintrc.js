@@ -3,16 +3,23 @@ module.exports = {
     'eslint:recommended',
     'plugin:import/recommended',
     'plugin:jsx-a11y/recommended',
+    'plugin:jest/all',
     'plugin:prettier/recommended', // Make sure to put it last, so it gets the chance to override other configs
   ],
   parser: 'esprima',
-  plugins: ['only-error'],
+  plugins: ['only-error', 'jest'],
   env: {
     'browser': true,
     'es6': true,
+    'jest/globals': true,
   },
   globals: {
     chrome: true,
+    jest: true,
+    process: true,
+    Template: true,
+    Optimizely: true,
+    initTabs: true,
   },
   rules: {
     'curly': 'error',
@@ -64,5 +71,12 @@ module.exports = {
       },
     ],
     'newline-before-return': 'error',
+    'jest/no-disabled-tests': 'warn',
+    'jest/no-focused-tests': 'error',
+    'jest/no-identical-title': 'error',
+    'jest/prefer-to-have-length': 'warn',
+    'jest/valid-expect': 'error',
+    'jest/prefer-expect-assertions': 'off',
+    'jest/require-hook': 'off',
   },
 }

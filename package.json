@@ -1,6 +1,6 @@
 {
   "name": "sa-optimizely-tool",
-  "version": "1.1.6",
+  "version": "1.1.7",
   "description": "Chrome extension for the Optimizely experiments management",
   "main": "index.js",
   "license": "proprietary",
@@ -19,16 +19,23 @@
     "lint:js": "eslint --ext=.js,.jsx,.mjs .",
     "lint:styles": "stylelint **/*.css",
     "bump": "mversion",
-    "bump:patch": "mversion patch -t"
+    "bump:patch": "mversion patch -t",
+    "test": "jest"
   },
   "devDependencies": {
-    "eslint": "^7.32.0",
+    "@babel/preset-env": "^7.16.11",
+    "babel-jest": "^27.5.1",
+    "enzyme": "^3.11.0",
+    "enzyme-to-json": "^3.6.2",
+    "eslint": "^8.9.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-jest": "^26.1.1",
     "eslint-plugin-jsx-a11y": "^6.5.1",
     "eslint-plugin-only-error": "^1.0.2",
     "eslint-plugin-prettier": "^4.0.0",
     "husky": "^7.0.4",
+    "jest": "^27.5.1",
     "lint-staged": "^12.1.2",
     "mversion": "^2.0.1",
     "prettier": "^2.4.1",

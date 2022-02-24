@@ -2,15 +2,17 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <title>Igel: SA Optimizely Tool</title>
+
     <link rel="stylesheet" href="../../shared/styles/reset.css" />
     <link rel="stylesheet" href="../../shared/styles/variables.css" />
     <link rel="stylesheet" href="../../shared/styles/common.css" />
     <link rel="stylesheet" href="../../shared/styles/tabs.css" />
-    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="styles.css" />
 
     <script src="../../shared/js/tabs.js"></script>
-    <script src="../../service/Optimizely.js"></script>
-    <script src="../../service/Template.js"></script>
+    <script src="../../services/Optimizely.js"></script>
+    <script src="../../services/Template.js"></script>
   </head>
   <body>
     <div class="componentWrapper">
@@ -96,12 +98,12 @@
         <p>
           <strong>Important</strong>: Feature flags cookie does not contain all
           possible variation names, so the extension tries to predict and
-          display the 3 possible variations instead + <code>default</code> one.
+          display the 3 (minimum) possible variations instead + <code>default</code> one.
         </p>
         <p>
-          Old names starts with the <code>variation_N</code> prefix (e.g.
+          Old variations names (kept in <code>v_name</code> variable) starts with the <code>variation_</code> prefix + N (e.g.
           variation_1, variation_2).<br />
-          New naming convention uses the <code>vN</code> (e.g. v1, v2)
+          New naming convention uses the <code>v</code> prefix + N (e.g. v1, v2)
         </p>
         <p>
           The extension currently only handles <code>v_name</code> and any
@@ -130,6 +132,6 @@
       </div>
     </div>
 
-    <script src="popup.js"></script>
+    <script type="module" src="popup.js"></script>
   </body>
 </html>

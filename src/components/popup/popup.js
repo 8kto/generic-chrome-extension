@@ -1,5 +1,10 @@
-/*global Optimizely, Template, initTabs*/
+/**
+ * @fileOverview A wrapper for the popup dialog. Binds the event handlers and dynamic layout.
+ */
 
+/**
+ * @return {Promise<number>}
+ */
 const getActiveTabId = async () => {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
 
@@ -66,7 +71,7 @@ const bindExperimentSwitchers = ({ listElement, tabId, optimizelyService }) => {
  * @param {number} tabId
  */
 const bindExperimentVariablesHandlers = ({ listElement, tabId }) => {
-  const callbackUI = data => {
+  const handleOnVariableSet = data => {
     Template.showReloadButton()
 
     // Pass prepared cookies from the extension to the page
@@ -106,7 +111,7 @@ const bindExperimentVariablesHandlers = ({ listElement, tabId }) => {
         const selectElement = getVariantsDropdown({
           value,
           payload,
-          callbackUI,
+          handleOnVariableSet,
         })
         target.parentNode.replaceChild(selectElement, target)
 
@@ -119,7 +124,7 @@ const bindExperimentVariablesHandlers = ({ listElement, tabId }) => {
     }
 
     if (payload.newValue !== undefined) {
-      callbackUI(payload)
+      handleOnVariableSet(payload)
     }
   }
 
@@ -176,9 +181,7 @@ const bindAddNewExperimentClick = (optimizelyService, tabId) => {
         target: { tabId },
         // NB: it is not the usual closure, it doesn't capture any context
         function(payload) {
-          document.cookie =
-            'feature-flag-cookie=;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;'
-          document.cookie = `feature-flag-cookie=${payload}`
+          document.cookie = `feature-flag-cookie=${payload}; path=/;`
         },
       })
 
@@ -188,7 +191,55 @@ const bindAddNewExperimentClick = (optimizelyService, tabId) => {
   }
 }
 
-const getVariantsDropdown = ({ value, payload, callbackUI }) => {
+/**
+ * Guess the prefix from the present option and return
+ * the list of possible variant names
+ *
+ * @param {string} presentOption
+ * @return {string[]}
+ */
+export const getVariantsOptions = (presentOption = '') => {
+  const defaultVariationsNumber = 3
+  const matched = presentOption && presentOption.match(/^(variation_|v)(\d+)/)
+
+  const getOptions = (prefix, num) =>
+    new Array(num).fill(null).map((_, i) => `${prefix}${i + 1}`)
+
+  const decorateOptionsList = options => {
+    const res = ['default', ...options, 'Custom']
+
+    if (
+      presentOption &&
+      !presentOption.match(/^(?:default|(?:variation_|v)\d+)$/)
+    ) {
+      res.unshift(presentOption)
+    }
+
+    return res
+  }
+
+  // We cannot guess the correct prefix, so generate all possible
+  if (presentOption === 'default' || !matched) {
+    return decorateOptionsList([
+      ...getOptions('v', 3),
+      ...getOptions('variation_', 3),
+    ])
+  }
+
+  const [, prefix, variantNum] = matched
+
+  return decorateOptionsList(
+    getOptions(prefix, Math.max(defaultVariationsNumber, +variantNum))
+  )
+}
+
+/**
+ * @param {string} value
+ * @param {Record<string, string>} payload
+ * @param {Function} handleOnVariableSet
+ * @return {HTMLSelectElement}
+ */
+const getVariantsDropdown = ({ value, payload, handleOnVariableSet }) => {
   const selectElement = Template.getOptionsList(
     getVariantsOptions(value),
     value
@@ -209,36 +260,10 @@ const getVariantsDropdown = ({ value, payload, callbackUI }) => {
     }
 
     payload.newValue = value
-    callbackUI(payload)
+    handleOnVariableSet(payload)
   })
 
   return selectElement
-}
-
-/**
- * Guess the prefix from the present option and return
- * the list of possible variant names
- *
- * @param {string} presentOption
- * @return {string[]}
- */
-const getVariantsOptions = presentOption => {
-  const matchedPrefix = presentOption.match(/^(variation_|v)\d/)
-
-  const getOptions = (prefix, num) =>
-    new Array(num).fill(null).map((_, i) => `${prefix}${i + 1}`)
-
-  const decorateOptionsList = options => ['default', ...options, 'Custom']
-
-  // We cannot guess the correct prefix, so generate all possible
-  if (presentOption === 'default' || !matchedPrefix) {
-    return decorateOptionsList([
-      ...getOptions('v', 3),
-      ...getOptions('variation_', 3),
-    ])
-  }
-
-  return decorateOptionsList(getOptions(matchedPrefix[1], 3))
 }
 
 /**
@@ -280,9 +305,8 @@ const resetFeatureFlags = tabId => {
         `feature-flag-user-token`,
         `feature-flag-targeting`,
       ].forEach(cookieName => {
-        // Make the cookies stale
         document.cookie =
-          cookieName + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;'
+          cookieName + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;'
       })
 
       chrome.runtime.sendMessage({ type: 'onFeatureFlagsReset' })
@@ -309,9 +333,7 @@ const applyFeatureFlagUpdates = (message, tabId) => {
     args: [JSON.stringify(updatedFeatureFlags)],
     // NB: it is not the usual closure, it doesn't capture any context
     function(payload) {
-      document.cookie =
-        'feature-flag-cookie=;expires=Thu, 01 Jan 1970 00:00:00 GMT;'
-      document.cookie = `feature-flag-cookie=${payload}`
+      document.cookie = `feature-flag-cookie=${payload}; path=/;`
     },
   })
 }
@@ -347,9 +369,7 @@ const handleJsonTab = (experiments, tabId) => {
       target: { tabId },
       // NB: it is not the usual closure, it doesn't capture any context
       function(payload) {
-        document.cookie =
-          'feature-flag-cookie=;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;'
-        document.cookie = `feature-flag-cookie=${payload}`
+        document.cookie = `feature-flag-cookie=${payload}; path=/;`
       },
     })
 
@@ -438,7 +458,13 @@ const init = async () => {
   updateExtensionVersion()
 }
 
-init()
+const isTestEnv = () => {
+  return typeof process !== 'undefined' && process.env.NODE_ENV === 'test'
+}
+
+if (!isTestEnv()) {
+  init()
+}
 
 /**
  * @typedef Message
@@ -447,3 +473,4 @@ init()
  */
 
 // todo clean up mess with the deps
+// todo use bundler: the file is bloated without imports
