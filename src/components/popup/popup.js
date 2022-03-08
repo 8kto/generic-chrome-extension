@@ -65,73 +65,79 @@ const bindExperimentSwitchers = ({ listElement, tabId, optimizelyService }) => {
 }
 
 /**
+ * @param {number} tabId
+ * @param {Record<string, unknown>} data
+ */
+const triggerOnVariableSet = (tabId, data) => {
+  // Pass prepared cookies from the extension to the page
+  chrome.scripting.executeScript({
+    args: [data],
+    target: { tabId },
+    function(data) {
+      // NB: it is not the usual closure, it doesn't capture any context
+      chrome.runtime.sendMessage({
+        type: 'onVariableSet',
+        payload: { data, cookies: document.cookie },
+      })
+    },
+  })
+}
+
+const handleVariableClick = async event => {
+  /** @type {HTMLElement} */
+  const { target } = event
+  const { varType, varName, expName } = target.dataset
+  const value = target.textContent.trim()
+  const payload = {
+    experimentName: expName,
+    variableName: varName,
+  }
+  const tabId = await getActiveTabId()
+
+  switch (varType) {
+    case 'boolean': {
+      const newValue = value !== 'true'
+      const newValueStr = newValue.toString()
+      payload.newValue = newValue
+      target.textContent = newValueStr
+
+      break
+    }
+
+    case 'variant': {
+      const selectElement = getVariantsDropdown({
+        value,
+        payload,
+        handleOnVariableSet: () => {
+          Template.showReloadButton()
+          triggerOnVariableSet(tabId, payload)
+        },
+      })
+      target.parentNode.replaceChild(selectElement, target)
+
+      break
+    }
+
+    default:
+      alert('Currently, only booleans and variations are supported')
+      break
+  }
+
+  if (payload.newValue !== undefined) {
+    Template.showReloadButton()
+    triggerOnVariableSet(tabId, payload)
+  }
+}
+
+/**
  * Activate update feature for the variable lists
  *
  * @param {HTMLElement} listElement
- * @param {number} tabId
  */
-const bindExperimentVariablesHandlers = ({ listElement, tabId }) => {
-  const handleOnVariableSet = data => {
-    Template.showReloadButton()
-
-    // Pass prepared cookies from the extension to the page
-    chrome.scripting.executeScript({
-      args: [data],
-      target: { tabId },
-      function(data) {
-        // NB: it is not the usual closure, it doesn't capture any context
-        chrome.runtime.sendMessage({
-          type: 'onVariableSet',
-          payload: { data, cookies: document.cookie },
-        })
-      },
-    })
-  }
-
-  const handleVariableClick = event => {
-    /** @type {HTMLElement} */
-    const { target } = event
-    const { varType, varName, expName } = target.dataset
-    const value = target.textContent.trim()
-    const payload = {
-      experimentName: expName,
-      variableName: varName,
-    }
-
-    switch (varType) {
-      case 'boolean': {
-        const newValue = (value !== 'true').toString()
-        payload.newValue = newValue
-        target.textContent = newValue
-
-        break
-      }
-
-      case 'variant': {
-        const selectElement = getVariantsDropdown({
-          value,
-          payload,
-          handleOnVariableSet,
-        })
-        target.parentNode.replaceChild(selectElement, target)
-
-        break
-      }
-
-      default:
-        alert('Currently, only booleans and variations are supported')
-        break
-    }
-
-    if (payload.newValue !== undefined) {
-      handleOnVariableSet(payload)
-    }
-  }
-
-  const variableElements = listElement.querySelectorAll('[data-var-type]')
-  variableElements.forEach(element =>
-    element.addEventListener('click', handleVariableClick)
-  )
+const bindExperimentVariablesHandlers = listElement => {
+  listElement
+    .querySelectorAll('[data-var-type]')
+    .forEach(element => element.addEventListener('click', handleVariableClick))
 }
 
 /**
@@ -285,7 +291,7 @@ const handleOnPopupOpen = (message, tabId) => {
       optimizelyService,
     })
 
-    bindExperimentVariablesHandlers({ listElement: expListElement, tabId })
+    bindExperimentVariablesHandlers(expListElement)
   }
 
   handleJsonTab(experiments, tabId)
