@@ -17,6 +17,8 @@
 This tab is used when you need to manually modify some experiment's properties, or add/remove it completely. 
 However, a new experiment can be added via the button, read further.
 
+* The `Details` tab contains information about the current feature branch and targeting options, if available.
+
 * The `Docs` tab contains some important notes about the current implementation and limitations.
 
 * Tab ➕ allows you to add a new experiment.

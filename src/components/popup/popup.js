@@ -11,6 +11,11 @@ const getActiveTabId = async () => {
   return tab.id
 }
 
+const reloadTab = async tabId => {
+  await chrome.tabs.reload(tabId)
+  window.close()
+}
+
 /**
  * Bind all controls in the popup with the event handlers
  */
@@ -24,10 +29,7 @@ const bindPopupControls = async () => {
 
   const reloadBtn = document.getElementById('reload-tab')
   if (reloadBtn) {
-    reloadBtn.addEventListener('click', async () => {
-      await chrome.tabs.reload(tabId)
-      window.close()
-    })
+    reloadBtn.addEventListener('click', () => reloadTab(tabId))
   }
 }
 
@@ -191,8 +193,7 @@ const bindAddNewExperimentClick = (optimizelyService, tabId) => {
         },
       })
 
-      await chrome.tabs.reload(tabId)
-      window.close()
+      reloadTab(tabId)
     })
   }
 }
@@ -214,6 +215,7 @@ export const getVariantsOptions = (presentOption = '') => {
   const decorateOptionsList = options => {
     const res = ['default', ...options, 'Custom']
 
+    // Keep the custom value (not variationN string)
     if (
       presentOption &&
       !presentOption.match(/^(?:default|(?:variation_|v)\d+)$/)
@@ -281,6 +283,15 @@ const getVariantsDropdown = ({ value, payload, handleOnVariableSet }) => {
 const handleOnPopupOpen = (message, tabId) => {
   const container = document.getElementById('container')
   const optimizelyService = new Optimizely(message.payload)
+
+  if (!optimizelyService.isFeatureFlagsValid()) {
+    Template.showError(
+      `Ambiguous feature-flag-cookie found: remove multiple values and reload tab`
+    )
+
+    return
+  }
+
   const experiments = optimizelyService.extractExperiments()
 
   const expListElement = Template.renderExperimentsList(container, experiments)
@@ -379,8 +390,7 @@ const handleJsonTab = (experiments, tabId) => {
       },
     })
 
-    await chrome.tabs.reload(tabId)
-    window.close()
+    reloadTab(tabId)
   })
 }
 
@@ -391,7 +401,7 @@ const handleEvents = tabId => {
     switch (message.type) {
       case 'onPopupOpen':
         handleOnPopupOpen(message, tabId)
-        updateFeatureBranchTitle(message.payload)
+        updateDetailsTabContent(message.payload)
         break
 
       case 'onVariableSet':
@@ -399,11 +409,7 @@ const handleEvents = tabId => {
         break
 
       case 'onFeatureFlagsReset': {
-        Template.hideResetCookiesButton()
-        Template.showMessage(
-          'Feature flags cookies are cleaned. Click "Apply" to reload page and fetch the new ones.'
-        )
-        Template.showReloadButton()
+        reloadTab(tabId)
         break
       }
 
@@ -438,15 +444,35 @@ const updateExtensionVersion = () => {
 /**
  * @param {string} cookies document.cookies
  */
-const updateFeatureBranchTitle = cookies => {
-  const container = document.getElementById('feature-branch-container')
+const updateDetailsTabContent = cookies => {
+  const defaultHandler = v => v
+  const containers = [
+    {
+      selector: '#feature-branch-container',
+      regexp: /x-featurebranch=([^;$]+)[;$]/,
+      handler: defaultHandler,
+    },
+    {
+      selector: '#feature-flag-targeting-params-container',
+      regexp: /feature-flag-targeting=([^;$]+)[;$]/,
+      handler: val => {
+        const parsed = JSON.stringify(JSON.parse(val), null, '  ')
 
-  if (container) {
-    const matched = cookies.match(/x-featurebranch=([^;$]+)[;$]/)
-    if (matched && matched[1]) {
-      container.innerText = matched[1]
+        return `<pre>${parsed}</pre>`
+      },
+    },
+  ]
+
+  containers.forEach(def => {
+    const container = document.querySelector(def.selector)
+
+    if (container) {
+      const matched = cookies.match(def.regexp)
+      if (matched && matched[1]) {
+        container.innerHTML = def.handler(matched[1])
+      }
     }
-  }
+  })
 }
 
 /**

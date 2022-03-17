@@ -20,22 +20,36 @@
         Optimizely experiments <span title="Igel: SA Optimizely Tool">🦔</span>
       </h1>
 
-      <!-- Current feature branch (preview server) -->
-      <div
-        id="feature-branch-container"
-        title="Current feature branch name (preview server)"
-      ></div>
-
       <!-- Tabs -->
       <div class="tab">
-        <button class="tabTitle active button" data-target="experiments-list">
-          📜 List
+        <button
+          class="tabTitle active button"
+          data-target="experiments-list"
+          title="Experiments list"
+        >
+          📜
         </button>
-        <button class="tabTitle button" data-target="experiments-json">
-          ⚙️ JSON
+        <button
+          class="tabTitle button"
+          data-target="experiments-json"
+          title="JSON"
+        >
+          ⚙️
         </button>
-        <button class="tabTitle button" data-target="experiments-docs">
-          👓️ Docs
+        <button
+          id="button--show-info"
+          class="tabTitle button"
+          data-target="experiments-details"
+          title="Show details"
+        >
+          🕵️
+        </button>
+        <button
+          class="tabTitle button"
+          data-target="experiments-docs"
+          title="Documentation"
+        >
+          ℹ️
         </button>
         <button
           id="button--add-new"
@@ -93,16 +107,50 @@
         />
       </div>
 
+      <!-- Feature flags & more details -->
+      <div id="experiments-details" class="tabContent">
+        <ul class="detailsList">
+          <li>
+            <strong>
+              <a
+                href="https://github.com/RedTecLab/fock/#public-urls"
+                target="_blank"
+              >
+                Branch name
+              </a></strong
+            >: <br />
+            <span
+              id="feature-branch-container"
+              title="Current feature branch name on the preview server (x-featurebranch)"
+              >NA</span
+            >
+          </li>
+          <li>
+            <strong title="feature-flag-targeting">Targeting parameters</strong
+            >: <br /><span id="feature-flag-targeting-params-container"
+              >NA</span
+            >
+          </li>
+        </ul>
+
+        <p>
+          <strong>User token</strong> cookie is <code>httpOnly</code>, so it is not
+          available in JS. You can find the value in the standard dev tools.
+        </p>
+      </div>
+
       <!-- Docs -->
       <div id="experiments-docs" class="tabContent">
         <p>
           <strong>Important</strong>: Feature flags cookie does not contain all
           possible variation names, so the extension tries to predict and
-          display the 3 (minimum) possible variations instead + <code>default</code> one.
+          display the 3 (minimum) possible variations instead +
+          <code>default</code> one.
         </p>
         <p>
-          Old variations names (kept in <code>v_name</code> variable) starts with the <code>variation_</code> prefix + N (e.g.
-          variation_1, variation_2).<br />
+          Old variations names (kept in <code>v_name</code> variable) starts
+          with the <code>variation_</code> prefix + N (e.g. variation_1,
+          variation_2).<br />
           New naming convention uses the <code>v</code> prefix + N (e.g. v1, v2)
         </p>
         <p>

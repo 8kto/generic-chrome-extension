@@ -1,6 +1,6 @@
 {
   "name": "sa-optimizely-tool",
-  "version": "1.1.8",
+  "version": "1.1.10",
   "description": "Chrome extension for the Optimizely experiments management",
   "main": "index.js",
   "license": "proprietary",
@@ -14,10 +14,10 @@
   },
   "scripts": {
     "prepare": "husky install",
-    "format": "prettier --write \"./**/*.{js,json,html}\" && stylelint **/*.css --fix",
+    "format": "prettier --write \"src/**/*.{js,json,html}\" && stylelint src/**/*.css --fix",
     "lint": "yarn lint:styles && yarn lint:js",
-    "lint:js": "eslint --ext=.js,.jsx,.mjs .",
-    "lint:styles": "stylelint **/*.css",
+    "lint:js": "eslint --ext=.js,.jsx,.mjs src",
+    "lint:styles": "stylelint src/**/*.css",
     "bump": "mversion",
     "bump:patch": "mversion patch -t",
     "test": "jest"

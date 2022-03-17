@@ -9,6 +9,14 @@ class Optimizely {
     this.experiments = {}
   }
 
+  isFeatureFlagsValid() {
+    const experimentsCookie = this.cookies
+      .split(';')
+      .filter(i => i.match(/feature-flag-cookie/))
+
+    return experimentsCookie.length === 1
+  }
+
   extractExperiments() {
     const experimentsCookie = this.cookies
       .split(';')

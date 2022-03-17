@@ -2,7 +2,9 @@
   --primary-color: #333;
   --secondary-color: #395878;
   --active-color: dodgerblue;
+  --muted-color: #ced8e5;
   --muted-bg-color: aliceblue;
   --foreground-bg-color: #d9ecff;
   --active-bg-color: #95c6ff;
+  --accent-color: #e87aef;
 }
