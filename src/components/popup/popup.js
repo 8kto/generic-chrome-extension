@@ -283,6 +283,15 @@ const getVariantsDropdown = ({ value, payload, handleOnVariableSet }) => {
 const handleOnPopupOpen = (message, tabId) => {
   const container = document.getElementById('container')
   const optimizelyService = new Optimizely(message.payload)
+
+  if (!optimizelyService.isFeatureFlagsValid()) {
+    Template.showError(
+      `Ambiguous feature-flag-cookie found: remove multiple values and reload tab`
+    )
+
+    return
+  }
+
   const experiments = optimizelyService.extractExperiments()
 
   const expListElement = Template.renderExperimentsList(container, experiments)
@@ -497,4 +506,3 @@ if (!isTestEnv()) {
 
 // todo clean up mess with the deps
 // todo use bundler: the file is bloated without imports
-// todo display message if few ff cookies

@@ -74,11 +74,11 @@ a:hover {
 }
 
 .message--info {
-  color: green;
+  color: var(--active-bg-color);
 }
 
 .message--alert {
-  color: darkred;
+  color: var(--accent-color);
 }
 
 .form-control--textarea {
