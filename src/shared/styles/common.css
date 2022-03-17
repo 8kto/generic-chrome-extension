@@ -86,3 +86,12 @@ a:hover {
   border: 1px solid var(--foreground-bg-color);
   margin: 0;
 }
+
+.detailsList {
+  padding: 0;
+  margin-bottom: 1rem;
+}
+
+.detailsList li:not(:last-child) {
+  margin-bottom: 1rem;
+}
