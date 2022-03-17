@@ -214,6 +214,7 @@ export const getVariantsOptions = (presentOption = '') => {
   const decorateOptionsList = options => {
     const res = ['default', ...options, 'Custom']
 
+    // Keep the custom value (not variationN string)
     if (
       presentOption &&
       !presentOption.match(/^(?:default|(?:variation_|v)\d+)$/)

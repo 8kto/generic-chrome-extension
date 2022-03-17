@@ -32,21 +32,25 @@
   cursor: pointer;
 }
 
-.expVariant {
-  color: olivedrab;
-}
-
-.expVariant:hover {
-  cursor: help;
-}
-
-.expVariant__var {
+.expVariant__varName {
   color: cadetblue;
 }
 
 .expVariant__varType:hover {
   border-bottom: 1px dashed;
   cursor: pointer;
+}
+
+.expVariant__varType--variant {
+  color: var(--accent-color);
+}
+
+.expVariant__varType--empty {
+  color: var(--muted-color);
+}
+
+.expVariant__varType--empty:hover {
+  border-bottom: 1px dashed var(--muted-color);
 }
 
 #reset-feature-flags-cookie {
