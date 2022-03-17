@@ -11,6 +11,11 @@ const getActiveTabId = async () => {
   return tab.id
 }
 
+const reloadTab = async tabId => {
+  await chrome.tabs.reload(tabId)
+  window.close()
+}
+
 /**
  * Bind all controls in the popup with the event handlers
  */
@@ -24,10 +29,7 @@ const bindPopupControls = async () => {
 
   const reloadBtn = document.getElementById('reload-tab')
   if (reloadBtn) {
-    reloadBtn.addEventListener('click', async () => {
-      await chrome.tabs.reload(tabId)
-      window.close()
-    })
+    reloadBtn.addEventListener('click', () => reloadTab(tabId))
   }
 }
 
@@ -191,8 +193,7 @@ const bindAddNewExperimentClick = (optimizelyService, tabId) => {
         },
       })
 
-      await chrome.tabs.reload(tabId)
-      window.close()
+      reloadTab(tabId)
     })
   }
 }
@@ -380,8 +381,7 @@ const handleJsonTab = (experiments, tabId) => {
       },
     })
 
-    await chrome.tabs.reload(tabId)
-    window.close()
+    reloadTab(tabId)
   })
 }
 
@@ -400,11 +400,7 @@ const handleEvents = tabId => {
         break
 
       case 'onFeatureFlagsReset': {
-        Template.hideResetCookiesButton()
-        Template.showMessage(
-          'Feature flags cookies are cleaned. Click "Apply" to reload page and fetch the new ones.'
-        )
-        Template.showReloadButton()
+        reloadTab(tabId)
         break
       }
 
