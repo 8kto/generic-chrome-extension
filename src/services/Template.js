@@ -1,22 +1,6 @@
 // eslint-disable-next-line no-unused-vars
 class Template {
   /**
-   * @param {Experiment} experiment
-   * @return {string}
-   */
-  static formatExperiment(experiment) {
-    const enabled = experiment.e ? 'Enabled' : 'Disabled'
-    const variation = experiment.v.v_name
-      ? experiment.v.v_name
-      : 'Variation is NA'
-    const title = experiment.v.v_name
-      ? `Active variation is "${variation}" [${enabled}]`
-      : 'No v_name variable set'
-
-    return `<span class="expVariant" title='${title}'>${variation}</span>`
-  }
-
-  /**
    * @param {string} experimentName
    * @param {Experiment} experiment
    */
@@ -31,7 +15,30 @@ class Template {
    * @return {string}
    */
   static getFormControlLabel(experimentName) {
-    return `<label class="expName" for="${experimentName}">${experimentName}</label>:`
+    return `<label class="expName" for="${experimentName}">${experimentName}</label>`
+  }
+
+  /**
+   * @param {VariableType} type
+   * @param {unknown} val
+   * @return {{classNames: string, value: string}}
+   */
+  static getFormattedValue(type, val) {
+    const classNames = []
+    let finalValue = val
+
+    if (type === 'variant') {
+      classNames.push('expVariant__varType--variant')
+    }
+    if (val === '') {
+      classNames.push('expVariant__varType--empty')
+      finalValue = '(empty)'
+    }
+
+    return {
+      classNames: classNames.join(' '),
+      value: finalValue,
+    }
   }
 
   /**
@@ -42,22 +49,28 @@ class Template {
   static getVariablesList(experimentName, experiment) {
     const options = Object.entries(experiment.v).map(([name, val]) => {
       const type = this.getVariableType(name, val)
+      const { value, classNames } = this.getFormattedValue(type, val)
 
       return `<li>
-          <span class="expVariant__var">${name}</span>
+          <span class="expVariant__varName">${name}</span>
           <span
-            class="expVariant__varType"
+            class="expVariant__varType ${classNames}"
             title="Click to edit"
             data-exp-name="${experimentName}"
             data-var-name="${name}"
             data-var-type="${type}"
-          >${val}</span>
+          >${value}</span>
         </li>`
     })
 
     return `<ul>${options.join('')}</ul>`
   }
 
+  /**
+   * @param {string} name
+   * @param {unknown} value
+   * @return {VariableType}
+   */
   static getVariableType(name, value) {
     if (name === 'v_name') {
       return 'variant'
@@ -88,7 +101,6 @@ class Template {
         '<li class="expList__item">',
         this.getCheckboxFormControl(name, experiment),
         this.getFormControlLabel(name),
-        this.formatExperiment(experiment),
         this.getVariablesList(name, experiment),
         '</li>',
       ].join(' ')
@@ -149,3 +161,7 @@ class Template {
       .setAttribute('hidden', 'hidden')
   }
 }
+
+/**
+ * @typedef {'variant' | 'boolean'} VariableType
+ */
