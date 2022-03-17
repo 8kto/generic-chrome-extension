@@ -392,7 +392,7 @@ const handleEvents = tabId => {
     switch (message.type) {
       case 'onPopupOpen':
         handleOnPopupOpen(message, tabId)
-        updateFeatureBranchTitle(message.payload)
+        updateDetailsTabContent(message.payload)
         break
 
       case 'onVariableSet':
@@ -435,15 +435,35 @@ const updateExtensionVersion = () => {
 /**
  * @param {string} cookies document.cookies
  */
-const updateFeatureBranchTitle = cookies => {
-  const container = document.getElementById('feature-branch-container')
+const updateDetailsTabContent = cookies => {
+  const defaultHandler = v => v
+  const containers = [
+    {
+      selector: '#feature-branch-container',
+      regexp: /x-featurebranch=([^;$]+)[;$]/,
+      handler: defaultHandler,
+    },
+    {
+      selector: '#feature-flag-targeting-params-container',
+      regexp: /feature-flag-targeting=([^;$]+)[;$]/,
+      handler: val => {
+        const parsed = JSON.stringify(JSON.parse(val), null, '  ')
 
-  if (container) {
-    const matched = cookies.match(/x-featurebranch=([^;$]+)[;$]/)
-    if (matched && matched[1]) {
-      container.innerText = matched[1]
+        return `<pre>${parsed}</pre>`
+      },
+    },
+  ]
+
+  containers.forEach(def => {
+    const container = document.querySelector(def.selector)
+
+    if (container) {
+      const matched = cookies.match(def.regexp)
+      if (matched && matched[1]) {
+        container.innerHTML = def.handler(matched[1])
+      }
     }
-  }
+  })
 }
 
 /**
@@ -477,3 +497,4 @@ if (!isTestEnv()) {
 
 // todo clean up mess with the deps
 // todo use bundler: the file is bloated without imports
+// todo display message if few ff cookies

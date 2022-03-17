@@ -20,22 +20,36 @@
         Optimizely experiments <span title="Igel: SA Optimizely Tool">🦔</span>
       </h1>
 
-      <!-- Current feature branch (preview server) -->
-      <div
-        id="feature-branch-container"
-        title="Current feature branch name (preview server)"
-      ></div>
-
       <!-- Tabs -->
       <div class="tab">
-        <button class="tabTitle active button" data-target="experiments-list">
-          📜 List
+        <button
+          class="tabTitle active button"
+          data-target="experiments-list"
+          title="Experiments list"
+        >
+          📜
         </button>
-        <button class="tabTitle button" data-target="experiments-json">
-          ⚙️ JSON
+        <button
+          class="tabTitle button"
+          data-target="experiments-json"
+          title="JSON"
+        >
+          ⚙️
         </button>
-        <button class="tabTitle button" data-target="experiments-docs">
-          👓️ Docs
+        <button
+          id="button--show-info"
+          class="tabTitle button"
+          data-target="experiments-details"
+          title="Show details"
+        >
+          🕵️
+        </button>
+        <button
+          class="tabTitle button"
+          data-target="experiments-docs"
+          title="Documentation"
+        >
+          ℹ️
         </button>
         <button
           id="button--add-new"
@@ -91,6 +105,38 @@
           value="🔄 Apply"
           hidden
         />
+      </div>
+
+      <!-- Feature flags & more details -->
+      <div id="experiments-details" class="tabContent">
+        <ul class="detailsList">
+          <li>
+            <strong>
+              <a
+                href="https://github.com/RedTecLab/fock/#public-urls"
+                target="_blank"
+              >
+                Branch name
+              </a></strong
+            >: <br />
+            <span
+              id="feature-branch-container"
+              title="Current feature branch name on the preview server (x-featurebranch)"
+              >NA</span
+            >
+          </li>
+          <li>
+            <strong title="feature-flag-targeting">Targeting parameters</strong
+            >: <br /><span id="feature-flag-targeting-params-container"
+              >NA</span
+            >
+          </li>
+        </ul>
+
+        <p>
+          <strong>User token</strong> is <code>httpOnly</code>, so it is not
+          available for JS. You can find it in the standard dev tools.
+        </p>
       </div>
 
       <!-- Docs -->
