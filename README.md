@@ -24,14 +24,31 @@ However, a new experiment can be added via the button, read further.
 * Tab ➕ allows you to add a new experiment.
 
 
-## Install and update
-Preferred way: 
+## Installation
+### Using git 
 1. Checkout repo to the local machine.
-2. Using [this manual](https://developer.chrome.com/docs/extensions/mv3/getstarted/), install the project folder through the "Load unpacked" action.
+2. Using [these instructions], install the project folder through the "Load unpacked" action.
 3. Find the newly installed extension in the browser tray with extensions, pin it.
 
-**Alternatively**, you can install `.crx` extension file through the browser UI. For that, check the [releases page](https://github.com/RedTecLab/igel-chrome-sa-optimizely-tool/releases) (last available version can be staled).
 
+### Chrome packed extension
+How to install `.crx` extension file through the browser UI:
+1. Check the [releases page] and download the latest available `.crx` file.
+2. Install by clicking or dragging the file to the extensions page in the browser.
+3. After installation, go to the 3rd point from the above.
+
+This way may not work for you because of the strict Google Chrome security policies.
+
+
+### Chrome unpacked extension
+If you got a security error by Chrome:
+1. Download the compressed `.zip` file from the [releases page].
+   Use the latest available version with the version number in the title, not the source code.
+3. Unzip it and enable with [these instructions].
+4. After installation, go to the 3rd point from the above.
+ 
+
+## Updates
 Since the repository is private, it's not possible to automatically get the latest version, 
 so for now, the only way to check for updates is to open the repository page and check for the latest release.
 
@@ -51,3 +68,8 @@ so for now, the only way to check for updates is to open the repository page and
 3. Push with `git push --tags`
 4. Prepare a [new release](https://github.com/RedTecLab/igel-chrome-sa-optimizely-tool/releases/new) in GitHub using the last tag
 5. Usually, a release contains a built Chrome extension: it can be made locally according to the [docs](https://developer.chrome.com/docs/extensions/mv3/linux_hosting/#create)
+
+
+
+[releases page]: https://github.com/RedTecLab/igel-chrome-sa-optimizely-tool/releases
+[these instructions]: https://developer.chrome.com/docs/extensions/mv3/getstarted/
