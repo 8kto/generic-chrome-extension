@@ -11,9 +11,8 @@ class Optimizely {
 
   /**
    * @throws {Error}
-   * @return {boolean}
    */
-  isFeatureFlagsValid() {
+  checkFeatureFlags() {
     const experimentsCookie = this.cookies
       .split(';')
       .filter(i => i.match(/feature-flag-cookie/))
@@ -28,17 +27,15 @@ class Optimizely {
       )
     }
 
-    try {
-      const featureFlags = this.extractExperiments()
+    const featureFlags = this.extractExperiments()
+    const isValid =
+      typeof featureFlags === 'object' &&
+      !Array.isArray(featureFlags) &&
+      featureFlags &&
+      Object.keys(featureFlags).length
 
-      return !!(
-        typeof featureFlags === 'object' &&
-        !Array.isArray(featureFlags) &&
-        featureFlags &&
-        Object.keys(featureFlags).length
-      )
-    } catch (err) {
-      return false
+    if (!isValid) {
+      throw new Error(`Feature flags JSON is invalid`)
     }
   }
 
