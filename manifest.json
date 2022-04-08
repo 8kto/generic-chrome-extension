@@ -2,7 +2,7 @@
   "name": "Igel: SA Optimizely Tool",
   "description": "Manage the available Optimizely experiments",
   "homepage_url": "https://github.com/RedTecLab/igel-chrome-sa-optimizely-tool",
-  "version": "1.1.10",
+  "version": "1.1.11",
   "manifest_version": 3,
   "icons": {
     "16": "src/images/igel16.png",

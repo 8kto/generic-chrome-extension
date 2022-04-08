@@ -9,12 +9,34 @@ class Optimizely {
     this.experiments = {}
   }
 
-  isFeatureFlagsValid() {
+  /**
+   * @throws {Error}
+   */
+  checkFeatureFlags() {
     const experimentsCookie = this.cookies
       .split(';')
       .filter(i => i.match(/feature-flag-cookie/))
 
-    return experimentsCookie.length === 1
+    if (!experimentsCookie.length) {
+      throw new Error('No feature-flag-cookie found')
+    }
+
+    if (experimentsCookie.length !== 1) {
+      throw new Error(
+        'Ambiguous feature-flag-cookie found: remove multiple values and reload tab'
+      )
+    }
+
+    const featureFlags = this.extractExperiments()
+    const isValid =
+      typeof featureFlags === 'object' &&
+      !Array.isArray(featureFlags) &&
+      featureFlags &&
+      Object.keys(featureFlags).length
+
+    if (!isValid) {
+      throw new Error(`Feature flags JSON is invalid`)
+    }
   }
 
   extractExperiments() {
