@@ -285,7 +285,7 @@ const handleOnPopupOpen = (message, tabId) => {
   const optimizelyService = new Optimizely(message.payload)
 
   try {
-    optimizelyService.isFeatureFlagsValid()
+    optimizelyService.checkFeatureFlags()
   } catch (err) {
     Template.showError(err.message)
 

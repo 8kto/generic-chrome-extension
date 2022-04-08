@@ -20,13 +20,13 @@ describe.skip('optimizely service', () => {
   // Just to disable console spamming during tests
   jest.spyOn(console, 'error').mockImplementation(() => undefined)
 
-  describe('isFeatureFlagsValid', () => {
+  describe('checkFeatureFlags', () => {
     /** @var {Optimizely} */
     let optimizelyService
 
     it('returns true for valid cookies', () => {
       optimizelyService = new Optimizely(VALID_COOKIE)
-      expect(optimizelyService.isFeatureFlagsValid()).toBe(true)
+      expect(optimizelyService.checkFeatureFlags()).toBe(true)
     })
 
     it.each(['', '{}', 'null', 'undefined', '[]'])(
@@ -35,13 +35,13 @@ describe.skip('optimizely service', () => {
         optimizelyService = new Optimizely(
           `var=1;second=2;feature-flag-cookie=${input}`
         )
-        expect(optimizelyService.isFeatureFlagsValid()).toBe(false)
+        expect(optimizelyService.checkFeatureFlags()).toBe(false)
       }
     )
 
     it('throws when no FF cookies', () => {
       optimizelyService = new Optimizely('var=1;second=2')
-      expect(() => optimizelyService.isFeatureFlagsValid()).toThrow(
+      expect(() => optimizelyService.checkFeatureFlags()).toThrow(
         'No feature-flag-cookie found'
       )
     })
@@ -50,7 +50,7 @@ describe.skip('optimizely service', () => {
       optimizelyService = new Optimizely(
         `my-cookie=42; feature-flag-cookie=${VALID_FF_STRING}; feature-flag-cookie={}`
       )
-      expect(() => optimizelyService.isFeatureFlagsValid()).toThrow(
+      expect(() => optimizelyService.checkFeatureFlags()).toThrow(
         'Ambiguous feature-flag-cookie found: remove multiple values and reload tab'
       )
     })
