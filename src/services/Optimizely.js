@@ -9,12 +9,37 @@ class Optimizely {
     this.experiments = {}
   }
 
+  /**
+   * @throws {Error}
+   * @return {boolean}
+   */
   isFeatureFlagsValid() {
     const experimentsCookie = this.cookies
       .split(';')
       .filter(i => i.match(/feature-flag-cookie/))
 
-    return experimentsCookie.length === 1
+    if (!experimentsCookie.length) {
+      throw new Error('No feature-flag-cookie found')
+    }
+
+    if (experimentsCookie.length !== 1) {
+      throw new Error(
+        'Ambiguous feature-flag-cookie found: remove multiple values and reload tab'
+      )
+    }
+
+    try {
+      const featureFlags = this.extractExperiments()
+
+      return !!(
+        typeof featureFlags === 'object' &&
+        !Array.isArray(featureFlags) &&
+        featureFlags &&
+        Object.keys(featureFlags).length
+      )
+    } catch (err) {
+      return false
+    }
   }
 
   extractExperiments() {

@@ -284,10 +284,10 @@ const handleOnPopupOpen = (message, tabId) => {
   const container = document.getElementById('container')
   const optimizelyService = new Optimizely(message.payload)
 
-  if (!optimizelyService.isFeatureFlagsValid()) {
-    Template.showError(
-      `Ambiguous feature-flag-cookie found: remove multiple values and reload tab`
-    )
+  try {
+    optimizelyService.isFeatureFlagsValid()
+  } catch (err) {
+    Template.showError(err.message)
 
     return
   }
