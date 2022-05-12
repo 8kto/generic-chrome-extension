@@ -2,9 +2,7 @@ const { readdirSync, existsSync } = require('fs')
 const path = require('path')
 const glob = require('glob')
 
-const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const TerserPlugin = require('terser-webpack-plugin')
 
 const dirPaths = [
   path.resolve(__dirname, './src/components/'),
