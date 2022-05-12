@@ -1,11 +1,15 @@
 const { readdirSync, existsSync } = require('fs')
 const path = require('path')
+const glob = require('glob')
 
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 
-const dirPaths = [path.resolve(__dirname, './src/components/')]
+const dirPaths = [
+  path.resolve(__dirname, './src/components/'),
+  path.resolve(__dirname, './src/shared/styles'),
+]
 
 const entries = {}
 
@@ -22,10 +26,24 @@ dirPaths.forEach(dirPath =>
     })
 )
 
+const getStyleEntries = pattern =>
+  glob.sync(pattern).reduce((entries, filename) => {
+    // Skip includes
+    if (path.basename(filename)[0] === '_') {
+      return entries
+    }
+
+    const [, dirName] = filename.match(/\/([^\/]+\/[^\/]+).scss$/)
+    const entryName = 'style-' + dirName.replace('/', '-')
+    entries[entryName] = filename
+
+    return entries
+  }, {})
+
 module.exports = {
   target: 'web',
   devtool: 'source-map',
-  entry: entries,
+  entry: { ...entries, ...getStyleEntries('./src/**/*.scss') },
   resolve: {
     extensions: ['.scss', '.ts', '.js'],
     modules: [
@@ -34,7 +52,13 @@ module.exports = {
     ],
   },
   output: {
-    filename: '[name]/index.js',
+    filename: (pathData) => {
+      const isStylesheet = pathData.chunk.name.startsWith('style-')
+
+      return isStylesheet
+        ? '[name]'
+        : '[name]/index.js'
+    },
     path: path.resolve(__dirname, 'build'),
   },
   module: {
@@ -53,41 +77,17 @@ module.exports = {
         use: [
           MiniCssExtractPlugin.loader,
           { loader: 'css-loader' },
-          {
-            loader: 'postcss-loader',
-            options: {
-              postcssOptions: {
-                plugins: ['autoprefixer', 'cssnano'],
-              },
-            },
-          },
-          { loader: 'resolve-url-loader' },
-          {
-            loader: 'sass-loader',
-            options: {
-              sourceMap: true,
-            },
-          },
-        ],
-      },
-    ],
-  },
-  optimization: {
-    minimizer: [
-      new TerserPlugin({
-        terserOptions: {
-          mangle: true,
-          compress: true,
-        },
-      }),
-      new CssMinimizerPlugin(),
+          { loader: 'resolve-url-loader', options: { debug: false } },
+          { loader: 'sass-loader' }
+        ]
+      }
     ],
   },
   plugins: [
     new MiniCssExtractPlugin({
-      filename: '[name]/styles.css',
-      chunkFilename: '[name]/[id].css',
-      ignoreOrder: false,
+      filename: (pathData) => {
+        return pathData.chunk.name.replace('style-', '') + '.css'
+      },
     }),
   ],
   stats: {
