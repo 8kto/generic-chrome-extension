@@ -8,23 +8,26 @@ const TerserPlugin = require('terser-webpack-plugin')
 
 const dirPaths = [
   path.resolve(__dirname, './src/components/'),
-  path.resolve(__dirname, './src/shared/styles'),
 ]
 
-const entries = {}
+const getJsEntries = () => {
+  const entries = {}
 
-dirPaths.forEach(dirPath =>
-  readdirSync(dirPath, { withFileTypes: true })
-    .filter(dir => dir.isDirectory())
-    .filter(
-      dir =>
-        existsSync(`${dirPath}/${dir.name}/index.js`) ||
-        existsSync(`${dirPath}/${dir.name}/index.ts`)
-    )
-    .forEach(({ name }) => {
-      entries[name] = `${dirPath}/${name}`
-    })
-)
+  dirPaths.forEach(dirPath =>
+    readdirSync(dirPath, { withFileTypes: true })
+      .filter(dir => dir.isDirectory())
+      .filter(
+        dir =>
+          existsSync(`${dirPath}/${dir.name}/index.js`) ||
+          existsSync(`${dirPath}/${dir.name}/index.ts`)
+      )
+      .forEach(({ name }) => {
+        entries[name] = `${dirPath}/${name}`
+      })
+  )
+
+  return entries
+}
 
 const getStyleEntries = pattern =>
   glob.sync(pattern).reduce((entries, filename) => {
@@ -43,7 +46,7 @@ const getStyleEntries = pattern =>
 module.exports = {
   target: 'web',
   devtool: 'source-map',
-  entry: { ...entries, ...getStyleEntries('./src/**/*.scss') },
+  entry: { ...getJsEntries(), ...getStyleEntries('./src/**/*.scss') },
   resolve: {
     extensions: ['.scss', '.ts', '.js'],
     modules: [
@@ -52,12 +55,10 @@ module.exports = {
     ],
   },
   output: {
-    filename: (pathData) => {
+    filename: pathData => {
       const isStylesheet = pathData.chunk.name.startsWith('style-')
 
-      return isStylesheet
-        ? '[name]'
-        : '[name]/index.js'
+      return isStylesheet ? '[name]' : '[name]/index.js'
     },
     path: path.resolve(__dirname, 'build'),
   },
@@ -78,14 +79,14 @@ module.exports = {
           MiniCssExtractPlugin.loader,
           { loader: 'css-loader' },
           { loader: 'resolve-url-loader', options: { debug: false } },
-          { loader: 'sass-loader' }
-        ]
-      }
+          { loader: 'sass-loader' },
+        ],
+      },
     ],
   },
   plugins: [
     new MiniCssExtractPlugin({
-      filename: (pathData) => {
+      filename: pathData => {
         return pathData.chunk.name.replace('style-', '') + '.css'
       },
     }),
