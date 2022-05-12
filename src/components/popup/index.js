@@ -1,6 +1,9 @@
 /**
  * @fileOverview A wrapper for the popup dialog. Binds the event handlers and dynamic layout.
  */
+import Optimizely from 'services/Optimizely'
+import Template from 'services/Template'
+import { initTabs } from 'shared/js/tabs'
 
 /**
  * @return {Promise<number>}
