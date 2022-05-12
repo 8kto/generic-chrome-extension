@@ -23,7 +23,7 @@ dirPaths.forEach(dirPath =>
 )
 
 module.exports = {
-  target: ['web', 'es5'],
+  target: 'web',
   devtool: 'source-map',
   entry: entries,
   resolve: {

@@ -14,7 +14,6 @@ module.exports = {
       },
     },
   },
-
   parser: 'esprima',
   plugins: ['only-error', 'jest'],
   env: {
