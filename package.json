@@ -14,6 +14,9 @@
   },
   "scripts": {
     "prepare": "husky install",
+    "clean": "rimraf build",
+    "prebuild": "yarn clean",
+    "build": "webpack --mode=production --config webpack.config.js",
     "format": "prettier --write README.md src/**/*.{js,json,html} && stylelint src/**/*.css --fix",
     "lint": "yarn lint:styles && yarn lint:js",
     "lint:js": "eslint --ext=.js,.jsx,.mjs src",
@@ -25,6 +28,7 @@
   "devDependencies": {
     "@babel/preset-env": "^7.16.11",
     "babel-jest": "^27.5.1",
+    "css-minimizer-webpack-plugin": "^3.4.1",
     "enzyme": "^3.11.0",
     "enzyme-to-json": "^3.6.2",
     "eslint": "^8.9.0",
@@ -34,14 +38,21 @@
     "eslint-plugin-jsx-a11y": "^6.5.1",
     "eslint-plugin-only-error": "^1.0.2",
     "eslint-plugin-prettier": "^4.0.0",
+    "fs": "^0.0.1-security",
     "husky": "^7.0.4",
     "jest": "^27.5.1",
     "lint-staged": "^12.1.2",
+    "mini-css-extract-plugin": "^2.6.0",
     "mversion": "^2.0.1",
+    "path": "^0.12.7",
     "prettier": "^2.4.1",
+    "rimraf": "^3.0.2",
     "stylelint": "^13.13.1",
     "stylelint-config-prettier": "^9.0.3",
     "stylelint-config-standard": "^22.0.0",
-    "stylelint-prettier": "^1.2.0"
+    "stylelint-prettier": "^1.2.0",
+    "terser-webpack-plugin": "^5.3.1",
+    "webpack": "^5.72.1",
+    "webpack-cli": "^4.9.2"
   }
 }
