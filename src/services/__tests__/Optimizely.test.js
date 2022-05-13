@@ -1,3 +1,5 @@
+import Optimizely from './../Optimizely'
+
 const VALID_FF_STRING = JSON.stringify({
   'cro-691': {
     'e': true,
@@ -14,9 +16,7 @@ const VALID_FF_STRING = JSON.stringify({
 })
 const VALID_COOKIE = `my-cookie=42; feature-flag-cookie=${VALID_FF_STRING}`
 
-// FIXME #9 Very frustrating, but Optimizely class cannot be exported with vanilla JS
-// eslint-disable-next-line jest/no-disabled-tests
-describe.skip('optimizely service', () => {
+describe('optimizely service', () => {
   // Just to disable console spamming during tests
   jest.spyOn(console, 'error').mockImplementation(() => undefined)
 
@@ -24,18 +24,20 @@ describe.skip('optimizely service', () => {
     /** @var {Optimizely} */
     let optimizelyService
 
-    it('returns true for valid cookies', () => {
+    it('does not throw for valid cookies', () => {
       optimizelyService = new Optimizely(VALID_COOKIE)
-      expect(optimizelyService.checkFeatureFlags()).toBe(true)
+      expect(() => optimizelyService.checkFeatureFlags()).not.toThrow()
     })
 
     it.each(['', '{}', 'null', 'undefined', '[]'])(
-      'returns false for empty and falsy FF cookies',
+      'throws error for empty and falsy FF cookies',
       input => {
         optimizelyService = new Optimizely(
           `var=1;second=2;feature-flag-cookie=${input}`
         )
-        expect(optimizelyService.checkFeatureFlags()).toBe(false)
+        expect(() => optimizelyService.checkFeatureFlags()).toThrow(
+          'Feature flags JSON is invalid'
+        )
       }
     )
 

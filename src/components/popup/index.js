@@ -1,6 +1,9 @@
 /**
  * @fileOverview A wrapper for the popup dialog. Binds the event handlers and dynamic layout.
  */
+import Optimizely from 'services/Optimizely'
+import Template from 'services/Template'
+import { initTabs } from 'shared/js/tabs'
 
 /**
  * @return {Promise<number>}
@@ -505,4 +508,3 @@ if (!isTestEnv()) {
  */
 
 // todo clean up mess with the deps
-// todo use bundler: the file is bloated without imports

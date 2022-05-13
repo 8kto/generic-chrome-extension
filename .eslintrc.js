@@ -6,6 +6,14 @@ module.exports = {
     'plugin:jest/all',
     'plugin:prettier/recommended', // Make sure to put it last, so it gets the chance to override other configs
   ],
+  settings: {
+    'import/resolver': {
+      'node': {
+        'paths': ['src'],
+        'extensions': ['.js', '.ts'],
+      },
+    },
+  },
   parser: 'esprima',
   plugins: ['only-error', 'jest'],
   env: {
@@ -17,9 +25,6 @@ module.exports = {
     chrome: true,
     jest: true,
     process: true,
-    Template: true,
-    Optimizely: true,
-    initTabs: true,
   },
   rules: {
     'curly': 'error',

@@ -11,8 +11,7 @@ const openTab = tabId => {
   document.getElementById(tabId).classList.add('active')
 }
 
-// eslint-disable-next-line no-unused-vars
-const initTabs = () => {
+export const initTabs = () => {
   document.querySelectorAll('.tabTitle').forEach(link => {
     link.addEventListener('click', event => {
       const currentTarget = event.currentTarget

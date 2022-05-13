@@ -13,10 +13,10 @@
 
 #feature-branch-container:not(:empty) {
   margin: 0 0 0.5rem;
-}
 
-#feature-branch-container:not(:empty):hover {
-  cursor: help;
+  &:hover {
+    cursor: help;
+  }
 }
 
 #expList {
@@ -26,19 +26,19 @@
 
 .expName {
   font-weight: bold;
-}
 
-.expName:hover {
-  cursor: pointer;
+  &:hover {
+    cursor: pointer;
+  }
 }
 
 .expVariant__varName {
   color: cadetblue;
-}
 
-.expVariant__varType:hover {
-  border-bottom: 1px dashed;
-  cursor: pointer;
+  &:hover {
+    border-bottom: 1px dashed;
+    cursor: pointer;
+  }
 }
 
 .expVariant__varType--variant {
@@ -47,10 +47,10 @@
 
 .expVariant__varType--empty {
   color: var(--muted-color);
-}
 
-.expVariant__varType--empty:hover {
-  border-bottom: 1px dashed var(--muted-color);
+  &:hover {
+    border-bottom: 1px dashed var(--muted-color);
+  }
 }
 
 #reset-feature-flags-cookie {

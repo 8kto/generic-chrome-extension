@@ -1,6 +1,6 @@
 {
   "name": "sa-optimizely-tool",
-  "version": "1.1.11",
+  "version": "1.2.0",
   "description": "Chrome extension for the Optimizely experiments management",
   "main": "index.js",
   "license": "proprietary",
@@ -14,17 +14,23 @@
   },
   "scripts": {
     "prepare": "husky install",
-    "format": "prettier --write README.md src/**/*.{js,json,html} && stylelint src/**/*.css --fix",
+    "clean": "rimraf build",
+    "prebuild": "yarn clean",
+    "build": "webpack --mode=production --config webpack.config.js",
+    "format": "prettier --write README.md src/**/*.{js,json,html} && stylelint src/**/*.scss --fix",
     "lint": "yarn lint:styles && yarn lint:js",
     "lint:js": "eslint --ext=.js,.jsx,.mjs src",
-    "lint:styles": "stylelint src/**/*.css",
+    "lint:styles": "stylelint src/**/*.scss",
     "bump": "mversion",
     "bump:patch": "mversion patch -t",
-    "test": "jest"
+    "test": "jest",
+    "watch": "webpack watch --mode development"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.16.11",
-    "babel-jest": "^27.5.1",
+    "@babel/preset-typescript": "^7.16.7",
+    "@types/jest": "^27.5.1",
+    "css-loader": "^6.7.1",
     "enzyme": "^3.11.0",
     "enzyme-to-json": "^3.6.2",
     "eslint": "^8.9.0",
@@ -34,14 +40,29 @@
     "eslint-plugin-jsx-a11y": "^6.5.1",
     "eslint-plugin-only-error": "^1.0.2",
     "eslint-plugin-prettier": "^4.0.0",
+    "fs": "^0.0.1-security",
+    "glob": "^8.0.1",
     "husky": "^7.0.4",
     "jest": "^27.5.1",
     "lint-staged": "^12.1.2",
+    "mini-css-extract-plugin": "^2.6.0",
     "mversion": "^2.0.1",
+    "path": "^0.12.7",
     "prettier": "^2.4.1",
+    "resolve-url-loader": "^5.0.0",
+    "rimraf": "^3.0.2",
+    "sass": "^1.51.0",
+    "sass-loader": "^12.6.0",
     "stylelint": "^13.13.1",
     "stylelint-config-prettier": "^9.0.3",
     "stylelint-config-standard": "^22.0.0",
-    "stylelint-prettier": "^1.2.0"
-  }
+    "stylelint-prettier": "^1.2.0",
+    "ts-jest": "^28.0.2",
+    "typescript": "^4.6.4",
+    "webpack": "^5.72.1",
+    "webpack-cli": "^4.9.2"
+  },
+  "browserslist": [
+    "last 2 Chrome versions"
+  ]
 }

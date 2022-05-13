@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "baseUrl": "src",
+    "outDir": "build",
+    "noImplicitAny": true,
+    "module": "es6",
+    "target": "es6",
+    "allowJs": true,
+    "moduleResolution": "node",
+    "rootDirs": ["src"]
+  },
+  "include": ["./src/**/*"],
+  "exclude": [
+    ".github/**/*",
+    ".husky/**/*",
+    "build/**/*",
+    "node_modules"
+  ]
+}

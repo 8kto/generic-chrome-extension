@@ -9,17 +9,18 @@ module.exports = {
       functions: 90,
     },
   },
-  globals: {
-    Template: true,
-    Optimizely: true,
-    initTabs: true,
-  },
   setupFilesAfterEnv: [],
   snapshotSerializers: ['enzyme-to-json/serializer'],
   testEnvironment: 'jsdom',
   testMatch: ['<rootDir>**/*.test.[jt]s'],
   moduleDirectories: ['node_modules', 'components', 'services', 'shared'],
-  transform: {
-    '^.+\\.js?$': 'babel-jest',
+  modulePaths: ['<rootDir>/src/'],
+  moduleNameMapper: {
+    '^.+\\.scss$': 'babel-jest',
   },
+  preset: 'ts-jest',
+  transform: {
+    '^.+[tj]s$': 'ts-jest',
+  },
+  transformIgnorePatterns: ['<rootDir>/node_modules/'],
 }
