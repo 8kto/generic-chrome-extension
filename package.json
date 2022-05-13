@@ -23,7 +23,8 @@
     "lint:styles": "stylelint src/**/*.scss",
     "bump": "mversion",
     "bump:patch": "mversion patch -t",
-    "test": "jest"
+    "test": "jest",
+    "watch": "webpack watch --mode development"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.16.11",
