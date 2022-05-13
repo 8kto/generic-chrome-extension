@@ -1,6 +1,7 @@
 module.exports = {
   extends: [
     'eslint:recommended',
+    'plugin:@typescript-eslint/recommended',
     'plugin:import/recommended',
     'plugin:jsx-a11y/recommended',
     'plugin:jest/all',
@@ -14,8 +15,8 @@ module.exports = {
       },
     },
   },
-  parser: 'esprima',
-  plugins: ['only-error', 'jest'],
+  parser: '@typescript-eslint/parser',
+  plugins: ['only-error', 'jest', '@typescript-eslint'],
   env: {
     'browser': true,
     'es6': true,
