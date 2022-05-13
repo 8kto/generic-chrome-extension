@@ -17,10 +17,10 @@
     "clean": "rimraf build",
     "prebuild": "yarn clean",
     "build": "webpack --mode=production --config webpack.config.js",
-    "format": "prettier --write README.md src/**/*.{js,json,html} && stylelint src/**/*.css --fix",
+    "format": "prettier --write README.md src/**/*.{js,json,html} && stylelint src/**/*.scss --fix",
     "lint": "yarn lint:styles && yarn lint:js",
     "lint:js": "eslint --ext=.js,.jsx,.mjs src",
-    "lint:styles": "stylelint src/**/*.css",
+    "lint:styles": "stylelint src/**/*.scss",
     "bump": "mversion",
     "bump:patch": "mversion patch -t",
     "test": "jest"
