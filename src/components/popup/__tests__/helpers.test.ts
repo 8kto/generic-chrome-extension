@@ -1,4 +1,4 @@
-import { getVariantsOptions } from './../popup'
+import { getVariantsOptions } from './../'
 
 describe('helpers test', () => {
   describe('getVariantsOptions', () => {
