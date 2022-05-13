@@ -1,17 +1,18 @@
+import type { ExperimentsList } from 'types'
+
 export default class Optimizely {
-  /**
-   * @param {string} cookies Document cookies
-   */
-  constructor(cookies) {
+  // Document cookies
+  private cookies: string
+  private experiments: ExperimentsList = {}
+
+  constructor(cookies: string) {
     this.cookies = cookies
-    /** @type {Record<string, Experiment>} */
-    this.experiments = {}
   }
 
   /**
    * @throws {Error}
    */
-  checkFeatureFlags() {
+  checkFeatureFlags(): void {
     const experimentsCookie = this.cookies
       .split(';')
       .filter(i => i.match(/feature-flag-cookie/))
@@ -38,7 +39,7 @@ export default class Optimizely {
     }
   }
 
-  extractExperiments() {
+  extractExperiments(): ExperimentsList {
     const experimentsCookie = this.cookies
       .split(';')
       .filter(i => i.match(/feature-flag-cookie/))
@@ -57,30 +58,24 @@ export default class Optimizely {
     return this.experiments
   }
 
-  /**
-   * @return {Record<string, Experiment>}
-   */
-  getExperiments() {
+  getExperiments(): ExperimentsList {
     return this.experiments
   }
 
-  /**
-   *
-   * @param {string} experimentName
-   * @param {boolean} status Enabled/Disabled
-   */
-  setExperimentStatus(experimentName, status) {
+  setExperimentStatus(
+    experimentName: string,
+    status: boolean | string
+  ): Optimizely {
     this.experiments[experimentName].e = Boolean(status)
 
     return this
   }
 
-  /**
-   * @param {string} experimentName
-   * @param {string} variableName
-   * @param {any} value
-   */
-  setExperimentVariable(experimentName, variableName, value) {
+  setExperimentVariable(
+    experimentName: string,
+    variableName: string,
+    value: unknown
+  ): Optimizely {
     const experiment = this.experiments[experimentName]
 
     if (experiment) {
@@ -90,12 +85,7 @@ export default class Optimizely {
     return this
   }
 
-  /**
-   * @param name
-   * @param variant
-   * @return {Record<string, Experiment>}
-   */
-  addNewExperiment(name, variant) {
+  addNewExperiment(name: string, variant: string): ExperimentsList {
     /** @type {Experiment} */
     this.experiments[name] = {
       e: true,
@@ -105,20 +95,9 @@ export default class Optimizely {
     return this.experiments
   }
 
-  isAvailable() {
+  isAvailable(): boolean {
     return Boolean(Object.keys(this.experiments || {}).length)
   }
 }
-
-/**
- * @typedef Variant
- * @property {string} v_name
- */
-
-/**
- * @typedef Experiment
- * @property {boolean} e
- * @property {Variant} v
- */
 
 // TODO review service, make static methods?
