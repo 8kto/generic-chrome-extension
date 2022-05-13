@@ -1,4 +1,7 @@
 # Igel: SA Optimizely Tool
+[![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
+![build status](https://github.com/RedTecLab/igel-chrome-sa-optimizely-tool/actions/workflows/main.yml/badge.svg)
+
 
 ![](src/images/igel350.jpg)
 
