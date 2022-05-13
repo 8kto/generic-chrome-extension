@@ -10,10 +10,5 @@
     "rootDirs": ["src"]
   },
   "include": ["./src/**/*"],
-  "exclude": [
-    ".github/**/*",
-    ".husky/**/*",
-    "build/**/*",
-    "node_modules"
-  ]
+  "exclude": [".github/**/*", ".husky/**/*", "build/**/*", "node_modules"]
 }
