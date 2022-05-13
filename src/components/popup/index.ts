@@ -487,5 +487,4 @@ if (!isTestEnv()) {
 }
 
 // todo clean up mess with the deps
-// fixme global chrome
 // todo enum for events
