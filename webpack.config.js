@@ -68,16 +68,12 @@ module.exports = {
         exclude: /node_modules/,
       },
       {
-        test: /\.css$/i,
-        use: [MiniCssExtractPlugin.loader, 'css-loader'],
-      },
-      {
-        test: /\.scss$/,
+        test: /\.(sc|c)ss$/,
         use: [
           MiniCssExtractPlugin.loader,
-          { loader: 'css-loader' },
+          "css-loader",
           { loader: 'resolve-url-loader', options: { debug: false } },
-          { loader: 'sass-loader' },
+          "sass-loader",
         ],
       },
     ],
@@ -90,8 +86,8 @@ module.exports = {
     }),
   ],
   stats: {
-    preset: 'normal',
-    assetsSpace: 100,
-    modulesSpace: 100,
+    preset: 'minimal',
+    assetsSpace: 20,
+    modulesSpace: 20,
   },
 }
