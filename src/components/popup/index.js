@@ -508,4 +508,3 @@ if (!isTestEnv()) {
  */
 
 // todo clean up mess with the deps
-// todo use bundler: the file is bloated without imports
