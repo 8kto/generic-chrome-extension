@@ -11,3 +11,8 @@ export type Experiment = {
 }
 
 export type ExperimentsList = Record<string, Experiment>
+
+export type Message = {
+  type: string
+  payload: unknown
+}
