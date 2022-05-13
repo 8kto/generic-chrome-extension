@@ -1,4 +1,4 @@
-const openTab = (tabId: any) => {
+const openTab = (tabId: string): void => {
   const tabContentElements = document.querySelectorAll('.tabContent')
   tabContentElements.forEach(elem => {
     elem.classList.remove('active')
@@ -7,23 +7,17 @@ const openTab = (tabId: any) => {
   const tabTitleElements = document.querySelectorAll('.tabTitle')
   tabTitleElements.forEach(elem => elem.classList.remove('active'))
 
-  // document.getElementById(tabId).style.display = 'block'
-  // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
   document.getElementById(tabId).classList.add('active')
 }
 
-export const initTabs = () => {
+export const initTabs = (): void =>
   document.querySelectorAll('.tabTitle').forEach(link => {
     link.addEventListener('click', event => {
-      const currentTarget = event.currentTarget
+      const currentTarget = <HTMLElement>event.currentTarget
 
-      // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
       if (currentTarget.dataset.target) {
-        // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
         openTab(currentTarget.dataset.target)
-        // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
         currentTarget.classList.add('active')
       }
     })
   })
-}
