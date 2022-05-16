@@ -7,7 +7,8 @@
     "target": "es6",
     "allowJs": true,
     "moduleResolution": "node",
-    "rootDirs": ["src"]
+    "rootDirs": ["src"],
+    "esModuleInterop": true
   },
   "include": ["./src/**/*"],
   "exclude": [".github/**/*", ".husky/**/*", "build/**/*", "node_modules"]
