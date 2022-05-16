@@ -5,6 +5,11 @@ import Optimizely from 'services/Optimizely'
 import Template from 'services/Template'
 import { initTabs } from 'shared/js/tabs'
 import type { ExperimentsList, Message } from 'types'
+import {
+  DetailsTabContentHandler,
+  MessageFeatureFlagUpdate,
+  VariableUpdatePayload,
+} from 'types'
 
 const getActiveTabId = async (): Promise<number> => {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
@@ -70,7 +75,7 @@ const bindExperimentSwitchers = ({
   listElement.addEventListener('click', handleListItemClick)
 }
 
-const triggerOnVariableSet = (tabId: number, data: Record<string, unknown>) => {
+const triggerOnVariableSet = (tabId: number, data: VariableUpdatePayload) => {
   // Pass prepared cookies from the extension to the page
   chrome.scripting.executeScript({
     args: [data],
@@ -89,7 +94,7 @@ const handleVariableClick = async (event: Event): Promise<void> => {
   const target = <HTMLElement>event.target
   const { varType, varName, expName } = target.dataset
   const value = target.textContent.trim()
-  const payload = {
+  const payload: VariableUpdatePayload = {
     experimentName: expName,
     variableName: varName,
   }
@@ -242,7 +247,7 @@ const getVariantsDropdown = ({
   handleOnVariableSet,
 }: {
   value: string
-  payload: Record<string, string>
+  payload: VariableUpdatePayload
   handleOnVariableSet: CallableFunction
 }): HTMLSelectElement => {
   const selectElement = Template.getOptionsList(
@@ -276,7 +281,7 @@ const getVariantsDropdown = ({
  */
 const handleOnPopupOpen = (message: Message, tabId: number): void => {
   const container = document.getElementById('container')
-  const optimizelyService = new Optimizely(message.payload)
+  const optimizelyService = new Optimizely(<string>message.payload)
 
   try {
     optimizelyService.checkFeatureFlags()
@@ -323,11 +328,10 @@ const resetFeatureFlags = (tabId: number): void => {
   })
 }
 
-/**
- * @param {Message} message
- * @param {number} tabId
- */
-const applyFeatureFlagUpdates = (message: Message, tabId: number): void => {
+const applyFeatureFlagUpdates = (
+  message: MessageFeatureFlagUpdate,
+  tabId: number
+): void => {
   const { payload } = message
   const { experimentName, variableName, newValue } = payload.data
   const optimizelyService = new Optimizely(payload.cookies)
@@ -394,7 +398,7 @@ const handleEvents = (tabId: number): void => {
         break
 
       case 'onVariableSet':
-        applyFeatureFlagUpdates(message, tabId)
+        applyFeatureFlagUpdates(<MessageFeatureFlagUpdate>message, tabId)
         break
 
       case 'onFeatureFlagsReset': {
@@ -432,9 +436,8 @@ const updateExtensionVersion = (): void => {
 }
 
 const updateDetailsTabContent = (cookies: string): void => {
-  const defaultHandler = (v: unknown) => v
-  // todo type
-  const containers = [
+  const defaultHandler = (v: string) => v
+  const containers: DetailsTabContentHandler[] = [
     {
       selector: '#feature-branch-container',
       regexp: /x-featurebranch=([^;$]+)[;$]/,
