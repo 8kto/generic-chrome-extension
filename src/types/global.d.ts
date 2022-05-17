@@ -11,12 +11,10 @@ declare namespace chrome.scripting {
       This means that any bound parameters and execution context will be lost.
       Exactly one of files and function must be specified.
       */
-    // eslint-disable-next-line no-unused-vars
     function: (...args: Args) => void
   }
 
   export function executeScript<Args extends unknown[]>(
-    // eslint-disable-next-line no-unused-vars
     injection: ScriptInjectionCustom<Args>
   ): Promise<InjectionResult[]>
 }
