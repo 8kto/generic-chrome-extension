@@ -66,16 +66,19 @@ so for now, the only way to check for updates is to open the repository page and
 2. [Add code completion for the `chrome` libs](https://newbedev.com/how-do-i-use-webstorm-for-chrome-extension-development).
 3. Check [official documentation](https://developer.chrome.com/docs/extensions/mv3/devguide/)
 4. Run tests with `yarn test`
+5. Run webpack watcher with `yarn watch`
 
 **PRs and issue reports are welcome!**
 
 ## Release
 
 1. Run `yarn bump:patch` or `yarn bump [minor|major] -t` for increasing the current version and adding a git tag.
-2. Commit updated files
-3. Push with `git push --tags`
-4. Prepare a [new release](https://github.com/RedTecLab/igel-chrome-sa-optimizely-tool/releases/new) in GitHub using the last tag
-5. Usually, a release contains a built Chrome extension: it can be made locally according to the [docs](https://developer.chrome.com/docs/extensions/mv3/linux_hosting/#create)
+2. If the commands hangs, hit `Ctrl+C` to interrupt the Commitizen master, waiting in the background.
+It is fine for this case not to send a commit with a semantic message.
+3. Commit updated files
+4. Push with `git push --tags`
+5. Prepare a [new release](https://github.com/RedTecLab/igel-chrome-sa-optimizely-tool/releases/new) in GitHub using the last tag
+6. Usually, a release contains a built Chrome extension: it can be made locally according to the [docs](https://developer.chrome.com/docs/extensions/mv3/linux_hosting/#create)
 
 [releases page]: https://github.com/RedTecLab/igel-chrome-sa-optimizely-tool/releases
 [these instructions]: https://developer.chrome.com/docs/extensions/mv3/getstarted/
