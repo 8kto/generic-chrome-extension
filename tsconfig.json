@@ -10,6 +10,5 @@
     "rootDirs": ["src"],
     "esModuleInterop": true
   },
-  "include": ["./src/**/*"],
-  "exclude": [".github/**/*", ".husky/**/*", "build/**/*", "node_modules"]
+  "include": ["./src/**/*"]
 }
