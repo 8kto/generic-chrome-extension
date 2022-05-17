@@ -4,17 +4,20 @@
 import Optimizely from 'services/Optimizely'
 import Template from 'services/Template'
 import { initTabs } from 'shared/js/tabs'
+import type { ExperimentsList, Message } from 'types'
+import {
+  DetailsTabContentHandler,
+  MessageFeatureFlagUpdate,
+  VariableUpdatePayload,
+} from 'types'
 
-/**
- * @return {Promise<number>}
- */
-const getActiveTabId = async () => {
+const getActiveTabId = async (): Promise<number> => {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
 
   return tab.id
 }
 
-const reloadTab = async tabId => {
+const reloadTab = async (tabId: number): Promise<void> => {
   await chrome.tabs.reload(tabId)
   window.close()
 }
@@ -22,7 +25,7 @@ const reloadTab = async tabId => {
 /**
  * Bind all controls in the popup with the event handlers
  */
-const bindPopupControls = async () => {
+const bindPopupControls = async (): Promise<void> => {
   const resetBtn = document.getElementById('reset-feature-flags-cookie')
   const tabId = await getActiveTabId()
 
@@ -38,15 +41,18 @@ const bindPopupControls = async () => {
 
 /**
  * Bind form controls that enable or disable experiments
- *
- * @param {HTMLElement} listElement
- * @param {number} tabId
- * @param {Optimizely} optimizelyService
  */
-const bindExperimentSwitchers = ({ listElement, tabId, optimizelyService }) => {
-  const handleListItemClick = async event => {
-    /** @type {HTMLElement} */
-    const { target } = event
+const bindExperimentSwitchers = ({
+  listElement,
+  tabId,
+  optimizelyService,
+}: {
+  listElement: HTMLElement
+  tabId: number
+  optimizelyService: Optimizely
+}): void => {
+  const handleListItemClick = async (event: Event) => {
+    const target = <HTMLInputElement>event.target
 
     if (target.type === 'checkbox') {
       const experiments = optimizelyService
@@ -57,7 +63,7 @@ const bindExperimentSwitchers = ({ listElement, tabId, optimizelyService }) => {
         args: [experiments],
         target: { tabId },
         // NB: it is not the usual closure, it doesn't capture any context
-        function(payload) {
+        function(payload: object) {
           document.cookie = `feature-flag-cookie=${JSON.stringify(payload)}`
         },
       })
@@ -69,17 +75,13 @@ const bindExperimentSwitchers = ({ listElement, tabId, optimizelyService }) => {
   listElement.addEventListener('click', handleListItemClick)
 }
 
-/**
- * @param {number} tabId
- * @param {Record<string, unknown>} data
- */
-const triggerOnVariableSet = (tabId, data) => {
+const triggerOnVariableSet = (tabId: number, data: VariableUpdatePayload) => {
   // Pass prepared cookies from the extension to the page
   chrome.scripting.executeScript({
     args: [data],
     target: { tabId },
-    function(data) {
-      // NB: it is not the usual closure, it doesn't capture any context
+    // NB: it is not the usual closure, it doesn't capture any context
+    function(data: Record<string, unknown>) {
       chrome.runtime.sendMessage({
         type: 'onVariableSet',
         payload: { data, cookies: document.cookie },
@@ -88,12 +90,11 @@ const triggerOnVariableSet = (tabId, data) => {
   })
 }
 
-const handleVariableClick = async event => {
-  /** @type {HTMLElement} */
-  const { target } = event
+const handleVariableClick = async (event: Event): Promise<void> => {
+  const target = <HTMLElement>event.target
   const { varType, varName, expName } = target.dataset
   const value = target.textContent.trim()
-  const payload = {
+  const payload: VariableUpdatePayload = {
     experimentName: expName,
     variableName: varName,
   }
@@ -136,20 +137,19 @@ const handleVariableClick = async event => {
 
 /**
  * Activate update feature for the variable lists
- *
- * @param {HTMLElement} listElement
  */
-const bindExperimentVariablesHandlers = listElement => {
+const bindExperimentVariablesHandlers = (
+  listElement: HTMLUListElement
+): void => {
   listElement
     .querySelectorAll('[data-var-type]')
     .forEach(element => element.addEventListener('click', handleVariableClick))
 }
 
-/**
- * @param {Optimizely} optimizelyService
- * @param {number} tabId
- */
-const bindAddNewExperimentClick = (optimizelyService, tabId) => {
+const bindAddNewExperimentClick = (
+  optimizelyService: Optimizely,
+  tabId: number
+): void => {
   const addNewExperimentBtn = document.getElementById('button--add-new')
   if (addNewExperimentBtn) {
     addNewExperimentBtn.addEventListener('click', async () => {
@@ -191,7 +191,7 @@ const bindAddNewExperimentClick = (optimizelyService, tabId) => {
         args: [jsonRaw],
         target: { tabId },
         // NB: it is not the usual closure, it doesn't capture any context
-        function(payload) {
+        function(payload: string) {
           document.cookie = `feature-flag-cookie=${payload}; path=/;`
         },
       })
@@ -204,18 +204,15 @@ const bindAddNewExperimentClick = (optimizelyService, tabId) => {
 /**
  * Guess the prefix from the present option and return
  * the list of possible variant names
- *
- * @param {string} presentOption
- * @return {string[]}
  */
-export const getVariantsOptions = (presentOption = '') => {
+export const getVariantsOptions = (presentOption = ''): string[] => {
   const defaultVariationsNumber = 3
   const matched = presentOption && presentOption.match(/^(variation_|v)(\d+)/)
 
-  const getOptions = (prefix, num) =>
+  const getOptions = (prefix: string, num: number) =>
     new Array(num).fill(null).map((_, i) => `${prefix}${i + 1}`)
 
-  const decorateOptionsList = options => {
+  const decorateOptionsList = (options: string[]) => {
     const res = ['default', ...options, 'Custom']
 
     // Keep the custom value (not variationN string)
@@ -244,20 +241,22 @@ export const getVariantsOptions = (presentOption = '') => {
   )
 }
 
-/**
- * @param {string} value
- * @param {Record<string, string>} payload
- * @param {Function} handleOnVariableSet
- * @return {HTMLSelectElement}
- */
-const getVariantsDropdown = ({ value, payload, handleOnVariableSet }) => {
+const getVariantsDropdown = ({
+  value,
+  payload,
+  handleOnVariableSet,
+}: {
+  value: string
+  payload: VariableUpdatePayload
+  handleOnVariableSet: CallableFunction
+}): HTMLSelectElement => {
   const selectElement = Template.getOptionsList(
     getVariantsOptions(value),
     value
   )
 
-  selectElement.addEventListener('change', event => {
-    const { target } = event
+  selectElement.addEventListener('change', (event: Event) => {
+    const target = <HTMLSelectElement>event.target
     let { value } = target
 
     if (value && value.toLowerCase() === 'custom') {
@@ -279,13 +278,10 @@ const getVariantsDropdown = ({ value, payload, handleOnVariableSet }) => {
 
 /**
  * Render the UI and bind event handlers for the experiments list
- *
- * @param {Message} message
- * @param {number} tabId
  */
-const handleOnPopupOpen = (message, tabId) => {
+const handleOnPopupOpen = (message: Message, tabId: number): void => {
   const container = document.getElementById('container')
-  const optimizelyService = new Optimizely(message.payload)
+  const optimizelyService = new Optimizely(<string>message.payload)
 
   try {
     optimizelyService.checkFeatureFlags()
@@ -312,11 +308,9 @@ const handleOnPopupOpen = (message, tabId) => {
   bindAddNewExperimentClick(optimizelyService, tabId)
 }
 
-/**
- * @param {number} tabId
- */
-const resetFeatureFlags = tabId => {
+const resetFeatureFlags = (tabId: number): void => {
   chrome.scripting.executeScript({
+    args: null,
     target: { tabId },
     // NB: it is not the usual closure, it doesn't capture any context
     function() {
@@ -334,11 +328,10 @@ const resetFeatureFlags = tabId => {
   })
 }
 
-/**
- * @param {Message} message
- * @param {number} tabId
- */
-const applyFeatureFlagUpdates = (message, tabId) => {
+const applyFeatureFlagUpdates = (
+  message: MessageFeatureFlagUpdate,
+  tabId: number
+): void => {
   const { payload } = message
   const { experimentName, variableName, newValue } = payload.data
   const optimizelyService = new Optimizely(payload.cookies)
@@ -352,19 +345,16 @@ const applyFeatureFlagUpdates = (message, tabId) => {
     target: { tabId },
     args: [JSON.stringify(updatedFeatureFlags)],
     // NB: it is not the usual closure, it doesn't capture any context
-    function(payload) {
+    function(payload: string) {
       document.cookie = `feature-flag-cookie=${payload}; path=/;`
     },
   })
 }
 
-/**
- * @param {Record<string, Experiment>} experiments
- * @param {number} tabId
- */
-const handleJsonTab = (experiments, tabId) => {
-  /** @type {HTMLTextAreaElement} */
-  const textarea = document.getElementById('experiments-json-container')
+const handleJsonTab = (experiments: ExperimentsList, tabId: number): void => {
+  const textarea = document.getElementById(
+    'experiments-json-container'
+  ) as HTMLTextAreaElement
   const saveJsonBtn = document.getElementById('save-json')
 
   textarea.innerHTML = JSON.stringify(experiments, null, '  ')
@@ -388,7 +378,7 @@ const handleJsonTab = (experiments, tabId) => {
       args: [jsonRaw],
       target: { tabId },
       // NB: it is not the usual closure, it doesn't capture any context
-      function(payload) {
+      function(payload: string) {
         document.cookie = `feature-flag-cookie=${payload}; path=/;`
       },
     })
@@ -397,7 +387,7 @@ const handleJsonTab = (experiments, tabId) => {
   })
 }
 
-const handleEvents = tabId => {
+const handleEvents = (tabId: number): void => {
   // Handle message from the page in the extension script:
   // extension and the document (active tab) don't share cookies and other context.
   chrome.runtime.onMessage.addListener(message => {
@@ -408,7 +398,7 @@ const handleEvents = tabId => {
         break
 
       case 'onVariableSet':
-        applyFeatureFlagUpdates(message, tabId)
+        applyFeatureFlagUpdates(<MessageFeatureFlagUpdate>message, tabId)
         break
 
       case 'onFeatureFlagsReset': {
@@ -422,9 +412,10 @@ const handleEvents = tabId => {
   })
 }
 
-const passCookiesFromDocumentToExtension = tabId => {
+const passCookiesFromDocumentToExtension = (tabId: number): void => {
   // Pass cookies from the page to the handlers
   chrome.scripting.executeScript({
+    args: null,
     target: { tabId },
     // NB: it is not the usual closure, it doesn't capture any context
     function() {
@@ -436,7 +427,7 @@ const passCookiesFromDocumentToExtension = tabId => {
   })
 }
 
-const updateExtensionVersion = () => {
+const updateExtensionVersion = (): void => {
   const versionContainer = document.getElementById('igel-version')
   if (versionContainer) {
     const manifest = chrome.runtime.getManifest()
@@ -444,12 +435,9 @@ const updateExtensionVersion = () => {
   }
 }
 
-/**
- * @param {string} cookies document.cookies
- */
-const updateDetailsTabContent = cookies => {
-  const defaultHandler = v => v
-  const containers = [
+const updateDetailsTabContent = (cookies: string): void => {
+  const defaultHandler = (v: string) => v
+  const containers: DetailsTabContentHandler[] = [
     {
       selector: '#feature-branch-container',
       regexp: /x-featurebranch=([^;$]+)[;$]/,
@@ -458,7 +446,7 @@ const updateDetailsTabContent = cookies => {
     {
       selector: '#feature-flag-targeting-params-container',
       regexp: /feature-flag-targeting=([^;$]+)[;$]/,
-      handler: val => {
+      handler: (val: string): string => {
         const parsed = JSON.stringify(JSON.parse(val), null, '  ')
 
         return `<pre>${parsed}</pre>`
@@ -467,7 +455,7 @@ const updateDetailsTabContent = cookies => {
   ]
 
   containers.forEach(def => {
-    const container = document.querySelector(def.selector)
+    const container = document.querySelector<HTMLElement>(def.selector)
 
     if (container) {
       const matched = cookies.match(def.regexp)
@@ -501,10 +489,5 @@ if (!isTestEnv()) {
   init()
 }
 
-/**
- * @typedef Message
- * @property {string} type
- * @property {any} payload
- */
-
 // todo clean up mess with the deps
+// todo enum for events

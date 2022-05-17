@@ -1,28 +1,23 @@
+import type { ExperimentsList, Experiment, VariableType } from 'types'
+
 export default class Template {
-  /**
-   * @param {string} experimentName
-   * @param {Experiment} experiment
-   */
-  static getCheckboxFormControl(experimentName, experiment) {
+  static getCheckboxFormControl(
+    experimentName: string,
+    experiment: Experiment
+  ): string {
     return `<input type="checkbox" value="${experimentName}" id="${experimentName}" ${
       experiment.e ? 'checked' : ''
     } title="Enable / Disable" />`
   }
 
-  /**
-   * @param {string} experimentName
-   * @return {string}
-   */
-  static getFormControlLabel(experimentName) {
+  static getFormControlLabel(experimentName: string): string {
     return `<label class="expName" for="${experimentName}">${experimentName}</label>`
   }
 
-  /**
-   * @param {VariableType} type
-   * @param {unknown} val
-   * @return {{classNames: string, value: string}}
-   */
-  static getFormattedValue(type, val) {
+  static getFormattedValue(
+    type: VariableType,
+    val: unknown
+  ): { classNames: string; value: unknown } {
     const classNames = []
     let finalValue = val
 
@@ -40,12 +35,10 @@ export default class Template {
     }
   }
 
-  /**
-   * @param {string} experimentName
-   * @param {Experiment} experiment
-   * @return {string}
-   */
-  static getVariablesList(experimentName, experiment) {
+  static getVariablesList(
+    experimentName: string,
+    experiment: Experiment
+  ): string {
     const options = Object.entries(experiment.v).map(([name, val]) => {
       const type = this.getVariableType(name, val)
       const { value, classNames } = this.getFormattedValue(type, val)
@@ -65,12 +58,7 @@ export default class Template {
     return `<ul>${options.join('')}</ul>`
   }
 
-  /**
-   * @param {string} name
-   * @param {unknown} value
-   * @return {VariableType}
-   */
-  static getVariableType(name, value) {
+  static getVariableType(name: string, value: unknown): VariableType {
     if (name === 'v_name') {
       return 'variant'
     }
@@ -78,15 +66,13 @@ export default class Template {
       return 'boolean'
     }
 
-    return typeof value
+    return typeof value as VariableType
   }
 
-  /**
-   * @param {HTMLElement} container
-   * @param {Record<string, Experiment>} experiments
-   * @return {HTMLUListElement}
-   */
-  static renderExperimentsList(container, experiments) {
+  static renderExperimentsList(
+    container: HTMLElement,
+    experiments: ExperimentsList
+  ): HTMLUListElement {
     const entries = Object.entries(experiments || {})
 
     if (!entries.length) {
@@ -107,15 +93,13 @@ export default class Template {
 
     container.innerHTML = `<ul id="expList">${options.join('\n')}</ul>`
 
-    return document.getElementById('expList')
+    return document.getElementById('expList') as HTMLUListElement
   }
 
-  /**
-   * @param {string[]} options
-   * @param {string} selectedOption
-   * @return {HTMLSelectElement}
-   */
-  static getOptionsList(options, selectedOption) {
+  static getOptionsList(
+    options: string[],
+    selectedOption: string
+  ): HTMLSelectElement {
     const list = document.createElement('select')
     list.innerHTML = options
       .map(
@@ -129,11 +113,11 @@ export default class Template {
     return list
   }
 
-  static clearMessages() {
+  static clearMessages(): void {
     document.getElementById('messages').innerHTML = ''
   }
 
-  static clearAndShowMessage(msg, mode) {
+  static clearAndShowMessage(msg: string, mode: string): void {
     const container = document.getElementById('messages')
     const className = `message ${
       mode === 'alert' ? 'message--alert' : 'message--info'
@@ -142,25 +126,22 @@ export default class Template {
     container.innerHTML = `<div class="${className}">${msg}</div>`
   }
 
-  static showMessage(msg) {
+  static showMessage(msg: string): void {
     this.clearAndShowMessage(msg, 'info')
   }
 
-  static showError(msg) {
+  static showError(msg: string): void {
     this.clearAndShowMessage(msg, 'alert')
   }
 
-  static showReloadButton() {
+  static showReloadButton(): void {
     document.getElementById('reload-tab').removeAttribute('hidden')
   }
 
-  static hideResetCookiesButton() {
+  // TODO remove ?
+  static hideResetCookiesButton(): void {
     document
       .getElementById('reset-feature-flags-cookie')
       .setAttribute('hidden', 'hidden')
   }
 }
-
-/**
- * @typedef {'variant' | 'boolean'} VariableType
- */

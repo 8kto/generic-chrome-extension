@@ -1,4 +1,4 @@
-const openTab = tabId => {
+const openTab = (tabId: string): void => {
   const tabContentElements = document.querySelectorAll('.tabContent')
   tabContentElements.forEach(elem => {
     elem.classList.remove('active')
@@ -7,14 +7,13 @@ const openTab = tabId => {
   const tabTitleElements = document.querySelectorAll('.tabTitle')
   tabTitleElements.forEach(elem => elem.classList.remove('active'))
 
-  // document.getElementById(tabId).style.display = 'block'
   document.getElementById(tabId).classList.add('active')
 }
 
-export const initTabs = () => {
+export const initTabs = (): void =>
   document.querySelectorAll('.tabTitle').forEach(link => {
     link.addEventListener('click', event => {
-      const currentTarget = event.currentTarget
+      const currentTarget = <HTMLElement>event.currentTarget
 
       if (currentTarget.dataset.target) {
         openTab(currentTarget.dataset.target)
@@ -22,4 +21,3 @@ export const initTabs = () => {
       }
     })
   })
-}

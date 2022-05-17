@@ -1,31 +1,27 @@
-const { readdirSync, existsSync } = require('fs')
 const path = require('path')
 const glob = require('glob')
 
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
-const dirPaths = [
-  path.resolve(__dirname, './src/components/'),
-]
+const getJsEntries = pattern =>
+  glob.sync(pattern).reduce((entries, filename) => {
+    // Skip tests and .d.ts types
+    const basename = path.basename(filename)
+    if (
+      basename.endsWith('.test.ts') ||
+      basename.endsWith('.test.js') ||
+      basename.endsWith('.d.ts')
+    ) {
+      return entries
+    }
 
-const getJsEntries = () => {
-  const entries = {}
+    const entryName = filename
+      .replace(/^(:?\.\/)?src\//, '')
+      .replace(/\.[jt]s/, '')
+    entries[entryName] = filename
 
-  dirPaths.forEach(dirPath =>
-    readdirSync(dirPath, { withFileTypes: true })
-      .filter(dir => dir.isDirectory())
-      .filter(
-        dir =>
-          existsSync(`${dirPath}/${dir.name}/index.js`) ||
-          existsSync(`${dirPath}/${dir.name}/index.ts`)
-      )
-      .forEach(({ name }) => {
-        entries[name] = `${dirPath}/${name}`
-      })
-  )
-
-  return entries
-}
+    return entries
+  }, {})
 
 const getStyleEntries = pattern =>
   glob.sync(pattern).reduce((entries, filename) => {
@@ -34,8 +30,9 @@ const getStyleEntries = pattern =>
       return entries
     }
 
-    const [, dirName] = filename.match(/\/([^\/]+\/[^\/]+).scss$/)
-    const entryName = 'style-' + dirName.replace('/', '-')
+    const entryName = filename
+      .replace(/^(:?\.\/)?src\//, '')
+      .replace(/\.scss$/, '')
     entries[entryName] = filename
 
     return entries
@@ -44,7 +41,10 @@ const getStyleEntries = pattern =>
 module.exports = {
   target: 'web',
   devtool: 'source-map',
-  entry: { ...getJsEntries(), ...getStyleEntries('./src/**/*.scss') },
+  entry: {
+    ...getJsEntries('./src/components/**/*.{ts,js}'),
+    ...getStyleEntries('./src/**/*.{scss,css}'),
+  },
   resolve: {
     extensions: ['.scss', '.ts', '.js'],
     modules: [
@@ -53,11 +53,6 @@ module.exports = {
     ],
   },
   output: {
-    filename: pathData => {
-      const isStylesheet = pathData.chunk.name.startsWith('style-')
-
-      return isStylesheet ? '[name]' : '[name]/index.js'
-    },
     path: path.resolve(__dirname, 'build'),
   },
   module: {
@@ -71,20 +66,14 @@ module.exports = {
         test: /\.(sc|c)ss$/,
         use: [
           MiniCssExtractPlugin.loader,
-          "css-loader",
+          'css-loader',
           { loader: 'resolve-url-loader', options: { debug: false } },
-          "sass-loader",
+          'sass-loader',
         ],
       },
     ],
   },
-  plugins: [
-    new MiniCssExtractPlugin({
-      filename: pathData => {
-        return pathData.chunk.name.replace('style-', '') + '.css'
-      },
-    }),
-  ],
+  plugins: [new MiniCssExtractPlugin()],
   stats: {
     preset: 'minimal',
     assetsSpace: 20,

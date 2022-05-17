@@ -12,7 +12,7 @@ module.exports = {
   setupFilesAfterEnv: [],
   snapshotSerializers: ['enzyme-to-json/serializer'],
   testEnvironment: 'jsdom',
-  testMatch: ['<rootDir>**/*.test.[jt]s'],
+  testMatch: ['<rootDir>src/**/*.test.[jt]s'],
   moduleDirectories: ['node_modules', 'components', 'services', 'shared'],
   modulePaths: ['<rootDir>/src/'],
   moduleNameMapper: {

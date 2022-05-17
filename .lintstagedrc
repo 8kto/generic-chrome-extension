@@ -1,8 +1,8 @@
 {
-  "**/*.{js,jsx,mjs}": [
-    "eslint --ext=.js,.jsx,.mjs"
+  "**/*.{js,ts}": [
+    "eslint --ext=.js,.ts"
   ],
-  "**/*.css": [
+  "**/*.{scss,css}": [
     "stylelint"
   ]
 }

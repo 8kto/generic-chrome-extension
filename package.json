@@ -1,6 +1,6 @@
 {
   "name": "sa-optimizely-tool",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Chrome extension for the Optimizely experiments management",
   "main": "index.js",
   "license": "proprietary",
@@ -17,9 +17,9 @@
     "clean": "rimraf build",
     "prebuild": "yarn clean",
     "build": "webpack --mode=production --config webpack.config.js",
-    "format": "prettier --write README.md src/**/*.{js,json,html} && stylelint src/**/*.scss --fix",
+    "format": "prettier --write README.md src/**/*.{js,json,html,ts} && stylelint src/**/*.scss --fix",
     "lint": "yarn lint:styles && yarn lint:js",
-    "lint:js": "eslint --ext=.js,.jsx,.mjs src",
+    "lint:js": "eslint --ext=.js,.ts src",
     "lint:styles": "stylelint src/**/*.scss",
     "bump": "mversion",
     "bump:patch": "mversion patch -t",
@@ -29,11 +29,16 @@
   "devDependencies": {
     "@babel/preset-env": "^7.16.11",
     "@babel/preset-typescript": "^7.16.7",
+    "@types/chrome": "^0.0.185",
     "@types/jest": "^27.5.1",
+    "@typescript-eslint/eslint-plugin": "^5.23.0",
+    "@typescript-eslint/parser": "^5.23.0",
+    "commitizen": "^4.2.4",
     "css-loader": "^6.7.1",
+    "cz-conventional-changelog": "3.3.0",
     "enzyme": "^3.11.0",
     "enzyme-to-json": "^3.6.2",
-    "eslint": "^8.9.0",
+    "eslint": "^8.15.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-import": "^2.25.3",
     "eslint-plugin-jest": "^26.1.1",
@@ -43,7 +48,8 @@
     "fs": "^0.0.1-security",
     "glob": "^8.0.1",
     "husky": "^7.0.4",
-    "jest": "^27.5.1",
+    "jest": "^28.0.3",
+    "jest-environment-jsdom": "^28.1.0",
     "lint-staged": "^12.1.2",
     "mini-css-extract-plugin": "^2.6.0",
     "mversion": "^2.0.1",
@@ -58,11 +64,17 @@
     "stylelint-config-standard": "^22.0.0",
     "stylelint-prettier": "^1.2.0",
     "ts-jest": "^28.0.2",
+    "ts-loader": "^9.3.0",
     "typescript": "^4.6.4",
     "webpack": "^5.72.1",
     "webpack-cli": "^4.9.2"
   },
   "browserslist": [
     "last 2 Chrome versions"
-  ]
+  ],
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
 }
