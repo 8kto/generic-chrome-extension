@@ -4,12 +4,15 @@
 import Optimizely from 'services/Optimizely'
 import Template from 'services/Template'
 import { initTabs } from 'shared/js/tabs'
-import type { ExperimentsList, Message } from 'types'
-import {
+import type {
   DetailsTabContentHandler,
-  MessageFeatureFlagUpdate,
+  ExperimentsList,
+  Message,
+  MessageOnPopupOpen,
+  MessageOnVariableSet,
   VariableUpdatePayload,
 } from 'types'
+import { MessageType } from 'types'
 
 const getActiveTabId = async (): Promise<number> => {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
@@ -279,9 +282,12 @@ const getVariantsDropdown = ({
 /**
  * Render the UI and bind event handlers for the experiments list
  */
-const handleOnPopupOpen = (message: Message, tabId: number): void => {
+const handleOnPopupOpen = (
+  message: MessageOnPopupOpen,
+  tabId: number
+): void => {
   const container = document.getElementById('container')
-  const optimizelyService = new Optimizely(<string>message.payload)
+  const optimizelyService = new Optimizely(message.payload)
 
   try {
     optimizelyService.checkFeatureFlags()
@@ -329,7 +335,7 @@ const resetFeatureFlags = (tabId: number): void => {
 }
 
 const applyFeatureFlagUpdates = (
-  message: MessageFeatureFlagUpdate,
+  message: MessageOnVariableSet,
   tabId: number
 ): void => {
   const { payload } = message
@@ -390,24 +396,24 @@ const handleJsonTab = (experiments: ExperimentsList, tabId: number): void => {
 const handleEvents = (tabId: number): void => {
   // Handle message from the page in the extension script:
   // extension and the document (active tab) don't share cookies and other context.
-  chrome.runtime.onMessage.addListener(message => {
+  chrome.runtime.onMessage.addListener((message: Message) => {
     switch (message.type) {
-      case 'onPopupOpen':
+      case MessageType.onPopupOpen:
         handleOnPopupOpen(message, tabId)
         updateDetailsTabContent(message.payload)
         break
 
-      case 'onVariableSet':
-        applyFeatureFlagUpdates(<MessageFeatureFlagUpdate>message, tabId)
+      case MessageType.onVariableSet:
+        applyFeatureFlagUpdates(message, tabId)
         break
 
-      case 'onFeatureFlagsReset': {
+      case MessageType.onFeatureFlagsReset: {
         reloadTab(tabId)
         break
       }
 
       default:
-        throw new Error(`Unknown message type: ${message.type}`)
+        throw new Error(`Unknown message type: ${JSON.stringify(message)}`)
     }
   })
 }
@@ -481,13 +487,6 @@ const init = async () => {
   updateExtensionVersion()
 }
 
-const isTestEnv = () => {
-  return typeof process !== 'undefined' && process.env.NODE_ENV === 'test'
-}
-
-if (!isTestEnv()) {
-  init()
-}
+init()
 
 // todo clean up mess with the deps
-// todo enum for events
