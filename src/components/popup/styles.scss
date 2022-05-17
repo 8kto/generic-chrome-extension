@@ -41,6 +41,12 @@
   }
 }
 
+.expVariant__varType {
+  &:hover {
+    cursor: pointer;
+  }
+}
+
 .expVariant__varType--variant {
   color: var(--accent-color);
 }
