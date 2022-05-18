@@ -4,7 +4,7 @@
  */
 declare namespace chrome.scripting {
   export type ScriptInjectionCustom<Args extends unknown[] = []> = {
-    args: unknown
+    args: Args
     target: { tabId: number }
     /*
       A JavaScript function to inject. This function will be serialized, and then deserialized for injection.

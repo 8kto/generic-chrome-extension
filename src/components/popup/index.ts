@@ -1,6 +1,8 @@
 /**
  * @fileOverview A wrapper for the popup dialog. Binds the event handlers and dynamic layout.
  */
+
+import ChromeApi from 'services/ChromeApi'
 import Optimizely from 'services/Optimizely'
 import Template from 'services/Template'
 import { initTabs } from 'shared/js/tabs'
@@ -14,23 +16,12 @@ import type {
 } from 'types'
 import { MessageType } from 'types'
 
-const getActiveTabId = async (): Promise<number> => {
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
-
-  return tab.id
-}
-
-const reloadTab = async (tabId: number): Promise<void> => {
-  await chrome.tabs.reload(tabId)
-  window.close()
-}
-
 /**
  * Bind all controls in the popup with the event handlers
  */
 const bindPopupControls = async (): Promise<void> => {
   const resetBtn = document.getElementById('reset-feature-flags-cookie')
-  const tabId = await getActiveTabId()
+  const tabId = await ChromeApi.getActiveTabId()
 
   if (resetBtn) {
     resetBtn.addEventListener('click', () => resetFeatureFlags(tabId))
@@ -38,7 +29,7 @@ const bindPopupControls = async (): Promise<void> => {
 
   const reloadBtn = document.getElementById('reload-tab')
   if (reloadBtn) {
-    reloadBtn.addEventListener('click', () => reloadTab(tabId))
+    reloadBtn.addEventListener('click', () => ChromeApi.reloadTab(tabId))
   }
 }
 
@@ -62,11 +53,11 @@ const bindExperimentSwitchers = ({
         .setExperimentStatus(target.value, target.checked)
         .getExperiments()
 
-      await chrome.scripting.executeScript({
+      await ChromeApi.executeScript<[ExperimentsList]>({
         args: [experiments],
         target: { tabId },
         // NB: it is not the usual closure, it doesn't capture any context
-        function(payload: object) {
+        function(payload) {
           document.cookie = `feature-flag-cookie=${JSON.stringify(payload)}`
         },
       })
@@ -78,20 +69,19 @@ const bindExperimentSwitchers = ({
   listElement.addEventListener('click', handleListItemClick)
 }
 
-const triggerOnVariableSet = (tabId: number, data: VariableUpdatePayload) => {
+const triggerOnVariableSet = (tabId: number, data: VariableUpdatePayload) =>
   // Pass prepared cookies from the extension to the page
-  chrome.scripting.executeScript({
-    args: [data],
+  ChromeApi.executeScript<[VariableUpdatePayload, MessageType]>({
+    args: [data, MessageType.onVariableSet],
     target: { tabId },
     // NB: it is not the usual closure, it doesn't capture any context
-    function(data: Record<string, unknown>) {
+    function(data, messageType) {
       chrome.runtime.sendMessage({
-        type: 'onVariableSet',
+        type: messageType,
         payload: { data, cookies: document.cookie },
       })
     },
   })
-}
 
 const handleVariableClick = async (event: Event): Promise<void> => {
   const target = <HTMLElement>event.target
@@ -101,7 +91,7 @@ const handleVariableClick = async (event: Event): Promise<void> => {
     experimentName: expName,
     variableName: varName,
   }
-  const tabId = await getActiveTabId()
+  const tabId = await ChromeApi.getActiveTabId()
 
   switch (varType) {
     case 'boolean': {
@@ -190,7 +180,7 @@ const bindAddNewExperimentClick = (
         return
       }
 
-      await chrome.scripting.executeScript({
+      await ChromeApi.executeScript({
         args: [jsonRaw],
         target: { tabId },
         // NB: it is not the usual closure, it doesn't capture any context
@@ -199,7 +189,7 @@ const bindAddNewExperimentClick = (
         },
       })
 
-      reloadTab(tabId)
+      ChromeApi.reloadTab(tabId)
     })
   }
 }
@@ -315,7 +305,7 @@ const handleOnPopupOpen = (
 }
 
 const resetFeatureFlags = (tabId: number): void => {
-  chrome.scripting.executeScript({
+  ChromeApi.executeScript({
     args: null,
     target: { tabId },
     // NB: it is not the usual closure, it doesn't capture any context
@@ -347,7 +337,7 @@ const applyFeatureFlagUpdates = (
     .setExperimentVariable(experimentName, variableName, newValue)
     .getExperiments()
 
-  chrome.scripting.executeScript({
+  ChromeApi.executeScript({
     target: { tabId },
     args: [JSON.stringify(updatedFeatureFlags)],
     // NB: it is not the usual closure, it doesn't capture any context
@@ -380,7 +370,7 @@ const handleJsonTab = (experiments: ExperimentsList, tabId: number): void => {
       return
     }
 
-    await chrome.scripting.executeScript({
+    await ChromeApi.executeScript({
       args: [jsonRaw],
       target: { tabId },
       // NB: it is not the usual closure, it doesn't capture any context
@@ -389,14 +379,14 @@ const handleJsonTab = (experiments: ExperimentsList, tabId: number): void => {
       },
     })
 
-    reloadTab(tabId)
+    ChromeApi.reloadTab(tabId)
   })
 }
 
 const handleEvents = (tabId: number): void => {
   // Handle message from the page in the extension script:
   // extension and the document (active tab) don't share cookies and other context.
-  chrome.runtime.onMessage.addListener((message: Message) => {
+  ChromeApi.addMessageListener((message: Message, _, sendResponse) => {
     switch (message.type) {
       case MessageType.onPopupOpen:
         handleOnPopupOpen(message, tabId)
@@ -408,19 +398,22 @@ const handleEvents = (tabId: number): void => {
         break
 
       case MessageType.onFeatureFlagsReset: {
-        reloadTab(tabId)
+        ChromeApi.reloadTab(tabId)
         break
       }
 
       default:
         throw new Error(`Unknown message type: ${JSON.stringify(message)}`)
     }
+
+    // Fixes Chrome bug with rejected promise
+    sendResponse({})
   })
 }
 
 const passCookiesFromDocumentToExtension = (tabId: number): void => {
   // Pass cookies from the page to the handlers
-  chrome.scripting.executeScript({
+  ChromeApi.executeScript({
     args: null,
     target: { tabId },
     // NB: it is not the usual closure, it doesn't capture any context
@@ -436,7 +429,7 @@ const passCookiesFromDocumentToExtension = (tabId: number): void => {
 const updateExtensionVersion = (): void => {
   const versionContainer = document.getElementById('igel-version')
   if (versionContainer) {
-    const manifest = chrome.runtime.getManifest()
+    const manifest = ChromeApi.getManifest()
     versionContainer.innerText = manifest.version
   }
 }
@@ -479,7 +472,7 @@ const init = async () => {
   Template.clearMessages()
   initTabs()
 
-  const tabId = await getActiveTabId()
+  const tabId = await ChromeApi.getActiveTabId()
 
   passCookiesFromDocumentToExtension(tabId)
   handleEvents(tabId)
