@@ -74,7 +74,7 @@ so for now, the only way to check for updates is to open the repository page and
 
 1. Run `yarn bump:patch` or `yarn bump [minor|major] -t` for increasing the current version and adding a git tag.
 2. If the commands hangs, hit `Ctrl+C` to interrupt the Commitizen master, waiting in the background.
-It is fine for this case not to send a commit with a semantic message.
+   It is fine for this case not to send a commit with a semantic message.
 3. Commit updated files
 4. Push with `git push --tags`
 5. Prepare a [new release](https://github.com/RedTecLab/igel-chrome-sa-optimizely-tool/releases/new) in GitHub using the last tag
