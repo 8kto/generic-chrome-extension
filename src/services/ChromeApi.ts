@@ -29,4 +29,6 @@ export default class ChromeApi {
     }
 }
 
-// TODO extract chrome.runtime.sendMessage from serialized funcs
+// TODO extract chrome.runtime.sendMessage from serialized funcs:
+// probably, can be done with the 2nd arg of executeScript
+// @see https://developer.chrome.com/docs/extensions/reference/scripting/#handling-results
