@@ -44,7 +44,7 @@ export default class PopupController {
   /**
    * Bind form controls that enable or disable experiments
    */
-  bindExperimentSwitchers = ({
+  bindExperimentCheckboxes = ({
     listElement,
     optimizelyService,
   }: {
@@ -137,7 +137,7 @@ export default class PopupController {
   /**
    * Activate update feature for the variable lists
    */
-  bindExperimentVariablesHandlers = (listElement: HTMLUListElement): void => {
+  bindExperimentVariablesHandlers(listElement: HTMLUListElement): void {
     listElement
       .querySelectorAll('[data-var-type]')
       .forEach(element =>
@@ -145,34 +145,42 @@ export default class PopupController {
       )
   }
 
-  bindAddNewExperimentClick = (optimizelyService: Optimizely): void => {
+  promptExperimentDetails(): { name: string; variant: string } | undefined {
+    const name = prompt('Enter the new experiment name')
+    const variant =
+      name &&
+      prompt(
+        `Enter the new experiment's variant (the page will be reloaded)`,
+        'default'
+      )
+
+    if (!name) {
+      return
+    }
+    if (!variant) {
+      alert('No variant provided')
+
+      return
+    }
+
+    return { name, variant }
+  }
+
+  bindAddNewExperimentClick(optimizelyService: Optimizely): void {
     const addNewExperimentBtn = document.getElementById('button--add-new')
     if (!addNewExperimentBtn) {
       return
     }
-    addNewExperimentBtn.addEventListener('click', async () => {
-      let name, variant
 
-      if (optimizelyService.isAvailable()) {
-        name = prompt('Enter the new experiment name')
-        variant =
-          name &&
-          prompt(
-            `Enter the new experiment's variant (the page will be reloaded)`,
-            'default'
-          )
-      } else {
+    addNewExperimentBtn.addEventListener('click', async () => {
+      if (!optimizelyService.isAvailable()) {
         alert('No experiment entries found')
 
         return
       }
 
-      if (!name) {
-        return
-      }
-      if (!variant) {
-        alert('No variant provided')
-
+      const { name, variant } = this.promptExperimentDetails()
+      if (!name || !variant) {
         return
       }
 
@@ -258,7 +266,7 @@ export default class PopupController {
       experiments
     )
     if (expListElement) {
-      this.bindExperimentSwitchers({
+      this.bindExperimentCheckboxes({
         listElement: expListElement,
         optimizelyService,
       })
@@ -301,8 +309,8 @@ export default class PopupController {
       .getExperiments()
 
     ChromeApi.executeScript({
-      target: { tabId: this.#tabId },
       args: [JSON.stringify(updatedFeatureFlags)],
+      target: { tabId: this.#tabId },
       // NB: it is not the usual closure, it doesn't capture any context
       function(payload: string) {
         document.cookie = `feature-flag-cookie=${payload}; path=/;`
