@@ -29,7 +29,7 @@ export default class PopupController {
     const resetBtn = document.getElementById('reset-feature-flags-cookie')
     if (resetBtn) {
       resetBtn.addEventListener('click', () =>
-        this.resetFeatureFlags(this.#tabId)
+        Optimizely.resetFeatureFlagCookie(this.#tabId)
       )
     }
 
@@ -265,26 +265,6 @@ export default class PopupController {
     this.bindAddNewExperimentClick(optimizelyService)
   }
 
-  resetFeatureFlags(tabId: number): void {
-    ChromeApi.executeScript({
-      args: null,
-      target: { tabId },
-      // NB: it is not the usual closure, it doesn't capture any context
-      function() {
-        ;[
-          `feature-flag-cookie`,
-          `feature-flag-user-token`,
-          `feature-flag-targeting`,
-        ].forEach(cookieName => {
-          document.cookie =
-            cookieName + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;'
-        })
-
-        chrome.runtime.sendMessage({ type: 'onFeatureFlagsReset' })
-      },
-    })
-  }
-
   applyFeatureFlagUpdates(message: MessageOnVariableSet): void {
     const { payload } = message
     const { experimentName, variableName, newValue } = payload.data
@@ -313,18 +293,18 @@ export default class PopupController {
     )
 
     saveJsonBtn.addEventListener('click', async () => {
-      let jsonRaw
+      let jsonString
 
       try {
         // Drop beatified formatting
-        jsonRaw = JSON.stringify(JSON.parse(textarea.value))
+        jsonString = JSON.stringify(JSON.parse(textarea.value))
       } catch (_) {
         Template.showError('Invalid JSON provided')
 
         return
       }
 
-      await Optimizely.setFeatureFlagCookie(this.#tabId, jsonRaw)
+      await Optimizely.setFeatureFlagCookie(this.#tabId, jsonString)
       ChromeApi.reloadTab(this.#tabId)
     })
   }
@@ -336,10 +316,11 @@ export default class PopupController {
   handleEvents(): void {
     ChromeApi.addMessageListener((message: Message, _, sendResponse) => {
       switch (message.type) {
-        case MessageType.onPopupOpen:
+        case MessageType.onPopupOpen: {
           this.handleOnPopupOpen(message)
           updateDetailsTabContent(message.payload)
           break
+        }
 
         case MessageType.onVariableSet:
           this.applyFeatureFlagUpdates(message)
@@ -359,9 +340,8 @@ export default class PopupController {
     })
   }
 
-  passCookiesFromDocumentToExtension(): void {
+  passCookiesFromDocumentToExtension() {
     ChromeApi.executeScript({
-      args: null,
       target: { tabId: this.#tabId },
       // NB: it is not the usual closure, it doesn't capture any context
       function() {
@@ -369,6 +349,8 @@ export default class PopupController {
           type: 'onPopupOpen',
           payload: document.cookie,
         })
+
+        return document.cookie
       },
     })
   }
@@ -379,8 +361,10 @@ export default class PopupController {
 
     this.#tabId = await ChromeApi.getActiveTabId()
 
-    this.passCookiesFromDocumentToExtension()
+    // Listener always has to be registered first
     this.handleEvents()
+
+    this.passCookiesFromDocumentToExtension()
     this.bindPopupControls()
     updateExtensionVersion()
   }

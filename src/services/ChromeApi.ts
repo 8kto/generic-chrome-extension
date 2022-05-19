@@ -14,9 +14,10 @@ export default class ChromeApi {
   }
 
   static async executeScript<Args extends unknown[]>(
-    injection: chrome.scripting.ScriptInjectionCustom<Args>
+    injection: chrome.scripting.ScriptInjectionCustom<Args>,
+    injectionResultsHandler?: chrome.scripting.ScriptInjectionResultsHandler
   ) {
-    return chrome.scripting.executeScript(injection)
+    return chrome.scripting.executeScript(injection, injectionResultsHandler)
   }
 
   static getManifest() {
