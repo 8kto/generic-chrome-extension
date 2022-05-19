@@ -59,15 +59,10 @@ export default class PopupController {
           .setExperimentStatus(target.value, target.checked)
           .getExperiments()
 
-        await ChromeApi.executeScript<[ExperimentsList]>({
-          args: [experiments],
-          target: { tabId: this.#tabId },
-          // NB: it is not the usual closure, it doesn't capture any context
-          function(payload) {
-            document.cookie = `feature-flag-cookie=${JSON.stringify(payload)}`
-          },
-        })
-
+        await Optimizely.setFeatureFlagCookie(
+          this.#tabId,
+          JSON.stringify(experiments)
+        )
         Template.showReloadButton()
       }
     }
@@ -196,15 +191,7 @@ export default class PopupController {
         return
       }
 
-      await ChromeApi.executeScript({
-        args: [jsonRaw],
-        target: { tabId: this.#tabId },
-        // NB: it is not the usual closure, it doesn't capture any context
-        function(payload: string) {
-          document.cookie = `feature-flag-cookie=${payload}; path=/;`
-        },
-      })
-
+      await Optimizely.setFeatureFlagCookie(this.#tabId, jsonRaw)
       ChromeApi.reloadTab(this.#tabId)
     })
   }
@@ -298,7 +285,7 @@ export default class PopupController {
     })
   }
 
-  applyFeatureFlagUpdates = (message: MessageOnVariableSet): void => {
+  applyFeatureFlagUpdates(message: MessageOnVariableSet): void {
     const { payload } = message
     const { experimentName, variableName, newValue } = payload.data
     const optimizelyService = this.getOptimizelyService(payload.cookies)
@@ -308,17 +295,13 @@ export default class PopupController {
       .setExperimentVariable(experimentName, variableName, newValue)
       .getExperiments()
 
-    ChromeApi.executeScript({
-      args: [JSON.stringify(updatedFeatureFlags)],
-      target: { tabId: this.#tabId },
-      // NB: it is not the usual closure, it doesn't capture any context
-      function(payload: string) {
-        document.cookie = `feature-flag-cookie=${payload}; path=/;`
-      },
-    })
+    Optimizely.setFeatureFlagCookie(
+      this.#tabId,
+      JSON.stringify(updatedFeatureFlags)
+    )
   }
 
-  handleJsonTab = (experiments: ExperimentsList): void => {
+  handleJsonTab(experiments: ExperimentsList): void {
     const textarea = document.getElementById(
       'experiments-json-container'
     ) as HTMLTextAreaElement
@@ -341,15 +324,7 @@ export default class PopupController {
         return
       }
 
-      await ChromeApi.executeScript({
-        args: [jsonRaw],
-        target: { tabId: this.#tabId },
-        // NB: it is not the usual closure, it doesn't capture any context
-        function(payload: string) {
-          document.cookie = `feature-flag-cookie=${payload}; path=/;`
-        },
-      })
-
+      await Optimizely.setFeatureFlagCookie(this.#tabId, jsonRaw)
       ChromeApi.reloadTab(this.#tabId)
     })
   }

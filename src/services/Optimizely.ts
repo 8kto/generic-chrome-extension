@@ -1,5 +1,7 @@
 import type { ExperimentsList } from 'types'
 
+import ChromeApi from './ChromeApi'
+
 export default class Optimizely {
   // Document cookies
   private cookies: string
@@ -97,6 +99,17 @@ export default class Optimizely {
 
   isAvailable(): boolean {
     return Boolean(Object.keys(this.experiments || {}).length)
+  }
+
+  static setFeatureFlagCookie(tabId: number, payload: string) {
+    ChromeApi.executeScript({
+      args: [payload],
+      target: { tabId },
+      // NB: it is not the usual closure, it doesn't capture any context
+      function(payload: string) {
+        document.cookie = `feature-flag-cookie=${payload}; path=/;`
+      },
+    })
   }
 }
 
