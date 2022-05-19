@@ -1,5 +1,6 @@
 /**
- * @fileOverview A wrapper for the popup dialog. Binds the event handlers and dynamic layout.
+ * @fileOverview A wrapper for the popup dialog.
+ * Binds the event handlers and dynamic layout.
  */
 
 import ChromeApi from 'services/ChromeApi'
@@ -19,10 +20,8 @@ import { MessageType } from 'types'
 /**
  * Bind all controls in the popup with the event handlers
  */
-const bindPopupControls = async (): Promise<void> => {
+const bindPopupControls = async (tabId: number): Promise<void> => {
   const resetBtn = document.getElementById('reset-feature-flags-cookie')
-  const tabId = await ChromeApi.getActiveTabId()
-
   if (resetBtn) {
     resetBtn.addEventListener('click', () => resetFeatureFlags(tabId))
   }
@@ -144,54 +143,58 @@ const bindAddNewExperimentClick = (
   tabId: number
 ): void => {
   const addNewExperimentBtn = document.getElementById('button--add-new')
-  if (addNewExperimentBtn) {
-    addNewExperimentBtn.addEventListener('click', async () => {
-      let name, variant
-
-      if (optimizelyService.isAvailable()) {
-        name = prompt('Enter the new experiment name')
-        variant =
-          name &&
-          prompt(
-            `Enter the new experiment's variant (the page will be reloaded)`,
-            'default'
-          )
-      } else {
-        alert('No experiment entries found')
-
-        return
-      }
-
-      if (!variant || !name) {
-        alert('No valid experiment data provided')
-
-        return
-      }
-
-      const experiments = optimizelyService.addNewExperiment(name, variant)
-      let jsonRaw
-      try {
-        jsonRaw = JSON.stringify(experiments)
-      } catch (error) {
-        Template.showError('Invalid Experiments JSON provided')
-        // eslint-disable-next-line no-console
-        console.error(error)
-
-        return
-      }
-
-      await ChromeApi.executeScript({
-        args: [jsonRaw],
-        target: { tabId },
-        // NB: it is not the usual closure, it doesn't capture any context
-        function(payload: string) {
-          document.cookie = `feature-flag-cookie=${payload}; path=/;`
-        },
-      })
-
-      ChromeApi.reloadTab(tabId)
-    })
+  if (!addNewExperimentBtn) {
+    return
   }
+  addNewExperimentBtn.addEventListener('click', async () => {
+    let name, variant
+
+    if (optimizelyService.isAvailable()) {
+      name = prompt('Enter the new experiment name')
+      variant =
+        name &&
+        prompt(
+          `Enter the new experiment's variant (the page will be reloaded)`,
+          'default'
+        )
+    } else {
+      alert('No experiment entries found')
+
+      return
+    }
+
+    if (!name) {
+      return
+    }
+    if (!variant) {
+      alert('No variant provided')
+
+      return
+    }
+
+    const experiments = optimizelyService.addNewExperiment(name, variant)
+    let jsonRaw
+    try {
+      jsonRaw = JSON.stringify(experiments)
+    } catch (error) {
+      Template.showError('Invalid Experiments JSON provided')
+      // eslint-disable-next-line no-console
+      console.error(error)
+
+      return
+    }
+
+    await ChromeApi.executeScript({
+      args: [jsonRaw],
+      target: { tabId },
+      // NB: it is not the usual closure, it doesn't capture any context
+      function(payload: string) {
+        document.cookie = `feature-flag-cookie=${payload}; path=/;`
+      },
+    })
+
+    ChromeApi.reloadTab(tabId)
+  })
 }
 
 /**
@@ -476,7 +479,7 @@ const init = async () => {
 
   passCookiesFromDocumentToExtension(tabId)
   handleEvents(tabId)
-  bindPopupControls()
+  bindPopupControls(tabId)
   updateExtensionVersion()
 }
 
