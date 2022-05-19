@@ -247,11 +247,11 @@ export default class PopupController {
     }
 
     const experiments = optimizelyService.extractExperiments()
-
     const expListElement = Template.renderExperimentsList(
       container,
       experiments
     )
+
     if (expListElement) {
       this.bindExperimentCheckboxes({
         listElement: expListElement,
@@ -261,7 +261,7 @@ export default class PopupController {
       this.bindExperimentVariablesHandlers(expListElement)
     }
 
-    this.handleJsonTab(experiments)
+    this.handleJsonUpdate(experiments)
     this.bindAddNewExperimentClick(optimizelyService)
   }
 
@@ -281,7 +281,7 @@ export default class PopupController {
     )
   }
 
-  handleJsonTab(experiments: ExperimentsList): void {
+  handleJsonUpdate(experiments: ExperimentsList): void {
     const textarea = document.getElementById(
       'experiments-json-container'
     ) as HTMLTextAreaElement
