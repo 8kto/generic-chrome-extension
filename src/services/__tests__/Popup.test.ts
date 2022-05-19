@@ -1,6 +1,6 @@
-import { getVariantsOptions } from './../'
+import Popup from './../Popup'
 
-describe('helpers test', () => {
+describe('popup service test', () => {
   describe('getVariantsOptions', () => {
     const completeSet = [
       'default',
@@ -14,15 +14,15 @@ describe('helpers test', () => {
     ]
 
     it('returns all possible options', () => {
-      expect(getVariantsOptions('')).toStrictEqual(completeSet)
+      expect(Popup.getVariantsOptions('')).toStrictEqual(completeSet)
     })
 
     it.each([null, undefined, ''])('handles invalid input', input => {
-      expect(getVariantsOptions(input)).toStrictEqual(completeSet)
+      expect(Popup.getVariantsOptions(input)).toStrictEqual(completeSet)
     })
 
     it('returns extended options for old names', () => {
-      expect(getVariantsOptions('variation_1')).toStrictEqual([
+      expect(Popup.getVariantsOptions('variation_1')).toStrictEqual([
         'default',
         'variation_1',
         'variation_2',
@@ -32,7 +32,7 @@ describe('helpers test', () => {
     })
 
     it('returns extended options for new names', () => {
-      expect(getVariantsOptions('v1')).toStrictEqual([
+      expect(Popup.getVariantsOptions('v1')).toStrictEqual([
         'default',
         'v1',
         'v2',
@@ -42,14 +42,14 @@ describe('helpers test', () => {
     })
 
     it('includes present option', () => {
-      expect(getVariantsOptions('my-var')).toStrictEqual([
+      expect(Popup.getVariantsOptions('my-var')).toStrictEqual([
         'my-var',
         ...completeSet,
       ])
     })
 
     it('returns options extended up to the current variant', () => {
-      expect(getVariantsOptions('variation_6')).toStrictEqual([
+      expect(Popup.getVariantsOptions('variation_6')).toStrictEqual([
         'default',
         'variation_1',
         'variation_2',
@@ -60,7 +60,7 @@ describe('helpers test', () => {
         'Custom',
       ])
 
-      expect(getVariantsOptions('v6')).toStrictEqual([
+      expect(Popup.getVariantsOptions('v6')).toStrictEqual([
         'default',
         'v1',
         'v2',
