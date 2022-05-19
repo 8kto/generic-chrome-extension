@@ -25,7 +25,7 @@ export default class PopupController {
   /**
    * Bind all controls in the popup with the event handlers
    */
-  bindPopupControls = async (): Promise<void> => {
+  async bindPopupControls(): Promise<void> {
     const resetBtn = document.getElementById('reset-feature-flags-cookie')
     if (resetBtn) {
       resetBtn.addEventListener('click', () =>
@@ -44,13 +44,13 @@ export default class PopupController {
   /**
    * Bind form controls that enable or disable experiments
    */
-  bindExperimentCheckboxes = ({
+  bindExperimentCheckboxes({
     listElement,
     optimizelyService,
   }: {
     listElement: HTMLElement
     optimizelyService: Optimizely
-  }): void => {
+  }): void {
     const handleListItemClick = async (event: Event) => {
       const target = <HTMLInputElement>event.target
 
@@ -196,7 +196,7 @@ export default class PopupController {
     })
   }
 
-  getVariantsDropdown = ({
+  getVariantsDropdown({
     value,
     payload,
     handleOnVariableSet,
@@ -204,7 +204,7 @@ export default class PopupController {
     value: string
     payload: VariableUpdatePayload
     handleOnVariableSet: CallableFunction
-  }): HTMLSelectElement => {
+  }): HTMLSelectElement {
     const selectElement = Template.getOptionsList(
       Popup.getVariantsOptions(value),
       value
@@ -234,7 +234,7 @@ export default class PopupController {
   /**
    * Render the UI and bind event handlers for the experiments list
    */
-  handleOnPopupOpen = (message: MessageOnPopupOpen): void => {
+  handleOnPopupOpen(message: MessageOnPopupOpen): void {
     const container = document.getElementById('container')
     const optimizelyService = this.getOptimizelyService(message.payload)
 
@@ -265,7 +265,7 @@ export default class PopupController {
     this.bindAddNewExperimentClick(optimizelyService)
   }
 
-  resetFeatureFlags = (tabId: number): void => {
+  resetFeatureFlags(tabId: number): void {
     ChromeApi.executeScript({
       args: null,
       target: { tabId },
@@ -329,9 +329,11 @@ export default class PopupController {
     })
   }
 
-  handleEvents = (): void => {
-    // Handle message from the page in the extension script:
-    // extension and the document (active tab) don't share cookies and other context.
+  /**
+   * Handle message from the page in the extension script:
+   * extension and the document (active tab) don't share cookies and other context.
+   */
+  handleEvents(): void {
     ChromeApi.addMessageListener((message: Message, _, sendResponse) => {
       switch (message.type) {
         case MessageType.onPopupOpen:
@@ -357,8 +359,7 @@ export default class PopupController {
     })
   }
 
-  passCookiesFromDocumentToExtension = (): void => {
-    // Pass cookies from the page to the handlers
+  passCookiesFromDocumentToExtension(): void {
     ChromeApi.executeScript({
       args: null,
       target: { tabId: this.#tabId },
@@ -372,7 +373,7 @@ export default class PopupController {
     })
   }
 
-  init = async () => {
+  async init(): Promise<void> {
     Template.clearMessages()
     initTabs()
 
