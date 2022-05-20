@@ -21,7 +21,7 @@ type VariableUpdateHandlers = (
   payload: VariableUpdatePayload
 ) => void
 
-export default class PopupController {
+export default class ViewController {
   #tabId: number
 
   readonly #variableUpdateHandlers: Record<

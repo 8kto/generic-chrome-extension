@@ -3,10 +3,10 @@
  * Binds the event handlers and dynamic layout.
  */
 
-import PopupController from './PopupController'
+import ViewController from './ViewController'
 
 /**
  * File is executed every time the extension icon is clicked in the browser tray,
  * therefore there is no way to use singletons
  */
-new PopupController().init()
+new ViewController().init()
