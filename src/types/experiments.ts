@@ -1,5 +1,3 @@
-export type VariableType = 'variant' | 'boolean'
-
 export type Variant = {
   v_name: string
   [key: string]: unknown
