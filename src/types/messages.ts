@@ -1,19 +1,9 @@
+import { VariableUpdatePayload } from './variables'
+
 export enum MessageType {
   onPopupOpen = 'onPopupOpen',
   onVariableSet = 'onVariableSet',
   onFeatureFlagsReset = 'onFeatureFlagsReset',
-}
-
-export type VariableUpdatePayload = {
-  experimentName: string
-  variableName: string
-  newValue?: unknown
-}
-
-export type VariableDataset = {
-  varType: 'boolean' | 'variant'
-  varName: string
-  expName: string
 }
 
 export type MessageOnPopupOpen = {
