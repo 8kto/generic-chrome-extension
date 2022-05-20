@@ -21,8 +21,7 @@ describe('optimizely service', () => {
   jest.spyOn(console, 'error').mockImplementation(() => undefined)
 
   describe('checkFeatureFlags', () => {
-    /** @var {Optimizely} */
-    let optimizelyService
+    let optimizelyService: Optimizely
 
     it('does not throw for valid cookies', () => {
       optimizelyService = new Optimizely(VALID_COOKIE)
@@ -55,6 +54,46 @@ describe('optimizely service', () => {
       expect(() => optimizelyService.checkFeatureFlags()).toThrow(
         'Ambiguous feature-flag-cookie found: remove multiple values and reload tab'
       )
+    })
+  })
+
+  describe('setExperimentStatus', () => {
+    let optimizelyService: Optimizely
+
+    beforeEach(() => {
+      optimizelyService = new Optimizely(VALID_COOKIE)
+      optimizelyService.extractExperiments()
+    })
+
+    it('updates the experiment with bools', () => {
+      optimizelyService.setExperimentStatus('cro-691', false)
+      expect(optimizelyService.getExperiments()['cro-691'].e).toBe(false)
+
+      optimizelyService.setExperimentStatus('cro-691', true)
+      expect(optimizelyService.getExperiments()['cro-691'].e).toBe(true)
+    })
+
+    it('updates the experiment with strings', () => {
+      optimizelyService.setExperimentStatus('cro-691', 'false')
+      expect(optimizelyService.getExperiments()['cro-691'].e).toBe(false)
+
+      optimizelyService.setExperimentStatus('cro-691', 'true')
+      expect(optimizelyService.getExperiments()['cro-691'].e).toBe(true)
+    })
+
+    it('handles invalid values', () => {
+      optimizelyService.setExperimentStatus('cro-691', undefined)
+      expect(optimizelyService.getExperiments()['cro-691'].e).toBeUndefined()
+
+      optimizelyService.setExperimentStatus('cro-691', null)
+      expect(optimizelyService.getExperiments()['cro-691'].e).toBeUndefined()
+    })
+
+    it('does not throw on unknown experiment and corrupt data', () => {
+      expect(() =>
+        optimizelyService.setExperimentStatus('XXX', true)
+      ).not.toThrow()
+      expect(optimizelyService.getExperiments()).toMatchSnapshot()
     })
   })
 })
