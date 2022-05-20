@@ -85,5 +85,6 @@ module.exports = {
     'jest/valid-expect': 'error',
     'jest/prefer-expect-assertions': 'off',
     'jest/require-hook': 'off',
+    "jest/no-hooks": 'off'
   },
 }
