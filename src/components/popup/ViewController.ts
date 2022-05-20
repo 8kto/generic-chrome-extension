@@ -27,6 +27,27 @@ type VariableUpdateHandlers = (
 export default class ViewController {
   #tabId: number
 
+  /**
+   * Broadcast messages across the controller,
+   * so the handlers can be attached declarative
+   */
+  readonly #subscriptions: Record<MessageType, CallableFunction> = {
+    [MessageType.onPopupOpen]: (message: MessageOnPopupOpen) => {
+      this.handleOnPopupOpen(message)
+      updateDetailsTabContent(message.payload)
+    },
+    [MessageType.onVariableSet]: (message: MessageOnVariableSet) => {
+      this.applyFeatureFlagUpdates(message)
+    },
+    [MessageType.onFeatureFlagsReset]: () => {
+      ChromeApi.reloadTab(this.#tabId)
+    },
+  }
+
+  /**
+   * DOM manipulations on variables updates
+   * @see VariableUpdate
+   */
   readonly #variableUpdateHandlers: Record<
     VariableType,
     VariableUpdateHandlers
@@ -59,7 +80,11 @@ export default class ViewController {
     const resetBtn = document.getElementById('reset-feature-flags-cookie')
     if (resetBtn) {
       resetBtn.addEventListener('click', () =>
-        Optimizely.resetFeatureFlagCookie(this.#tabId)
+        Optimizely.resetFeatureFlagCookie(this.#tabId, () => {
+          this.trigger({
+            type: MessageType.onFeatureFlagsReset,
+          })
+        })
       )
     }
 
@@ -100,19 +125,27 @@ export default class ViewController {
     listElement.addEventListener('click', handleListItemClick)
   }
 
-  triggerOnVariableSet = (data: VariableUpdatePayload) =>
+  triggerOnVariableSet(data: VariableUpdatePayload) {
     // Pass prepared cookies from the extension to the page
-    ChromeApi.executeScript<[VariableUpdatePayload, MessageType]>({
-      args: [data, MessageType.onVariableSet],
-      target: { tabId: this.#tabId },
-      // NB: it is not the usual closure, it doesn't capture any context
-      function(data, messageType) {
-        chrome.runtime.sendMessage({
-          type: messageType,
-          payload: { data, cookies: document.cookie },
-        })
+    ChromeApi.executeScript<undefined, string>(
+      {
+        target: { tabId: this.#tabId },
+        // NB: it is not the usual closure, it doesn't capture any context
+        function() {
+          return document.cookie
+        },
       },
-    })
+      injectionResults => {
+        this.trigger({
+          type: MessageType.onVariableSet,
+          payload: {
+            cookies: injectionResults.pop().result,
+            data,
+          },
+        })
+      }
+    )
+  }
 
   handleVariableClick = async (event: Event): Promise<void> => {
     const target = <HTMLElement>event.target
@@ -313,50 +346,28 @@ export default class ViewController {
     })
   }
 
-  /**
-   * Handle message from the page in the extension script:
-   * extension and the document (active tab) don't share cookies and other context.
-   */
-  handleEvents(): void {
-    ChromeApi.addMessageListener((message: Message, _, sendResponse) => {
-      switch (message.type) {
-        case MessageType.onPopupOpen: {
-          this.handleOnPopupOpen(message)
-          updateDetailsTabContent(message.payload)
-          break
-        }
-
-        case MessageType.onVariableSet:
-          this.applyFeatureFlagUpdates(message)
-          break
-
-        case MessageType.onFeatureFlagsReset: {
-          ChromeApi.reloadTab(this.#tabId)
-          break
-        }
-
-        default:
-          throw new Error(`Unknown message type: ${JSON.stringify(message)}`)
-      }
-
-      // Fixes Chrome bug with rejected promise
-      sendResponse({})
-    })
+  trigger(message: Message) {
+    if (message.type in this.#subscriptions) {
+      this.#subscriptions[message.type](message)
+    }
   }
 
   passCookiesFromDocumentToExtension() {
-    ChromeApi.executeScript({
-      target: { tabId: this.#tabId },
-      // NB: it is not the usual closure, it doesn't capture any context
-      function() {
-        chrome.runtime.sendMessage({
-          type: 'onPopupOpen',
-          payload: document.cookie,
-        })
-
-        return document.cookie
+    ChromeApi.executeScript<undefined, string>(
+      {
+        target: { tabId: this.#tabId },
+        // NB: it is not the usual closure, it doesn't capture any context
+        function() {
+          return document.cookie
+        },
       },
-    })
+      injectionResults => {
+        this.trigger({
+          type: MessageType.onPopupOpen,
+          payload: injectionResults.pop().result,
+        })
+      }
+    )
   }
 
   async init(): Promise<void> {
@@ -364,9 +375,6 @@ export default class ViewController {
     initTabs()
 
     this.#tabId = await ChromeApi.getActiveTabId()
-
-    // Listener always has to be registered first
-    this.handleEvents()
 
     this.passCookiesFromDocumentToExtension()
     this.bindPopupControls()

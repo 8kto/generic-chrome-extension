@@ -112,23 +112,27 @@ export default class Optimizely {
     })
   }
 
-  static resetFeatureFlagCookie(tabId: number): void {
-    ChromeApi.executeScript({
-      target: { tabId },
-      // NB: it is not the usual closure, it doesn't capture any context
-      function() {
-        ;[
-          `feature-flag-cookie`,
-          `feature-flag-user-token`,
-          `feature-flag-targeting`,
-        ].forEach(cookieName => {
-          document.cookie =
-            cookieName + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;'
-        })
-
-        chrome.runtime.sendMessage({ type: 'onFeatureFlagsReset' })
+  static resetFeatureFlagCookie(
+    tabId: number,
+    callback: chrome.scripting.ScriptInjectionResultsHandler
+  ): void {
+    ChromeApi.executeScript(
+      {
+        target: { tabId },
+        // NB: it is not the usual closure, it doesn't capture any context
+        function() {
+          ;[
+            `feature-flag-cookie`,
+            `feature-flag-user-token`,
+            `feature-flag-targeting`,
+          ].forEach(cookieName => {
+            document.cookie =
+              cookieName + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;'
+          })
+        },
       },
-    })
+      callback
+    )
   }
 }
 
