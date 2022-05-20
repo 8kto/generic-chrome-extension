@@ -1,5 +1,6 @@
 /**
- * Class encapsulates the Chrome browser API
+ * Class encapsulates the Chrome browser API.
+ * No direct `chrome.*` calls should be performed from the other scripts.
  */
 export default class ChromeApi {
   static async getActiveTabId(): Promise<number> {

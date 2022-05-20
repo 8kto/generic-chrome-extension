@@ -1,5 +1,9 @@
 import type { ExperimentsList, Experiment, VariableType } from 'types'
 
+/**
+ * HTML layout helpers.
+ * Should only contain getters for the layout and dynamic HTML handlers
+ */
 export default class Template {
   static getCheckboxFormControl(
     experimentName: string,

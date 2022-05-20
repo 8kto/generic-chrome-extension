@@ -1,3 +1,6 @@
+/**
+ * Service contains static logic used by `ViewController`
+ */
 export default class Popup {
   /**
    * Guess the prefix from the present option and return
