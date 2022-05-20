@@ -18,8 +18,8 @@ declare namespace chrome.scripting {
     injectionResults: Record<'result', T>[]
   ) => void
 
-  export function executeScript<Args extends unknown[]>(
+  export function executeScript<Args extends unknown[], Res = unknown>(
     injection: ScriptInjectionCustom<Args>,
-    injectionResultsHandler?: ScriptInjectionResultsHandler
+    injectionResultsHandler?: ScriptInjectionResultsHandler<Res>
   ): Promise<InjectionResult[]>
 }
