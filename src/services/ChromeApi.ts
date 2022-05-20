@@ -14,9 +14,9 @@ export default class ChromeApi {
     window.close()
   }
 
-  static async executeScript<Args extends unknown[]>(
+  static async executeScript<Args extends unknown[], Res = unknown>(
     injection: chrome.scripting.ScriptInjectionCustom<Args>,
-    injectionResultsHandler?: chrome.scripting.ScriptInjectionResultsHandler
+    injectionResultsHandler?: chrome.scripting.ScriptInjectionResultsHandler<Res>
   ) {
     return chrome.scripting.executeScript(injection, injectionResultsHandler)
   }
@@ -24,13 +24,4 @@ export default class ChromeApi {
   static getManifest() {
     return chrome.runtime.getManifest()
   }
-
-  static addMessageListener: typeof chrome.runtime.onMessage.addListener =
-    async (...args) => {
-      return chrome.runtime.onMessage.addListener(...args)
-    }
 }
-
-// TODO extract chrome.runtime.sendMessage from serialized funcs:
-// probably, can be done with the 2nd arg of executeScript
-// @see https://developer.chrome.com/docs/extensions/reference/scripting/#handling-results
