@@ -40,14 +40,4 @@ export default class Popup {
       getOptions(prefix, Math.max(defaultVariationsNumber, +variantNum))
     )
   }
-
-  static getVariableUpdateDefaultPayload(
-    expName: string,
-    varName: string
-  ): VariableUpdatePayload {
-    return {
-      experimentName: expName,
-      variableName: varName,
-    }
-  }
 }

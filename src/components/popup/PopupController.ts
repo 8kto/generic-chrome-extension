@@ -10,12 +10,27 @@ import type {
   MessageOnVariableSet,
   VariableUpdatePayload,
 } from 'types'
-import { MessageType, VariableDataset } from 'types'
+import { MessageType } from 'types'
 
 import { updateDetailsTabContent, updateExtensionVersion } from './ui'
+import VariableUpdate from './VariableUpdate'
 
 export default class PopupController {
   #tabId: number
+
+  readonly #variableUpdateHandlers: Record<string, CallableFunction> = {
+    'variant': (target: HTMLElement, payload: VariableUpdatePayload) => {
+      const selectElement = this.getVariantsDropdown({
+        value: payload.value,
+        payload,
+        handleOnVariableSet: () => {
+          Template.showReloadButton()
+          this.triggerOnVariableSet(payload)
+        },
+      })
+      target.parentNode.replaceChild(selectElement, target)
+    },
+  }
 
   // todo find out if can be optimized, and no new instance created every time
   getOptimizelyService(cookies: string): Optimizely {
@@ -84,56 +99,13 @@ export default class PopupController {
       },
     })
 
-  handleBooleanVariableUpdate(target: HTMLElement): VariableUpdatePayload {
-    const dataset = <VariableDataset>target.dataset
-    const { varName, expName } = dataset
-    const value = target.textContent.trim()
-    const payload = Popup.getVariableUpdateDefaultPayload(expName, varName)
-
-    const toggledBool = value !== 'true'
-    target.textContent = toggledBool.toString()
-    payload.newValue = toggledBool
-
-    return payload
-  }
-
-  handleVariantVariableUpdate(target: HTMLElement): VariableUpdatePayload {
-    const dataset = <VariableDataset>target.dataset
-    const { varName, expName } = dataset
-    const value = target.textContent.trim()
-    const payload = Popup.getVariableUpdateDefaultPayload(expName, varName)
-
-    const selectElement = this.getVariantsDropdown({
-      value,
-      payload,
-      handleOnVariableSet: () => {
-        Template.showReloadButton()
-        this.triggerOnVariableSet(payload)
-      },
-    })
-    target.parentNode.replaceChild(selectElement, target)
-
-    return payload
-  }
-
   handleVariableClick = async (event: Event): Promise<void> => {
     const target = <HTMLElement>event.target
-    const dataset = <VariableDataset>target.dataset
-    const { varType } = dataset
+    const variableUpdate = new VariableUpdate(target)
+    const payload: VariableUpdatePayload = variableUpdate.getUpdatePayload()
 
-    let payload: VariableUpdatePayload
-    switch (varType) {
-      case 'boolean':
-        payload = this.handleBooleanVariableUpdate(target)
-        break
-
-      case 'variant':
-        payload = this.handleVariantVariableUpdate(target)
-        break
-
-      default:
-        alert('Currently, only booleans and variants are supported')
-        break
+    if (payload.type in this.#variableUpdateHandlers) {
+      this.#variableUpdateHandlers[payload.type](target, payload)
     }
 
     if (payload.newValue !== undefined) {
