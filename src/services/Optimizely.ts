@@ -68,7 +68,17 @@ export default class Optimizely {
     experimentName: string,
     status: boolean | string
   ): Optimizely {
-    this.experiments[experimentName].e = Boolean(status)
+    const normalizedBool =
+      typeof status === 'boolean'
+        ? status
+        : {
+            'true': true,
+            'false': false,
+          }[status]
+
+    if (this.experiments[experimentName]) {
+      this.experiments[experimentName].e = normalizedBool
+    }
 
     return this
   }
