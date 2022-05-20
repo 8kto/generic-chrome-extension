@@ -1,5 +1,6 @@
 /**
  * @fileOverview Popup UI handlers
+ * Encapsulates DOM manipulation that is not associated with any Optimizely logic.
  */
 
 import ChromeApi from 'services/ChromeApi'
