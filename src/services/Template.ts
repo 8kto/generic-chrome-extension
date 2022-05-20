@@ -137,11 +137,4 @@ export default class Template {
   static showReloadButton(): void {
     document.getElementById('reload-tab').removeAttribute('hidden')
   }
-
-  // TODO remove ?
-  static hideResetCookiesButton(): void {
-    document
-      .getElementById('reset-feature-flags-cookie')
-      .setAttribute('hidden', 'hidden')
-  }
 }
