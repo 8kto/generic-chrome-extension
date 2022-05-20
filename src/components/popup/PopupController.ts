@@ -382,13 +382,3 @@ export default class PopupController {
     updateExtensionVersion()
   }
 }
-
-// todo test with two tabs and find out, does singleton really needed
-let instance: PopupController
-export const getPopupControllerInstance = () => {
-  if (!instance) {
-    instance = new PopupController()
-  }
-
-  return instance
-}

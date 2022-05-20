@@ -3,9 +3,10 @@
  * Binds the event handlers and dynamic layout.
  */
 
-import { getPopupControllerInstance } from './PopupController'
+import PopupController from './PopupController'
 
 /**
- * File is executed every time the extension icon is clicked in the browser tray
+ * File is executed every time the extension icon is clicked in the browser tray,
+ * therefore there is no way to use singletons
  */
-getPopupControllerInstance().init()
+new PopupController().init()
