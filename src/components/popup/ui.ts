@@ -1,9 +1,14 @@
-import ChromeApi from 'services/ChromeApi'
-import type { DetailsTabContentHandler } from 'types'
-
 /**
  * @fileOverview Popup UI handlers
  */
+
+import ChromeApi from 'services/ChromeApi'
+
+type DetailsTabContentHandler = {
+  selector: string
+  regexp: RegExp
+  handler: (...args: string[]) => string
+}
 
 export const updateExtensionVersion = (): void => {
   const versionContainer = document.getElementById('igel-version')
