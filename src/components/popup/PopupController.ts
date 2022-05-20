@@ -137,7 +137,7 @@ export default class PopupController {
       )
   }
 
-  promptExperimentDetails(): { name: string; variant: string } | undefined {
+  promptExperimentDetails(): { name: string; variant: string } | null {
     const name = prompt('Enter the new experiment name')
     const variant =
       name &&
@@ -147,15 +147,43 @@ export default class PopupController {
       )
 
     if (!name) {
-      return
+      return null
     }
     if (!variant) {
       alert('No variant provided')
 
-      return
+      return null
     }
 
     return { name, variant }
+  }
+
+  async handleNewExperimentAdd(optimizelyService: Optimizely) {
+    if (!optimizelyService.isAvailable()) {
+      alert('No experiment entries found')
+
+      return
+    }
+
+    const { name, variant } = this.promptExperimentDetails()
+    if (!name || !variant) {
+      return
+    }
+
+    const experiments = optimizelyService.addNewExperiment(name, variant)
+    let jsonRaw
+    try {
+      jsonRaw = JSON.stringify(experiments)
+    } catch (error) {
+      Template.showError('Invalid Experiments JSON provided')
+      // eslint-disable-next-line no-console
+      console.error(error)
+
+      return
+    }
+
+    await Optimizely.setFeatureFlagCookie(this.#tabId, jsonRaw)
+    ChromeApi.reloadTab(this.#tabId)
   }
 
   bindAddNewExperimentClick(optimizelyService: Optimizely): void {
@@ -164,33 +192,9 @@ export default class PopupController {
       return
     }
 
-    addNewExperimentBtn.addEventListener('click', async () => {
-      if (!optimizelyService.isAvailable()) {
-        alert('No experiment entries found')
-
-        return
-      }
-
-      const { name, variant } = this.promptExperimentDetails()
-      if (!name || !variant) {
-        return
-      }
-
-      const experiments = optimizelyService.addNewExperiment(name, variant)
-      let jsonRaw
-      try {
-        jsonRaw = JSON.stringify(experiments)
-      } catch (error) {
-        Template.showError('Invalid Experiments JSON provided')
-        // eslint-disable-next-line no-console
-        console.error(error)
-
-        return
-      }
-
-      await Optimizely.setFeatureFlagCookie(this.#tabId, jsonRaw)
-      ChromeApi.reloadTab(this.#tabId)
-    })
+    addNewExperimentBtn.addEventListener('click', () =>
+      this.handleNewExperimentAdd(optimizelyService)
+    )
   }
 
   getVariantsDropdown({
