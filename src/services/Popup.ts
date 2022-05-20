@@ -1,3 +1,5 @@
+import type { VariableUpdatePayload } from 'types'
+
 export default class Popup {
   /**
    * Guess the prefix from the present option and return
@@ -37,5 +39,15 @@ export default class Popup {
     return decorateOptionsList(
       getOptions(prefix, Math.max(defaultVariationsNumber, +variantNum))
     )
+  }
+
+  static getVariableUpdateDefaultPayload(
+    expName: string,
+    varName: string
+  ): VariableUpdatePayload {
+    return {
+      experimentName: expName,
+      variableName: varName,
+    }
   }
 }
