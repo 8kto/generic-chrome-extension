@@ -16,20 +16,3 @@ Object {
   },
 }
 `;
-
-exports[`optimizely service setExperimentStatus does not throw on unknown experiment name 1`] = `
-Object {
-  "cro-691": Object {
-    "e": true,
-    "v": Object {
-      "v_name": "v3",
-    },
-  },
-  "serp-filtering-v2": Object {
-    "e": true,
-    "v": Object {
-      "v_name": "variation_2",
-    },
-  },
-}
-`;
