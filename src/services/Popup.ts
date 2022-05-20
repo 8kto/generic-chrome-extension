@@ -1,5 +1,3 @@
-import type { VariableUpdatePayload } from 'types'
-
 export default class Popup {
   /**
    * Guess the prefix from the present option and return

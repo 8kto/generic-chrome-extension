@@ -13,7 +13,7 @@ import type {
 } from 'types'
 import { MessageType } from 'types'
 
-import { updateDetailsTabContent, updateExtensionVersion } from './ui'
+import { updateDetailsTabContent, updateExtensionVersion } from './helpers.UI'
 import VariableUpdate from './VariableUpdate'
 
 type VariableUpdateHandlers = (
@@ -21,6 +21,9 @@ type VariableUpdateHandlers = (
   payload: VariableUpdatePayload
 ) => void
 
+/**
+ * Binds the event handlers and dynamic layout.
+ */
 export default class ViewController {
   #tabId: number
 

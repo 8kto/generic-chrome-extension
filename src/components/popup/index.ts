@@ -1,6 +1,5 @@
 /**
  * @fileOverview A wrapper for the popup dialog.
- * Binds the event handlers and dynamic layout.
  */
 
 import ViewController from './ViewController'
