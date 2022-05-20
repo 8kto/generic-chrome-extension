@@ -10,6 +10,12 @@ export type VariableUpdatePayload = {
   newValue?: unknown
 }
 
+export type VariableDataset = {
+  varType: 'boolean' | 'variant'
+  varName: string
+  expName: string
+}
+
 export type MessageOnPopupOpen = {
   type: MessageType.onPopupOpen
   payload: string
