@@ -10,7 +10,7 @@ import type {
   MessageOnVariableSet,
   VariableUpdatePayload,
 } from 'types'
-import { MessageType } from 'types'
+import { MessageType, VariableDataset } from 'types'
 
 import { updateDetailsTabContent, updateExtensionVersion } from './ui'
 
@@ -70,11 +70,11 @@ export default class PopupController {
     listElement.addEventListener('click', handleListItemClick)
   }
 
-  triggerOnVariableSet = (tabId: number, data: VariableUpdatePayload) =>
+  triggerOnVariableSet = (data: VariableUpdatePayload) =>
     // Pass prepared cookies from the extension to the page
     ChromeApi.executeScript<[VariableUpdatePayload, MessageType]>({
       args: [data, MessageType.onVariableSet],
-      target: { tabId },
+      target: { tabId: this.#tabId },
       // NB: it is not the usual closure, it doesn't capture any context
       function(data, messageType) {
         chrome.runtime.sendMessage({
@@ -84,48 +84,61 @@ export default class PopupController {
       },
     })
 
+  handleBooleanVariableUpdate(target: HTMLElement): VariableUpdatePayload {
+    const dataset = <VariableDataset>target.dataset
+    const { varName, expName } = dataset
+    const value = target.textContent.trim()
+    const payload = Popup.getVariableUpdateDefaultPayload(expName, varName)
+
+    const toggledBool = value !== 'true'
+    target.textContent = toggledBool.toString()
+    payload.newValue = toggledBool
+
+    return payload
+  }
+
+  handleVariantVariableUpdate(target: HTMLElement): VariableUpdatePayload {
+    const dataset = <VariableDataset>target.dataset
+    const { varName, expName } = dataset
+    const value = target.textContent.trim()
+    const payload = Popup.getVariableUpdateDefaultPayload(expName, varName)
+
+    const selectElement = this.getVariantsDropdown({
+      value,
+      payload,
+      handleOnVariableSet: () => {
+        Template.showReloadButton()
+        this.triggerOnVariableSet(payload)
+      },
+    })
+    target.parentNode.replaceChild(selectElement, target)
+
+    return payload
+  }
+
   handleVariableClick = async (event: Event): Promise<void> => {
     const target = <HTMLElement>event.target
-    const { varType, varName, expName } = target.dataset
-    const value = target.textContent.trim()
-    const payload: VariableUpdatePayload = {
-      experimentName: expName,
-      variableName: varName,
-    }
-    const tabId = await ChromeApi.getActiveTabId()
+    const dataset = <VariableDataset>target.dataset
+    const { varType } = dataset
 
+    let payload: VariableUpdatePayload
     switch (varType) {
-      case 'boolean': {
-        const newValue = value !== 'true'
-        const newValueStr = newValue.toString()
-        payload.newValue = newValue
-        target.textContent = newValueStr
-
+      case 'boolean':
+        payload = this.handleBooleanVariableUpdate(target)
         break
-      }
 
-      case 'variant': {
-        const selectElement = this.getVariantsDropdown({
-          value,
-          payload,
-          handleOnVariableSet: () => {
-            Template.showReloadButton()
-            this.triggerOnVariableSet(tabId, payload)
-          },
-        })
-        target.parentNode.replaceChild(selectElement, target)
-
+      case 'variant':
+        payload = this.handleVariantVariableUpdate(target)
         break
-      }
 
       default:
-        alert('Currently, only booleans and variations are supported')
+        alert('Currently, only booleans and variants are supported')
         break
     }
 
     if (payload.newValue !== undefined) {
       Template.showReloadButton()
-      this.triggerOnVariableSet(tabId, payload)
+      this.triggerOnVariableSet(payload)
     }
   }
 
