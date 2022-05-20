@@ -8,6 +8,7 @@ import type {
   Message,
   MessageOnPopupOpen,
   MessageOnVariableSet,
+  VariableType,
   VariableUpdatePayload,
 } from 'types'
 import { MessageType } from 'types'
@@ -15,11 +16,19 @@ import { MessageType } from 'types'
 import { updateDetailsTabContent, updateExtensionVersion } from './ui'
 import VariableUpdate from './VariableUpdate'
 
+type VariableUpdateHandlers = (
+  target: HTMLElement,
+  payload: VariableUpdatePayload
+) => void
+
 export default class PopupController {
   #tabId: number
 
-  readonly #variableUpdateHandlers: Record<string, CallableFunction> = {
-    'variant': (target: HTMLElement, payload: VariableUpdatePayload) => {
+  readonly #variableUpdateHandlers: Record<
+    VariableType,
+    VariableUpdateHandlers
+  > = {
+    'variant': (target, payload) => {
       const selectElement = this.getVariantsDropdown({
         value: payload.value,
         payload,
@@ -29,6 +38,9 @@ export default class PopupController {
         },
       })
       target.parentNode.replaceChild(selectElement, target)
+    },
+    'boolean': (target, payload) => {
+      target.textContent = payload.newValue.toString()
     },
   }
 
@@ -102,7 +114,7 @@ export default class PopupController {
   handleVariableClick = async (event: Event): Promise<void> => {
     const target = <HTMLElement>event.target
     const variableUpdate = new VariableUpdate(target)
-    const payload: VariableUpdatePayload = variableUpdate.getUpdatePayload()
+    const payload: VariableUpdatePayload = variableUpdate.valueOf()
 
     if (payload.type in this.#variableUpdateHandlers) {
       this.#variableUpdateHandlers[payload.type](target, payload)

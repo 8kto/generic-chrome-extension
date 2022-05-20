@@ -1,5 +1,9 @@
 import type { VariableDataset, VariableUpdatePayload } from 'types'
 
+/**
+ * Encapsulates variable updates logic.
+ * Should not contain any DOM manipulations.
+ */
 export default class VariableUpdate {
   readonly #target: HTMLElement
   readonly #type: 'boolean' | 'variant'
@@ -17,10 +21,13 @@ export default class VariableUpdate {
     this.#type = varType
     this.#name = varName
     this.#experimentName = expName
-    this.#payload = this.getVariableUpdateDefaultPayload()
+    this.#payload = {
+      ...this.getVariableUpdateDefaultPayload(),
+      ...this.processData(),
+    }
   }
 
-  getVariableUpdateDefaultPayload(): VariableUpdatePayload {
+  private getVariableUpdateDefaultPayload(): VariableUpdatePayload {
     return {
       type: this.#type,
       experimentName: this.#experimentName,
@@ -29,19 +36,19 @@ export default class VariableUpdate {
     }
   }
 
-  handleBooleanVariableUpdate(): VariableUpdatePayload {
+  private handleBooleanVariableUpdate(): Partial<VariableUpdatePayload> {
     const toggledBool = this.#value !== 'true'
-    this.#target.textContent = toggledBool.toString()
-    this.#payload.newValue = toggledBool
 
-    return this.#payload
+    return {
+      newValue: toggledBool,
+    }
   }
 
-  handleVariantVariableUpdate(): VariableUpdatePayload {
-    return this.#payload
+  private handleVariantVariableUpdate(): Partial<VariableUpdatePayload> {
+    return {}
   }
 
-  getUpdatePayload(): VariableUpdatePayload | null {
+  private processData(): Partial<VariableUpdatePayload> | null {
     switch (this.#type) {
       case 'boolean':
         return this.handleBooleanVariableUpdate()
@@ -50,7 +57,15 @@ export default class VariableUpdate {
         return this.handleVariantVariableUpdate()
 
       default:
-        return null
+        return {}
     }
+  }
+
+  valueOf() {
+    return this.#payload
+  }
+
+  toString() {
+    return JSON.stringify(this.#payload, null, '  ')
   }
 }
