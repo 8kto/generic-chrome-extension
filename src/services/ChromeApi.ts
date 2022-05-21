@@ -1,5 +1,9 @@
 import { getGlobalChromeApi } from 'services/ChromeApi.helpers'
 
+import InjectionResult = chrome.scripting.InjectionResult
+import ScriptInjectionResultsHandler = chrome.scripting.ScriptInjectionResultsHandler
+import ScriptInjectionCustom = chrome.scripting.ScriptInjectionCustom
+
 /**
  * Class encapsulates the Chrome browser API.
  * No direct `chrome.*` calls should be performed from the other scripts.
@@ -20,9 +24,9 @@ export default class ChromeApi {
   }
 
   static async executeScript<Args extends unknown[], Res = unknown>(
-    injection: chrome.scripting.ScriptInjectionCustom<Args>,
-    injectionResultsHandler?: chrome.scripting.ScriptInjectionResultsHandler<Res>
-  ) {
+    injection: ScriptInjectionCustom<Args>,
+    injectionResultsHandler?: ScriptInjectionResultsHandler<Res>
+  ): Promise<InjectionResult[]> {
     return getGlobalChromeApi().scripting.executeScript(
       injection,
       injectionResultsHandler
