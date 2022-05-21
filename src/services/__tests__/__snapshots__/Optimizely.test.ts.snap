@@ -1,14 +1,31 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`optimizely service setExperimentStatus does not throw on unknown experiment and corrupt data 1`] = `
+exports[`optimizely service extractExperiments returns valid experiments: valid 1`] = `
 Object {
-  "cro-691": Object {
+  "MOS-6502": Object {
     "e": true,
     "v": Object {
       "v_name": "v3",
     },
   },
-  "serp-filtering-v2": Object {
+  "Z80": Object {
+    "e": true,
+    "v": Object {
+      "v_name": "variation_2",
+    },
+  },
+}
+`;
+
+exports[`optimizely service setExperimentStatus does not throw on unknown experiment and corrupt data: valid 1`] = `
+Object {
+  "MOS-6502": Object {
+    "e": true,
+    "v": Object {
+      "v_name": "v3",
+    },
+  },
+  "Z80": Object {
     "e": true,
     "v": Object {
       "v_name": "variation_2",
