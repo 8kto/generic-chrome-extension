@@ -1,13 +1,13 @@
 import Optimizely from './../Optimizely'
 
 const VALID_FF_STRING = JSON.stringify({
-  'cro-691': {
+  'MOS-6502': {
     'e': true,
     'v': {
       'v_name': 'v3',
     },
   },
-  'serp-filtering-v2': {
+  'Z80': {
     'e': true,
     'v': {
       'v_name': 'variation_2',
@@ -57,6 +57,43 @@ describe('optimizely service', () => {
     })
   })
 
+  describe('extractExperiments', () => {
+    it('returns valid experiments', () => {
+      const optimizelyService = new Optimizely(VALID_COOKIE)
+      expect(optimizelyService.extractExperiments()).toMatchSnapshot(
+        {},
+        'valid'
+      )
+    })
+
+    it('handles NA feature flags cookie', () => {
+      const optimizelyService = new Optimizely('my-cookie=42;var=val')
+      expect(optimizelyService.extractExperiments()).toStrictEqual({})
+    })
+
+    it.each(['', null, undefined])('handles falsy cookies [%s]', input => {
+      const optimizelyService = new Optimizely(input)
+      expect(optimizelyService.extractExperiments()).toStrictEqual({})
+    })
+
+    it('handles corrupted JSON in feature flags cookie', () => {
+      const optimizelyService = new Optimizely(
+        'my-cookie=42;feature-flag-cookie={"flag":{'
+      )
+      expect(optimizelyService.extractExperiments()).toStrictEqual({})
+    })
+
+    it.each(['', 'null', 'false', 'undefined', '[]', '{}', '"string"'])(
+      'handles invalid feature flags cookie [%s]',
+      input => {
+        const optimizelyService = new Optimizely(
+          'my-cookie=42;feature-flag-cookie=' + input
+        )
+        expect(optimizelyService.extractExperiments()).toStrictEqual({})
+      }
+    )
+  })
+
   describe('setExperimentStatus', () => {
     let optimizelyService: Optimizely
 
@@ -66,34 +103,89 @@ describe('optimizely service', () => {
     })
 
     it('updates the experiment with bools', () => {
-      optimizelyService.setExperimentStatus('cro-691', false)
-      expect(optimizelyService.getExperiments()['cro-691'].e).toBe(false)
+      optimizelyService.setExperimentStatus('MOS-6502', false)
+      expect(optimizelyService.getExperiments()['MOS-6502'].e).toBe(false)
 
-      optimizelyService.setExperimentStatus('cro-691', true)
-      expect(optimizelyService.getExperiments()['cro-691'].e).toBe(true)
+      optimizelyService.setExperimentStatus('MOS-6502', true)
+      expect(optimizelyService.getExperiments()['MOS-6502'].e).toBe(true)
     })
 
     it('updates the experiment with strings', () => {
-      optimizelyService.setExperimentStatus('cro-691', 'false')
-      expect(optimizelyService.getExperiments()['cro-691'].e).toBe(false)
+      optimizelyService.setExperimentStatus('MOS-6502', 'false')
+      expect(optimizelyService.getExperiments()['MOS-6502'].e).toBe(false)
 
-      optimizelyService.setExperimentStatus('cro-691', 'true')
-      expect(optimizelyService.getExperiments()['cro-691'].e).toBe(true)
+      optimizelyService.setExperimentStatus('MOS-6502', 'true')
+      expect(optimizelyService.getExperiments()['MOS-6502'].e).toBe(true)
     })
 
     it('handles invalid values', () => {
-      optimizelyService.setExperimentStatus('cro-691', undefined)
-      expect(optimizelyService.getExperiments()['cro-691'].e).toBeUndefined()
+      optimizelyService.setExperimentStatus('MOS-6502', undefined)
+      expect(optimizelyService.getExperiments()['MOS-6502'].e).toBeUndefined()
 
-      optimizelyService.setExperimentStatus('cro-691', null)
-      expect(optimizelyService.getExperiments()['cro-691'].e).toBeUndefined()
+      optimizelyService.setExperimentStatus('MOS-6502', null)
+      expect(optimizelyService.getExperiments()['MOS-6502'].e).toBeUndefined()
     })
 
     it('does not throw on unknown experiment and corrupt data', () => {
       expect(() =>
         optimizelyService.setExperimentStatus('XXX', true)
       ).not.toThrow()
-      expect(optimizelyService.getExperiments()).toMatchSnapshot()
+      expect(optimizelyService.getExperiments()).toMatchSnapshot({}, 'valid')
+    })
+
+    it('returns service instance', () => {
+      const instance = optimizelyService.setExperimentStatus('MOS-6502', false)
+      expect(instance).toBe(optimizelyService)
+    })
+  })
+
+  // todo add return this cases
+
+  describe('setExperimentVariable', () => {
+    let optimizelyService: Optimizely
+
+    beforeEach(() => {
+      optimizelyService = new Optimizely(VALID_COOKIE)
+      optimizelyService.extractExperiments()
+    })
+
+    const values = [
+      'string',
+      42,
+      0xdeadbeaf,
+      ['arr'],
+      { key: 'val' },
+      null,
+      undefined,
+      0,
+      false,
+      '',
+    ]
+
+    it.each(values)('updates value [%s]', input => {
+      const instance = optimizelyService.setExperimentVariable(
+        'Z80',
+        'v_name',
+        input
+      )
+      expect(optimizelyService.getExperiments()['Z80'].v['v_name']).toBe(input)
+      expect(instance).toBe(optimizelyService)
+    })
+
+    it.each(values)('adds value [%s]', input => {
+      const instance = optimizelyService.setExperimentVariable(
+        'Z80',
+        'new_var',
+        input
+      )
+      expect(optimizelyService.getExperiments()['Z80'].v['new_var']).toBe(input)
+      expect(instance).toBe(optimizelyService)
+    })
+
+    it('does not throw on unknown experiment', () => {
+      expect(() =>
+        optimizelyService.setExperimentVariable('XXX', 'test', 'fail')
+      ).not.toThrow()
     })
   })
 })
