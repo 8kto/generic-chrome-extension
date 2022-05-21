@@ -3,19 +3,18 @@ import type { ExperimentsList } from 'types'
 import ChromeApi from './ChromeApi'
 
 export default class Optimizely {
-  // Document cookies
-  private cookies: string
-  private experiments: ExperimentsList = {}
+  readonly #cookies: string
+  #experiments: ExperimentsList = {}
 
   constructor(cookies: string) {
-    this.cookies = cookies
+    this.#cookies = cookies
   }
 
   /**
    * @throws {Error}
    */
   checkFeatureFlags(): void {
-    const experimentsCookie = this.cookies
+    const experimentsCookie = this.#cookies
       .split(';')
       .filter(i => i.match(/feature-flag-cookie/))
 
@@ -42,7 +41,11 @@ export default class Optimizely {
   }
 
   extractExperiments(): ExperimentsList {
-    const experimentsCookie = this.cookies
+    if (!this.#cookies) {
+      return (this.#experiments = {})
+    }
+
+    const experimentsCookie = this.#cookies
       .split(';')
       .filter(i => i.match(/feature-flag-cookie/))
 
@@ -50,18 +53,18 @@ export default class Optimizely {
       const json = experimentsCookie.shift().replace(/^[^{]+/, '')
 
       try {
-        this.experiments = JSON.parse(json)
+        this.#experiments = JSON.parse(json)
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error(error)
       }
     }
 
-    return this.experiments
+    return this.#experiments
   }
 
   getExperiments(): ExperimentsList {
-    return this.experiments
+    return this.#experiments
   }
 
   setExperimentStatus(
@@ -76,8 +79,8 @@ export default class Optimizely {
             'false': false,
           }[status]
 
-    if (this.experiments[experimentName]) {
-      this.experiments[experimentName].e = normalizedBool
+    if (this.#experiments[experimentName]) {
+      this.#experiments[experimentName].e = normalizedBool
     }
 
     return this
@@ -88,7 +91,7 @@ export default class Optimizely {
     variableName: string,
     value: unknown
   ): Optimizely {
-    const experiment = this.experiments[experimentName]
+    const experiment = this.#experiments[experimentName]
 
     if (experiment) {
       experiment.v[variableName] = value
@@ -98,17 +101,16 @@ export default class Optimizely {
   }
 
   addNewExperiment(name: string, variant: string): ExperimentsList {
-    /** @type {Experiment} */
-    this.experiments[name] = {
+    this.#experiments[name] = {
       e: true,
       v: { v_name: variant },
     }
 
-    return this.experiments
+    return this.#experiments
   }
 
   isAvailable(): boolean {
-    return Boolean(Object.keys(this.experiments || {}).length)
+    return Boolean(Object.keys(this.#experiments || {}).length)
   }
 
   static setFeatureFlagCookie(tabId: number, payload: string) {
