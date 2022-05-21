@@ -1,16 +1,21 @@
+import { getGlobalChromeApi } from 'services/ChromeApi.helpers'
+
 /**
  * Class encapsulates the Chrome browser API.
  * No direct `chrome.*` calls should be performed from the other scripts.
  */
 export default class ChromeApi {
   static async getActiveTabId(): Promise<number> {
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
+    const [tab] = await getGlobalChromeApi().tabs.query({
+      active: true,
+      currentWindow: true,
+    })
 
     return tab.id
   }
 
   static async reloadTab(tabId: number): Promise<void> {
-    await chrome.tabs.reload(tabId)
+    await getGlobalChromeApi().tabs.reload(tabId)
     window.close()
   }
 
@@ -18,10 +23,13 @@ export default class ChromeApi {
     injection: chrome.scripting.ScriptInjectionCustom<Args>,
     injectionResultsHandler?: chrome.scripting.ScriptInjectionResultsHandler<Res>
   ) {
-    return chrome.scripting.executeScript(injection, injectionResultsHandler)
+    return getGlobalChromeApi().scripting.executeScript(
+      injection,
+      injectionResultsHandler
+    )
   }
 
   static getManifest() {
-    return chrome.runtime.getManifest()
+    return getGlobalChromeApi().runtime.getManifest()
   }
 }
