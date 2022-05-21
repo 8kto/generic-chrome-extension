@@ -147,5 +147,3 @@ export default class Optimizely {
     )
   }
 }
-
-// TODO review service, make static methods?
