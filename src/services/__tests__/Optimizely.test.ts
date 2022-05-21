@@ -1,4 +1,5 @@
-import Optimizely from './../Optimizely'
+import ChromeApi from 'services/ChromeApi'
+import Optimizely from 'services/Optimizely'
 
 const VALID_FF_STRING = JSON.stringify({
   'MOS-6502': {
@@ -139,8 +140,6 @@ describe('optimizely service', () => {
     })
   })
 
-  // todo add return this cases
-
   describe('setExperimentVariable', () => {
     let optimizelyService: Optimizely
 
@@ -186,6 +185,72 @@ describe('optimizely service', () => {
       expect(() =>
         optimizelyService.setExperimentVariable('XXX', 'test', 'fail')
       ).not.toThrow()
+    })
+  })
+
+  describe('addNewExperiment', () => {
+    it('adds experiment', () => {
+      const optimizelyService = new Optimizely(VALID_COOKIE)
+
+      const experiments = optimizelyService.addNewExperiment('new', 'v1')
+      expect(experiments).toBe(optimizelyService.getExperiments())
+
+      const experiment = optimizelyService.getExperiments()['new']
+      expect(experiment.v['v_name']).toBe('v1')
+      expect(experiment.e).toBe(true)
+    })
+
+    it('overrides experiment', () => {
+      const optimizelyService = new Optimizely(VALID_COOKIE)
+      optimizelyService.addNewExperiment('MOS-6502', 'v200')
+
+      const experiment = optimizelyService.getExperiments()['MOS-6502']
+      expect(experiment.v['v_name']).toBe('v200')
+      expect(experiment.e).toBe(true)
+    })
+  })
+
+  describe('isAvailable', () => {
+    it('returns true', () => {
+      const optimizelyService = new Optimizely(VALID_COOKIE)
+      optimizelyService.extractExperiments()
+      expect(optimizelyService.isAvailable()).toBe(true)
+    })
+
+    it.each(['', null, undefined])('returns false [%s]', input => {
+      const optimizelyService = new Optimizely(input)
+      optimizelyService.extractExperiments()
+      expect(optimizelyService.isAvailable()).toBe(false)
+    })
+  })
+
+  describe('setFeatureFlagCookie', () => {
+    jest.spyOn(ChromeApi, 'executeScript').mockImplementation(() => undefined)
+
+    it('calls the service method correctly', () => {
+      Optimizely.setFeatureFlagCookie(777, 'cookies')
+      expect(ChromeApi.executeScript).toHaveBeenCalledWith({
+        args: ['cookies'],
+        target: { tabId: 777 },
+        function: expect.any(Function),
+      })
+    })
+  })
+
+  describe('resetFeatureFlagCookie', () => {
+    jest.spyOn(ChromeApi, 'executeScript').mockImplementation(() => undefined)
+
+    it('calls the service method correctly', () => {
+      const callback = jest.fn()
+      Optimizely.resetFeatureFlagCookie(777, callback)
+      expect(ChromeApi.executeScript).toHaveBeenCalledWith(
+        {
+          args: undefined,
+          target: { tabId: 777 },
+          function: expect.any(Function),
+        },
+        callback
+      )
     })
   })
 })
