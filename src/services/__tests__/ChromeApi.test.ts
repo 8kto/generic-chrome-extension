@@ -1,6 +1,8 @@
 import ChromeApi from 'services/ChromeApi'
 import * as ChromeApiHelpers from 'services/ChromeApi.helpers'
 
+import Manifest = chrome.runtime.Manifest
+
 jest.mock('services/ChromeApi.helpers')
 
 describe('chrome API service', () => {
@@ -66,11 +68,6 @@ describe('chrome API service', () => {
     let executeScript: jest.Mock<unknown>
 
     beforeEach(() => {
-      getGlobalChromeApi.mockReset()
-      if (executeScript) {
-        executeScript.mockReset()
-      }
-
       executeScript = jest.fn().mockImplementation((_, cb) => {
         return Promise.resolve([{ result: 'test' }]).then(cb)
       })
@@ -122,6 +119,23 @@ describe('chrome API service', () => {
       expect(callback).toHaveBeenCalledTimes(0)
       await result
       expect(callback).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('getManifest', () => {
+    it('calls API', () => {
+      const manifest: Partial<Manifest> = {
+        manifest_version: 3,
+        version: 'v3',
+      }
+
+      const getManifest = jest.fn().mockReturnValue(manifest)
+      getGlobalChromeApi.mockReturnValue({
+        //@ts-ignore
+        runtime: { getManifest },
+      })
+
+      expect(ChromeApi.getManifest()).toBe(manifest)
     })
   })
 })
