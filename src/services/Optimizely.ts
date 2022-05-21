@@ -114,7 +114,7 @@ export default class Optimizely {
   }
 
   static setFeatureFlagCookie(tabId: number, payload: string) {
-    ChromeApi.executeScript({
+    return ChromeApi.executeScript({
       args: [payload],
       target: { tabId },
       // NB: it is not the usual closure, it doesn't capture any context
@@ -127,8 +127,8 @@ export default class Optimizely {
   static resetFeatureFlagCookie(
     tabId: number,
     callback: chrome.scripting.ScriptInjectionResultsHandler
-  ): void {
-    ChromeApi.executeScript(
+  ) {
+    return ChromeApi.executeScript(
       {
         target: { tabId },
         // NB: it is not the usual closure, it doesn't capture any context
