@@ -17,6 +17,57 @@ Object {
 }
 `;
 
+exports[`optimizely service setCookies does not mutate experiments list: valid 1`] = `
+Object {
+  "MOS-6502": Object {
+    "e": true,
+    "v": Object {
+      "v_name": "v3",
+    },
+  },
+  "Z80": Object {
+    "e": true,
+    "v": Object {
+      "v_name": "variation_2",
+    },
+  },
+}
+`;
+
+exports[`optimizely service setCookies overrides the experiments list: valid 1`] = `
+Object {
+  "MOS-6502": Object {
+    "e": true,
+    "v": Object {
+      "v_name": "v3",
+    },
+  },
+  "Z80": Object {
+    "e": true,
+    "v": Object {
+      "v_name": "variation_2",
+    },
+  },
+}
+`;
+
+exports[`optimizely service setCookies sets the cookies and updates experiments list: valid 1`] = `
+Object {
+  "MOS-6502": Object {
+    "e": true,
+    "v": Object {
+      "v_name": "v3",
+    },
+  },
+  "Z80": Object {
+    "e": true,
+    "v": Object {
+      "v_name": "variation_2",
+    },
+  },
+}
+`;
+
 exports[`optimizely service setExperimentStatus does not throw on unknown experiment and corrupt data: valid 1`] = `
 Object {
   "MOS-6502": Object {
