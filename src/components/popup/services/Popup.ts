@@ -54,7 +54,7 @@ export default class Popup {
     const versionContainer = document.getElementById('igel-version')
     if (versionContainer) {
       const manifest = ChromeApi.getManifest()
-      versionContainer.innerText = manifest.version
+      versionContainer.innerHTML = manifest.version
     }
   }
 
