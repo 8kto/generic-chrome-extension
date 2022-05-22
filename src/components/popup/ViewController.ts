@@ -1,7 +1,7 @@
+import Popup from 'components/popup/services/Popup'
+import Template from 'components/popup/services/Template'
 import ChromeApi from 'services/ChromeApi'
 import Optimizely from 'services/Optimizely'
-import Popup from 'services/Popup'
-import Template from 'services/Template'
 import { initTabs } from 'shared/js/tabs'
 import type {
   ExperimentsList,
@@ -13,8 +13,11 @@ import type {
 } from 'types'
 import { MessageType } from 'types'
 
-import { updateDetailsTabContent, updateExtensionVersion } from './helpers.UI'
-import VariableUpdate from './VariableUpdate'
+import {
+  updateDetailsTabContent,
+  updateExtensionVersion,
+} from './services/helpers.UI'
+import VariableUpdate from './services/VariableUpdate'
 
 type VariableUpdateHandlers = (
   target: HTMLElement,
