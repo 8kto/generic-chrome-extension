@@ -3,7 +3,7 @@
   "version": "1.2.1",
   "description": "Chrome extension for the Optimizely experiments management",
   "main": "index.js",
-  "license": "UNLICENSED",
+  "license": "proprietary",
   "private": true,
   "repository": {
     "type": "git",
