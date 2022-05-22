@@ -13,10 +13,6 @@ import type {
 } from 'types'
 import { MessageType } from 'types'
 
-import {
-  updateDetailsTabContent,
-  updateExtensionVersion,
-} from './services/helpers.UI'
 import VariableUpdate from './services/VariableUpdate'
 
 type VariableUpdateHandlers = (
@@ -37,7 +33,7 @@ export default class ViewController {
   readonly #subscriptions: Record<MessageType, CallableFunction> = {
     [MessageType.onPopupOpen]: (message: MessageOnPopupOpen) => {
       this.handleOnPopupOpen(message)
-      updateDetailsTabContent(message.payload)
+      Popup.updateDetailsTabContent(message.payload)
     },
     [MessageType.onVariableSet]: (message: MessageOnVariableSet) => {
       this.applyFeatureFlagUpdates(message)
@@ -376,11 +372,11 @@ export default class ViewController {
   async init(): Promise<void> {
     Template.clearMessages()
     initTabs()
+    Popup.updateExtensionVersion()
 
     this.#tabId = await ChromeApi.getActiveTabId()
 
     this.passCookiesFromDocumentToExtension()
     this.bindPopupControls()
-    updateExtensionVersion()
   }
 }
