@@ -3,16 +3,13 @@ import type { ExperimentsList } from 'types'
 import ChromeApi from './ChromeApi'
 
 export default class Optimizely {
-  readonly #cookies: string
+  #cookies: string
   #experiments: ExperimentsList = {}
 
   constructor(cookies: string) {
     this.#cookies = cookies
   }
 
-  /**
-   * @throws {Error}
-   */
   checkFeatureFlags(): void {
     const experimentsCookie = this.#cookies
       .split(';')
@@ -111,6 +108,13 @@ export default class Optimizely {
 
   isAvailable(): boolean {
     return Boolean(Object.keys(this.#experiments || {}).length)
+  }
+
+  setCookies(cookies: string): this {
+    this.#cookies = cookies
+    this.extractExperiments()
+
+    return this
   }
 
   static setFeatureFlagCookie(tabId: number, payload: string) {

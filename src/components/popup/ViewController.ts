@@ -25,6 +25,11 @@ type VariableUpdateHandlers = (
  */
 export default class ViewController {
   #tabId: number
+  #optimizelyService: Optimizely
+
+  constructor() {
+    this.#optimizelyService = new Optimizely('')
+  }
 
   /**
    * Broadcast messages across the controller,
@@ -39,7 +44,7 @@ export default class ViewController {
       this.applyFeatureFlagUpdates(message)
     },
     [MessageType.onFeatureFlagsReset]: () => {
-      ChromeApi.reloadTab(this.#tabId)
+      void ChromeApi.reloadTab(this.#tabId)
     },
   }
 
@@ -65,11 +70,6 @@ export default class ViewController {
     'boolean': (target, payload) => {
       target.textContent = payload.newValue.toString()
     },
-  }
-
-  // todo find out if can be optimized, and no new instance created every time
-  getOptimizelyService(cookies: string): Optimizely {
-    return new Optimizely(cookies)
   }
 
   /**
@@ -100,16 +100,14 @@ export default class ViewController {
    */
   bindExperimentCheckboxes({
     listElement,
-    optimizelyService,
   }: {
     listElement: HTMLElement
-    optimizelyService: Optimizely
   }): void {
     const handleListItemClick = async (event: Event) => {
       const target = <HTMLInputElement>event.target
 
       if (target.type === 'checkbox') {
-        const experiments = optimizelyService
+        const experiments = this.#optimizelyService
           .setExperimentStatus(target.value, target.checked)
           .getExperiments()
 
@@ -126,7 +124,7 @@ export default class ViewController {
 
   triggerOnVariableSet(data: VariableUpdatePayload) {
     // Pass prepared cookies from the extension to the page
-    ChromeApi.executeScript<undefined, string>(
+    void ChromeApi.executeScript<undefined, string>(
       {
         target: { tabId: this.#tabId },
         // NB: it is not the usual closure, it doesn't capture any context
@@ -193,8 +191,8 @@ export default class ViewController {
     return { name, variant }
   }
 
-  async handleNewExperimentAdd(optimizelyService: Optimizely) {
-    if (!optimizelyService.isAvailable()) {
+  async handleNewExperimentAdd() {
+    if (!this.#optimizelyService.isAvailable()) {
       alert('No experiment entries found')
 
       return
@@ -205,7 +203,7 @@ export default class ViewController {
       return
     }
 
-    const experiments = optimizelyService.addNewExperiment(name, variant)
+    const experiments = this.#optimizelyService.addNewExperiment(name, variant)
     let jsonRaw
     try {
       jsonRaw = JSON.stringify(experiments)
@@ -218,17 +216,17 @@ export default class ViewController {
     }
 
     await Optimizely.setFeatureFlagCookie(this.#tabId, jsonRaw)
-    ChromeApi.reloadTab(this.#tabId)
+    await ChromeApi.reloadTab(this.#tabId)
   }
 
-  bindAddNewExperimentClick(optimizelyService: Optimizely): void {
+  bindAddNewExperimentClick(): void {
     const addNewExperimentBtn = document.getElementById('button--add-new')
     if (!addNewExperimentBtn) {
       return
     }
 
     addNewExperimentBtn.addEventListener('click', () =>
-      this.handleNewExperimentAdd(optimizelyService)
+      this.handleNewExperimentAdd()
     )
   }
 
@@ -272,17 +270,17 @@ export default class ViewController {
    */
   handleOnPopupOpen(message: MessageOnPopupOpen): void {
     const container = document.getElementById('container')
-    const optimizelyService = this.getOptimizelyService(message.payload)
+    this.#optimizelyService.setCookies(message.payload)
 
     try {
-      optimizelyService.checkFeatureFlags()
+      this.#optimizelyService.checkFeatureFlags()
     } catch (err) {
       Template.showError(err.message)
 
       return
     }
 
-    const experiments = optimizelyService.extractExperiments()
+    const experiments = this.#optimizelyService.getExperiments()
     const expListElement = Template.renderExperimentsList(
       container,
       experiments
@@ -291,27 +289,25 @@ export default class ViewController {
     if (expListElement) {
       this.bindExperimentCheckboxes({
         listElement: expListElement,
-        optimizelyService,
       })
 
       this.bindExperimentVariablesHandlers(expListElement)
     }
 
     this.handleJsonUpdate(experiments)
-    this.bindAddNewExperimentClick(optimizelyService)
+    this.bindAddNewExperimentClick()
   }
 
   applyFeatureFlagUpdates(message: MessageOnVariableSet): void {
     const { payload } = message
     const { experimentName, variableName, newValue } = payload.data
-    const optimizelyService = this.getOptimizelyService(payload.cookies)
 
-    optimizelyService.extractExperiments()
-    const updatedFeatureFlags = optimizelyService
+    this.#optimizelyService.setCookies(payload.cookies)
+    const updatedFeatureFlags = this.#optimizelyService
       .setExperimentVariable(experimentName, variableName, newValue)
       .getExperiments()
 
-    Optimizely.setFeatureFlagCookie(
+    void Optimizely.setFeatureFlagCookie(
       this.#tabId,
       JSON.stringify(updatedFeatureFlags)
     )
@@ -341,7 +337,7 @@ export default class ViewController {
       }
 
       await Optimizely.setFeatureFlagCookie(this.#tabId, jsonString)
-      ChromeApi.reloadTab(this.#tabId)
+      await ChromeApi.reloadTab(this.#tabId)
     })
   }
 
@@ -352,7 +348,7 @@ export default class ViewController {
   }
 
   passCookiesFromDocumentToExtension() {
-    ChromeApi.executeScript<undefined, string>(
+    void ChromeApi.executeScript<undefined, string>(
       {
         target: { tabId: this.#tabId },
         // NB: it is not the usual closure, it doesn't capture any context
@@ -377,6 +373,6 @@ export default class ViewController {
     this.#tabId = await ChromeApi.getActiveTabId()
 
     this.passCookiesFromDocumentToExtension()
-    this.bindPopupControls()
+    await this.bindPopupControls()
   }
 }
