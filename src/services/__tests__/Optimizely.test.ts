@@ -253,4 +253,40 @@ describe('optimizely service', () => {
       )
     })
   })
+
+  describe('setCookies', () => {
+    it('sets the cookies and updates experiments list', () => {
+      const optimizelyService = new Optimizely('')
+      optimizelyService.extractExperiments()
+      expect(optimizelyService.getExperiments()).toStrictEqual({})
+
+      optimizelyService.setCookies(VALID_COOKIE)
+      expect(optimizelyService.getExperiments()).toMatchSnapshot({}, 'valid')
+    })
+
+    it('overrides the experiments list', () => {
+      const optimizelyService = new Optimizely(VALID_COOKIE)
+      optimizelyService.extractExperiments()
+      expect(optimizelyService.getExperiments()).toMatchSnapshot({}, 'valid')
+
+      const featureFlags = {
+        'Motorola-68000': { 'e': true, 'v': { 'v_name': 'v1' } },
+      }
+      const featureFlagCookie = JSON.stringify(featureFlags)
+      const newCookie = `three-different=ones; feature-flag-cookie=${featureFlagCookie}`
+
+      optimizelyService.setCookies(newCookie)
+      expect(optimizelyService.getExperiments()).toStrictEqual(featureFlags)
+    })
+
+    it('does not mutate experiments list', () => {
+      const optimizelyService = new Optimizely(VALID_COOKIE)
+      optimizelyService.extractExperiments()
+
+      const newCookie = `three-different=ones; every-wave=has-gotta-break`
+
+      optimizelyService.setCookies(newCookie)
+      expect(optimizelyService.getExperiments()).toMatchSnapshot({}, 'valid')
+    })
+  })
 })
