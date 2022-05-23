@@ -58,17 +58,17 @@ export default class ViewController {
   > = {
     'variant': (target, payload) => {
       const selectElement = this.getVariantsDropdown({
-        value: payload.value,
+        value: <string>payload.value,
         payload,
         handleOnVariableSet: () => {
           Template.showReloadButton()
           this.triggerOnVariableSet(payload)
         },
       })
-      target.parentNode.replaceChild(selectElement, target)
+      target?.parentNode?.replaceChild(selectElement, target)
     },
     'boolean': (target, payload) => {
-      target.textContent = payload.newValue.toString()
+      target.textContent = (<boolean>payload.newValue).toString()
     },
   }
 
@@ -77,32 +77,22 @@ export default class ViewController {
    */
   async bindPopupControls(): Promise<void> {
     const resetBtn = document.getElementById('reset-feature-flags-cookie')
-    if (resetBtn) {
-      resetBtn.addEventListener('click', () =>
-        Optimizely.resetFeatureFlagCookie(this.#tabId, () => {
-          this.trigger({
-            type: MessageType.onFeatureFlagsReset,
-          })
+    resetBtn?.addEventListener('click', () =>
+      Optimizely.resetFeatureFlagCookie(this.#tabId, () => {
+        this.trigger({
+          type: MessageType.onFeatureFlagsReset,
         })
-      )
-    }
+      })
+    )
 
     const reloadBtn = document.getElementById('reload-tab')
-    if (reloadBtn) {
-      reloadBtn.addEventListener('click', () =>
-        ChromeApi.reloadTab(this.#tabId)
-      )
-    }
+    reloadBtn?.addEventListener('click', () => ChromeApi.reloadTab(this.#tabId))
   }
 
   /**
    * Bind form controls that enable or disable experiments
    */
-  bindExperimentCheckboxes({
-    listElement,
-  }: {
-    listElement: HTMLElement
-  }): void {
+  bindExperimentCheckboxes(listElement: HTMLElement): void {
     const handleListItemClick = async (event: Event) => {
       const target = <HTMLInputElement>event.target
 
@@ -124,7 +114,7 @@ export default class ViewController {
 
   triggerOnVariableSet(data: VariableUpdatePayload) {
     // Pass prepared cookies from the extension to the page
-    void ChromeApi.executeScript<undefined, string>(
+    void ChromeApi.executeScript<undefined[], string>(
       {
         target: { tabId: this.#tabId },
         // NB: it is not the usual closure, it doesn't capture any context
@@ -133,13 +123,17 @@ export default class ViewController {
         },
       },
       injectionResults => {
-        this.trigger({
-          type: MessageType.onVariableSet,
-          payload: {
-            cookies: injectionResults.pop().result,
-            data,
-          },
-        })
+        const [injection] = injectionResults || []
+
+        if (injection) {
+          this.trigger({
+            type: MessageType.onVariableSet,
+            payload: {
+              cookies: injection.result,
+              data,
+            },
+          })
+        }
       }
     )
   }
@@ -198,7 +192,7 @@ export default class ViewController {
       return
     }
 
-    const { name, variant } = this.promptExperimentDetails()
+    const { name, variant } = this.promptExperimentDetails() || {}
     if (!name || !variant) {
       return
     }
@@ -221,11 +215,7 @@ export default class ViewController {
 
   bindAddNewExperimentClick(): void {
     const addNewExperimentBtn = document.getElementById('button--add-new')
-    if (!addNewExperimentBtn) {
-      return
-    }
-
-    addNewExperimentBtn.addEventListener('click', () =>
+    addNewExperimentBtn?.addEventListener('click', () =>
       this.handleNewExperimentAdd()
     )
   }
@@ -246,7 +236,7 @@ export default class ViewController {
 
     selectElement.addEventListener('change', (event: Event) => {
       const target = <HTMLSelectElement>event.target
-      let { value } = target
+      let value: string | null = target.value
 
       if (value && value.toLowerCase() === 'custom') {
         value = prompt('Enter the custom variation', '')
@@ -270,8 +260,11 @@ export default class ViewController {
    */
   handleOnPopupOpen(message: MessageOnPopupOpen): void {
     const container = document.getElementById('container')
-    this.#optimizelyService.setCookies(message.payload)
+    if (!container) {
+      return
+    }
 
+    this.#optimizelyService.setCookies(message.payload)
     try {
       this.#optimizelyService.checkFeatureFlags()
     } catch (err) {
@@ -287,10 +280,7 @@ export default class ViewController {
     )
 
     if (expListElement) {
-      this.bindExperimentCheckboxes({
-        listElement: expListElement,
-      })
-
+      this.bindExperimentCheckboxes(expListElement)
       this.bindExperimentVariablesHandlers(expListElement)
     }
 
@@ -321,10 +311,10 @@ export default class ViewController {
 
     textarea.innerHTML = JSON.stringify(experiments, null, '  ')
     textarea.addEventListener('input', () =>
-      saveJsonBtn.removeAttribute('hidden')
+      saveJsonBtn?.removeAttribute('hidden')
     )
 
-    saveJsonBtn.addEventListener('click', async () => {
+    saveJsonBtn?.addEventListener('click', async () => {
       let jsonString
 
       try {
@@ -348,7 +338,7 @@ export default class ViewController {
   }
 
   passCookiesFromDocumentToExtension() {
-    void ChromeApi.executeScript<undefined, string>(
+    void ChromeApi.executeScript<undefined[], string>(
       {
         target: { tabId: this.#tabId },
         // NB: it is not the usual closure, it doesn't capture any context
@@ -357,10 +347,14 @@ export default class ViewController {
         },
       },
       injectionResults => {
-        this.trigger({
-          type: MessageType.onPopupOpen,
-          payload: injectionResults.pop().result,
-        })
+        const [injection] = injectionResults || []
+
+        if (injection) {
+          this.trigger({
+            type: MessageType.onPopupOpen,
+            payload: injection.result,
+          })
+        }
       }
     )
   }
