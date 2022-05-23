@@ -1,19 +1,17 @@
 import type { ExperimentsList } from 'types'
 
+import ChromeApi from './ChromeApi'
+
 export default class Optimizely {
-  // Document cookies
-  private cookies: string
-  private experiments: ExperimentsList = {}
+  #cookies: string
+  #experiments: ExperimentsList = {}
 
   constructor(cookies: string) {
-    this.cookies = cookies
+    this.#cookies = cookies
   }
 
-  /**
-   * @throws {Error}
-   */
   checkFeatureFlags(): void {
-    const experimentsCookie = this.cookies
+    const experimentsCookie = this.#cookies
       .split(';')
       .filter(i => i.match(/feature-flag-cookie/))
 
@@ -40,33 +38,48 @@ export default class Optimizely {
   }
 
   extractExperiments(): ExperimentsList {
-    const experimentsCookie = this.cookies
+    if (!this.#cookies) {
+      return (this.#experiments = {})
+    }
+
+    const experimentsCookie = this.#cookies
       .split(';')
       .filter(i => i.match(/feature-flag-cookie/))
 
     if (experimentsCookie.length) {
-      const json = experimentsCookie.shift().replace(/^[^{]+/, '')
+      const json = experimentsCookie.shift()?.replace(/^[^{]+/, '')
 
       try {
-        this.experiments = JSON.parse(json)
+        // it is OK to cast it here since we expect an error
+        this.#experiments = JSON.parse(<string>json)
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error(error)
       }
     }
 
-    return this.experiments
+    return this.#experiments
   }
 
   getExperiments(): ExperimentsList {
-    return this.experiments
+    return this.#experiments
   }
 
   setExperimentStatus(
     experimentName: string,
     status: boolean | string
   ): Optimizely {
-    this.experiments[experimentName].e = Boolean(status)
+    const normalizedBool =
+      typeof status === 'boolean'
+        ? status
+        : {
+            'true': true,
+            'false': false,
+          }[status]
+
+    if (this.#experiments[experimentName]) {
+      this.#experiments[experimentName].e = !!normalizedBool
+    }
 
     return this
   }
@@ -76,7 +89,7 @@ export default class Optimizely {
     variableName: string,
     value: unknown
   ): Optimizely {
-    const experiment = this.experiments[experimentName]
+    const experiment = this.#experiments[experimentName]
 
     if (experiment) {
       experiment.v[variableName] = value
@@ -86,18 +99,56 @@ export default class Optimizely {
   }
 
   addNewExperiment(name: string, variant: string): ExperimentsList {
-    /** @type {Experiment} */
-    this.experiments[name] = {
+    this.#experiments[name] = {
       e: true,
       v: { v_name: variant },
     }
 
-    return this.experiments
+    return this.#experiments
   }
 
   isAvailable(): boolean {
-    return Boolean(Object.keys(this.experiments || {}).length)
+    return Boolean(Object.keys(this.#experiments || {}).length)
+  }
+
+  setCookies(cookies: string): this {
+    this.#cookies = cookies
+    this.extractExperiments()
+
+    return this
+  }
+
+  static setFeatureFlagCookie(tabId: number, payload: string) {
+    return ChromeApi.executeScript({
+      args: [payload],
+      target: { tabId },
+      // NB: it is not the usual closure, it doesn't capture any context
+      function(payload: string) {
+        document.cookie = `feature-flag-cookie=${payload}; path=/;`
+      },
+    })
+  }
+
+  static resetFeatureFlagCookie(
+    tabId: number,
+    callback: chrome.scripting.ScriptInjectionResultsHandler
+  ) {
+    return ChromeApi.executeScript(
+      {
+        target: { tabId },
+        // NB: it is not the usual closure, it doesn't capture any context
+        function() {
+          ;[
+            `feature-flag-cookie`,
+            `feature-flag-user-token`,
+            `feature-flag-targeting`,
+          ].forEach(cookieName => {
+            document.cookie =
+              cookieName + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;'
+          })
+        },
+      },
+      callback
+    )
   }
 }
-
-// TODO review service, make static methods?

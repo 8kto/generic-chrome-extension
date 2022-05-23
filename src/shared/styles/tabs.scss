@@ -1,9 +1,9 @@
-.tab {
+.tabs {
   overflow: hidden;
   border-bottom: 1px solid var(--foreground-bg-color);
 }
 
-.tab .tabTitle {
+.tabs .tabTitle {
   color: var(--secondary-color);
   float: left;
   width: 20%;
@@ -11,7 +11,7 @@
   padding: 0.5rem 0.65rem;
 }
 
-.tab .tabTitle.active {
+.tabs .tabTitle.active {
   background-color: var(--foreground-bg-color);
 }
 

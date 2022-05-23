@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`popup service test updateDetailsTabContent updates the details 1`] = `
+"<pre>{
+  \\"browser-family\\": \\"Chrome\\",
+  \\"browser-version\\": \\"101.0.4951.54\\",
+  \\"device\\": \\"mobile\\",
+  \\"expa\\": \\"\\",
+  \\"isInternalIP\\": false,
+  \\"tenant\\": \\"com\\"
+}</pre>"
+`;

@@ -49,7 +49,8 @@ module.exports = {
       },
     ],
     'no-console': 'error',
-    'no-unused-vars': ['error', { 'ignoreRestSiblings': true }],
+    'no-unused-vars': 'off',
+    '@typescript-eslint/no-unused-vars': 'error',
     'no-shadow': 'off',
     'jsx-a11y/no-autofocus': [
       'error',
@@ -84,5 +85,7 @@ module.exports = {
     'jest/valid-expect': 'error',
     'jest/prefer-expect-assertions': 'off',
     'jest/require-hook': 'off',
+    'jest/no-hooks': 'off',
+    '@typescript-eslint/ban-ts-comment':'off'
   },
 }

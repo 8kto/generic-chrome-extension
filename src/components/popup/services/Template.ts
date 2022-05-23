@@ -1,5 +1,9 @@
 import type { ExperimentsList, Experiment, VariableType } from 'types'
 
+/**
+ * HTML layout helpers.
+ * Should only contain getters for the layout and dynamic HTML handlers
+ */
 export default class Template {
   static getCheckboxFormControl(
     experimentName: string,
@@ -72,7 +76,7 @@ export default class Template {
   static renderExperimentsList(
     container: HTMLElement,
     experiments: ExperimentsList
-  ): HTMLUListElement {
+  ): HTMLUListElement | null {
     const entries = Object.entries(experiments || {})
 
     if (!entries.length) {
@@ -114,7 +118,10 @@ export default class Template {
   }
 
   static clearMessages(): void {
-    document.getElementById('messages').innerHTML = ''
+    const element = document.getElementById('messages')
+    if (element) {
+      element.innerHTML = ''
+    }
   }
 
   static clearAndShowMessage(msg: string, mode: string): void {
@@ -123,7 +130,9 @@ export default class Template {
       mode === 'alert' ? 'message--alert' : 'message--info'
     }`
 
-    container.innerHTML = `<div class="${className}">${msg}</div>`
+    if (container) {
+      container.innerHTML = `<div class="${className}">${msg}</div>`
+    }
   }
 
   static showMessage(msg: string): void {
@@ -135,13 +144,9 @@ export default class Template {
   }
 
   static showReloadButton(): void {
-    document.getElementById('reload-tab').removeAttribute('hidden')
-  }
-
-  // TODO remove ?
-  static hideResetCookiesButton(): void {
-    document
-      .getElementById('reset-feature-flags-cookie')
-      .setAttribute('hidden', 'hidden')
+    const element = document.getElementById('reload-tab')
+    if (element) {
+      element.removeAttribute('hidden')
+    }
   }
 }
