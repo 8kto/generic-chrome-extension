@@ -1,21 +1,6 @@
 import ChromeApi from 'services/ChromeApi'
 import Optimizely from 'services/Optimizely'
-
-const VALID_FF_STRING = JSON.stringify({
-  'MOS-6502': {
-    'e': true,
-    'v': {
-      'v_name': 'v3',
-    },
-  },
-  'Z80': {
-    'e': true,
-    'v': {
-      'v_name': 'variation_2',
-    },
-  },
-})
-const VALID_COOKIE = `my-cookie=42; feature-flag-cookie=${VALID_FF_STRING}`
+import { VALID_COOKIE, VALID_FF_STRING } from 'shared/tests/mocks'
 
 describe('optimizely service', () => {
   // Just to disable console spamming during tests
