@@ -15,7 +15,7 @@ export default class ChromeApi {
       currentWindow: true,
     })
 
-    return tab.id
+    return <number>tab.id
   }
 
   static async reloadTab(tabId: number): Promise<void> {

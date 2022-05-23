@@ -47,10 +47,11 @@ export default class Optimizely {
       .filter(i => i.match(/feature-flag-cookie/))
 
     if (experimentsCookie.length) {
-      const json = experimentsCookie.shift().replace(/^[^{]+/, '')
+      const json = experimentsCookie.shift()?.replace(/^[^{]+/, '')
 
       try {
-        this.#experiments = JSON.parse(json)
+        // it is OK to cast it here since we expect an error
+        this.#experiments = JSON.parse(<string>json)
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error(error)
@@ -77,7 +78,7 @@ export default class Optimizely {
           }[status]
 
     if (this.#experiments[experimentName]) {
-      this.#experiments[experimentName].e = normalizedBool
+      this.#experiments[experimentName].e = !!normalizedBool
     }
 
     return this

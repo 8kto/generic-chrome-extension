@@ -73,6 +73,7 @@ describe('optimizely service', () => {
     })
 
     it.each(['', null, undefined])('handles falsy cookies [%s]', input => {
+      // @ts-ignore-next-line
       const optimizelyService = new Optimizely(input)
       expect(optimizelyService.extractExperiments()).toStrictEqual({})
     })
@@ -120,11 +121,13 @@ describe('optimizely service', () => {
     })
 
     it('handles invalid values', () => {
+      // @ts-ignore-next-line
       optimizelyService.setExperimentStatus('MOS-6502', undefined)
-      expect(optimizelyService.getExperiments()['MOS-6502'].e).toBeUndefined()
+      expect(optimizelyService.getExperiments()['MOS-6502'].e).toBe(false)
 
+      // @ts-ignore-next-line
       optimizelyService.setExperimentStatus('MOS-6502', null)
-      expect(optimizelyService.getExperiments()['MOS-6502'].e).toBeUndefined()
+      expect(optimizelyService.getExperiments()['MOS-6502'].e).toBe(false)
     })
 
     it('does not throw on unknown experiment and corrupt data', () => {
@@ -218,6 +221,7 @@ describe('optimizely service', () => {
     })
 
     it.each(['', null, undefined])('returns false [%s]', input => {
+      // @ts-ignore-next-line
       const optimizelyService = new Optimizely(input)
       optimizelyService.extractExperiments()
       expect(optimizelyService.isAvailable()).toBe(false)
@@ -225,6 +229,7 @@ describe('optimizely service', () => {
   })
 
   describe('setFeatureFlagCookie', () => {
+    // @ts-ignore-next-line
     jest.spyOn(ChromeApi, 'executeScript').mockImplementation(() => undefined)
 
     it('calls the service method correctly', () => {
@@ -238,6 +243,7 @@ describe('optimizely service', () => {
   })
 
   describe('resetFeatureFlagCookie', () => {
+    // @ts-ignore-next-line
     jest.spyOn(ChromeApi, 'executeScript').mockImplementation(() => undefined)
 
     it('calls the service method correctly', () => {

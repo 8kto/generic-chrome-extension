@@ -20,6 +20,7 @@ describe('popup service test', () => {
     })
 
     it.each([null, undefined, ''])('handles invalid input', input => {
+      // @ts-ignore-next-line
       expect(Popup.getVariantsOptions(input)).toStrictEqual(completeSet)
     })
 
@@ -85,9 +86,9 @@ describe('popup service test', () => {
 
       const versionContainer = document.getElementById('igel-version')
 
-      expect(versionContainer.innerHTML).toBe('')
+      expect(versionContainer?.innerHTML).toBe('')
       Popup.updateExtensionVersion()
-      expect(versionContainer.innerHTML).toBe('v1.1.1')
+      expect(versionContainer?.innerHTML).toBe('v1.1.1')
 
       jest.resetAllMocks()
     })
@@ -106,8 +107,8 @@ describe('popup service test', () => {
         'feature-flag-targeting-params-container'
       )
 
-      expect(targetingParamsContainer.innerHTML).toBe('NA')
-      expect(featureBranchContainer.innerHTML).toBe('NA')
+      expect(targetingParamsContainer?.innerHTML).toBe('NA')
+      expect(featureBranchContainer?.innerHTML).toBe('NA')
 
       Popup.updateDetailsTabContent(
         [
@@ -116,8 +117,8 @@ describe('popup service test', () => {
         ].join('; ')
       )
 
-      expect(featureBranchContainer.innerHTML).toBe('TestBranch')
-      expect(targetingParamsContainer.innerHTML).toMatchSnapshot()
+      expect(featureBranchContainer?.innerHTML).toBe('TestBranch')
+      expect(targetingParamsContainer?.innerHTML).toMatchSnapshot()
     })
   })
 })

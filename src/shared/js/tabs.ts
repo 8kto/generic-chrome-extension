@@ -11,7 +11,7 @@ const openTab = (tabId: string): void => {
   const tabTitleElements = document.querySelectorAll(SELECTOR_TAB_TITLE)
   tabTitleElements.forEach(elem => elem.classList.remove(CLASS_ACTIVE))
 
-  document.getElementById(tabId).classList.add(CLASS_ACTIVE)
+  document.getElementById(tabId)?.classList.add(CLASS_ACTIVE)
 }
 
 export const initTabs = (): void =>

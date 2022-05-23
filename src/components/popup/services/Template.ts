@@ -76,7 +76,7 @@ export default class Template {
   static renderExperimentsList(
     container: HTMLElement,
     experiments: ExperimentsList
-  ): HTMLUListElement {
+  ): HTMLUListElement | null {
     const entries = Object.entries(experiments || {})
 
     if (!entries.length) {
@@ -118,7 +118,10 @@ export default class Template {
   }
 
   static clearMessages(): void {
-    document.getElementById('messages').innerHTML = ''
+    const element = document.getElementById('messages')
+    if (element) {
+      element.innerHTML = ''
+    }
   }
 
   static clearAndShowMessage(msg: string, mode: string): void {
@@ -127,7 +130,9 @@ export default class Template {
       mode === 'alert' ? 'message--alert' : 'message--info'
     }`
 
-    container.innerHTML = `<div class="${className}">${msg}</div>`
+    if (container) {
+      container.innerHTML = `<div class="${className}">${msg}</div>`
+    }
   }
 
   static showMessage(msg: string): void {
@@ -139,6 +144,9 @@ export default class Template {
   }
 
   static showReloadButton(): void {
-    document.getElementById('reload-tab').removeAttribute('hidden')
+    const element = document.getElementById('reload-tab')
+    if (element) {
+      element.removeAttribute('hidden')
+    }
   }
 }

@@ -17,7 +17,7 @@ export default class VariableUpdate {
     const { varName, expName, varType } = dataset
 
     this.#target = target
-    this.#value = target.textContent.trim()
+    this.#value = target?.textContent?.trim() || ''
     this.#type = varType
     this.#name = varName
     this.#experimentName = expName
