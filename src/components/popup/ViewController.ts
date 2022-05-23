@@ -24,7 +24,7 @@ type VariableUpdateHandlers = (
  * Binds the event handlers and dynamic layout.
  */
 export default class ViewController {
-  #tabId: number
+  #tabId = -1
   #optimizelyService: Optimizely
 
   constructor() {
@@ -268,7 +268,7 @@ export default class ViewController {
     try {
       this.#optimizelyService.checkFeatureFlags()
     } catch (err) {
-      Template.showError(err.message)
+      Template.showError((<Error>err).message)
 
       return
     }

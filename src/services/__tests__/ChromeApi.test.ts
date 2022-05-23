@@ -79,7 +79,7 @@ describe('chrome API service', () => {
     })
 
     it('calls API', async () => {
-      const result = ChromeApi.executeScript({
+      const result = ChromeApi.executeScript<[number, string]>({
         args: [1, 'test string'],
         target: { tabId: 888 },
         function: () => undefined,
@@ -98,7 +98,7 @@ describe('chrome API service', () => {
 
     it('calls API and passes callback', async () => {
       const callback = jest.fn()
-      const result = ChromeApi.executeScript(
+      const result = ChromeApi.executeScript<[number, string]>(
         {
           args: [1, 'test string'],
           target: { tabId: 888 },
