@@ -126,3 +126,18 @@ export const POPUP_LAYOUT = `
   </div>
 </div>
 `
+
+export const chromeMock: typeof chrome = {
+  //@ts-ignore
+  runtime: {
+    getManifest: jest.fn().mockReturnValue({
+      version: 'v1.1.1',
+    }),
+  },
+  //@ts-ignore
+  scripting: { executeScript: jest.fn() },
+  //@ts-ignore
+  tabs: {
+    query: jest.fn().mockReturnValue([{ tabId: 42 }]),
+  },
+}

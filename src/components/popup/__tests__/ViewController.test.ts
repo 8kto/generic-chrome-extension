@@ -5,40 +5,49 @@ import { VALID_COOKIE } from 'shared/tests/mocks'
 import ViewController from './../ViewController'
 import { POPUP_LAYOUT } from './mocks'
 
-import InjectionResult = chrome.scripting.InjectionResult
-
 jest.mock('services/ChromeApi')
-
-//@ts-ignore
-jest.spyOn(ChromeApi, 'getManifest').mockReturnValue({
-  version: 'v1.1.1',
-})
 
 describe('view controller integration tests', () => {
   beforeAll(async () => {
+    //@ts-ignore
+    jest.spyOn(ChromeApi, 'getManifest').mockReturnValue({
+      version: 'v1.1.1',
+    })
+
+    jest.spyOn(ChromeApi, 'getActiveTabId').mockReturnValue(Promise.resolve(99))
+
     document.body.innerHTML = POPUP_LAYOUT
     document.cookie = VALID_COOKIE
     initTabs()
-    await new ViewController().init()
   })
 
-  it('should not break layout', async () => {
-    expect(
-      document.querySelectorAll('.componentWrapper .tabs > .tabTitle')
-    ).toHaveLength(5)
-    expect(
-      document.querySelectorAll('.componentWrapper .tabContent')
-    ).toHaveLength(4)
-    expect(document.querySelector('#messages')?.innerHTML).toBe('')
-  })
+  describe('basic layout', () => {
+    beforeAll(async () => {
+      await new ViewController().init()
+    })
 
-  it('should have one active tab', () => {
-    const activeTab = document.querySelectorAll('.tabContent.active')
-    expect(activeTab).toHaveLength(1)
-    expect(activeTab[0].id).toBe('experiments-list')
+    it('should not break layout', async () => {
+      expect(
+        document.querySelectorAll('.componentWrapper .tabs > .tabTitle')
+      ).toHaveLength(5)
+      expect(
+        document.querySelectorAll('.componentWrapper .tabContent')
+      ).toHaveLength(4)
+      expect(document.querySelector('#messages')?.innerHTML).toBe('')
+    })
+
+    it('should have one active tab', () => {
+      const activeTab = document.querySelectorAll('.tabContent.active')
+      expect(activeTab).toHaveLength(1)
+      expect(activeTab[0].id).toBe('experiments-list')
+    })
   })
 
   describe('json tab', () => {
+    beforeAll(async () => {
+      await new ViewController().init()
+    })
+
     it('should open tab', function () {
       document
         .querySelector<HTMLButtonElement>(
@@ -53,6 +62,10 @@ describe('view controller integration tests', () => {
   })
 
   describe('experiments-details tab', () => {
+    beforeAll(async () => {
+      await new ViewController().init()
+    })
+
     it('should open tab', function () {
       document
         .querySelector<HTMLButtonElement>(
@@ -67,6 +80,10 @@ describe('view controller integration tests', () => {
   })
 
   describe('experiments-docs tab', () => {
+    beforeAll(async () => {
+      await new ViewController().init()
+    })
+
     it('should open tab', function () {
       document
         .querySelector<HTMLButtonElement>(
@@ -81,18 +98,21 @@ describe('view controller integration tests', () => {
   })
 
   describe('experiments-list tab', () => {
-    it('should open tab', () => {
-      jest
-        .spyOn(ChromeApi, 'executeScript')
-        .mockImplementationOnce((_, callback): Promise<InjectionResult[]> => {
-          const injectionResult = [{ result: VALID_COOKIE, frameId: 18 }]
+    // todo clear
+    beforeAll(async () => {
+      const executeScript = jest.fn().mockImplementation((_, cb) => {
+        const res = [{ result: VALID_COOKIE }]
 
-          //@ts-ignore
-          callback(injectionResult)
-
-          return Promise.resolve<InjectionResult[]>(injectionResult)
+        return Promise.resolve(res).then(() => {
+          cb(res)
         })
+      })
+      jest.spyOn(ChromeApi, 'executeScript').mockImplementation(executeScript)
 
+      await new ViewController().init()
+    })
+
+    it('should open tab and render experiments list', () => {
       document
         .querySelector<HTMLButtonElement>(
           'button[data-target="experiments-list"]'
@@ -102,10 +122,18 @@ describe('view controller integration tests', () => {
       const activeTab = document.querySelectorAll('.tabContent.active')
       expect(activeTab).toHaveLength(1)
       expect(activeTab[0].id).toBe('experiments-list')
+
+      const expList = document.querySelector('#expList')
+      expect(expList).not.toBeFalsy()
+      expect(expList).toMatchSnapshot()
     })
   })
 
   describe('add new experiment button', () => {
+    beforeAll(async () => {
+      await new ViewController().init()
+    })
+
     it('should display prompt', function () {
       const alert = jest.fn()
       jest.spyOn(window, 'prompt').mockImplementation(prompt)
@@ -115,7 +143,7 @@ describe('view controller integration tests', () => {
         .querySelector<HTMLButtonElement>('button#button--add-new')
         ?.click()
 
-      expect(prompt).toHaveBeenCalledWith('')
+      expect(prompt).toHaveBeenCalledWith('Enter the new experiment name')
     })
   })
 })
