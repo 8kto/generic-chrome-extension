@@ -8,6 +8,13 @@ export const VALID_FF_STRING = JSON.stringify({
   'Z80': {
     'e': true,
     'v': {
+      'cart-cta-delayed': false,
+      'erx': true,
+      'erx-adyen': false,
+      'marketplace': true,
+      'mp-cross-sell': false,
+      'now': true,
+      'sae-only': true,
       'v_name': 'variation_2',
     },
   },
