@@ -1,0 +1,507 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`view controller integration tests experiments-list tab should open tab 1`] = `
+<ul
+  id="expList"
+>
+  <li
+    class="expList__item"
+  >
+     
+    <input
+      checked=""
+      id="MOS-6502"
+      title="Enable / Disable"
+      type="checkbox"
+      value="MOS-6502"
+    />
+     
+    <label
+      class="expName"
+      for="MOS-6502"
+    >
+      MOS-6502
+    </label>
+     
+    <ul>
+      <li>
+        
+          
+        <span
+          class="expVariant__varName"
+        >
+          v_name
+        </span>
+        
+          
+        <span
+          class="expVariant__varType expVariant__varType--variant"
+          data-exp-name="MOS-6502"
+          data-var-name="v_name"
+          data-var-type="variant"
+          title="Click to edit"
+        >
+          v3
+        </span>
+        
+        
+      </li>
+    </ul>
+     
+  </li>
+  
+
+  <li
+    class="expList__item"
+  >
+     
+    <input
+      checked=""
+      id="Z80"
+      title="Enable / Disable"
+      type="checkbox"
+      value="Z80"
+    />
+     
+    <label
+      class="expName"
+      for="Z80"
+    >
+      Z80
+    </label>
+     
+    <ul>
+      <li>
+        
+          
+        <span
+          class="expVariant__varName"
+        >
+          cart-cta-delayed
+        </span>
+        
+          
+        <span
+          class="expVariant__varType "
+          data-exp-name="Z80"
+          data-var-name="cart-cta-delayed"
+          data-var-type="boolean"
+          title="Click to edit"
+        >
+          false
+        </span>
+        
+        
+      </li>
+      <li>
+        
+          
+        <span
+          class="expVariant__varName"
+        >
+          erx
+        </span>
+        
+          
+        <span
+          class="expVariant__varType "
+          data-exp-name="Z80"
+          data-var-name="erx"
+          data-var-type="boolean"
+          title="Click to edit"
+        >
+          true
+        </span>
+        
+        
+      </li>
+      <li>
+        
+          
+        <span
+          class="expVariant__varName"
+        >
+          erx-adyen
+        </span>
+        
+          
+        <span
+          class="expVariant__varType "
+          data-exp-name="Z80"
+          data-var-name="erx-adyen"
+          data-var-type="boolean"
+          title="Click to edit"
+        >
+          false
+        </span>
+        
+        
+      </li>
+      <li>
+        
+          
+        <span
+          class="expVariant__varName"
+        >
+          marketplace
+        </span>
+        
+          
+        <span
+          class="expVariant__varType "
+          data-exp-name="Z80"
+          data-var-name="marketplace"
+          data-var-type="boolean"
+          title="Click to edit"
+        >
+          true
+        </span>
+        
+        
+      </li>
+      <li>
+        
+          
+        <span
+          class="expVariant__varName"
+        >
+          mp-cross-sell
+        </span>
+        
+          
+        <span
+          class="expVariant__varType "
+          data-exp-name="Z80"
+          data-var-name="mp-cross-sell"
+          data-var-type="boolean"
+          title="Click to edit"
+        >
+          false
+        </span>
+        
+        
+      </li>
+      <li>
+        
+          
+        <span
+          class="expVariant__varName"
+        >
+          now
+        </span>
+        
+          
+        <span
+          class="expVariant__varType "
+          data-exp-name="Z80"
+          data-var-name="now"
+          data-var-type="boolean"
+          title="Click to edit"
+        >
+          true
+        </span>
+        
+        
+      </li>
+      <li>
+        
+          
+        <span
+          class="expVariant__varName"
+        >
+          sae-only
+        </span>
+        
+          
+        <span
+          class="expVariant__varType "
+          data-exp-name="Z80"
+          data-var-name="sae-only"
+          data-var-type="boolean"
+          title="Click to edit"
+        >
+          true
+        </span>
+        
+        
+      </li>
+      <li>
+        
+          
+        <span
+          class="expVariant__varName"
+        >
+          v_name
+        </span>
+        
+          
+        <span
+          class="expVariant__varType expVariant__varType--variant"
+          data-exp-name="Z80"
+          data-var-name="v_name"
+          data-var-type="variant"
+          title="Click to edit"
+        >
+          variation_2
+        </span>
+        
+        
+      </li>
+    </ul>
+     
+  </li>
+</ul>
+`;
+
+exports[`view controller integration tests experiments-list tab should open tab and render experiments list 1`] = `
+<ul
+  id="expList"
+>
+  <li
+    class="expList__item"
+  >
+     
+    <input
+      checked=""
+      id="MOS-6502"
+      title="Enable / Disable"
+      type="checkbox"
+      value="MOS-6502"
+    />
+     
+    <label
+      class="expName"
+      for="MOS-6502"
+    >
+      MOS-6502
+    </label>
+     
+    <ul>
+      <li>
+        
+          
+        <span
+          class="expVariant__varName"
+        >
+          v_name
+        </span>
+        
+          
+        <span
+          class="expVariant__varType expVariant__varType--variant"
+          data-exp-name="MOS-6502"
+          data-var-name="v_name"
+          data-var-type="variant"
+          title="Click to edit"
+        >
+          v3
+        </span>
+        
+        
+      </li>
+    </ul>
+     
+  </li>
+  
+
+  <li
+    class="expList__item"
+  >
+     
+    <input
+      checked=""
+      id="Z80"
+      title="Enable / Disable"
+      type="checkbox"
+      value="Z80"
+    />
+     
+    <label
+      class="expName"
+      for="Z80"
+    >
+      Z80
+    </label>
+     
+    <ul>
+      <li>
+        
+          
+        <span
+          class="expVariant__varName"
+        >
+          cart-cta-delayed
+        </span>
+        
+          
+        <span
+          class="expVariant__varType "
+          data-exp-name="Z80"
+          data-var-name="cart-cta-delayed"
+          data-var-type="boolean"
+          title="Click to edit"
+        >
+          false
+        </span>
+        
+        
+      </li>
+      <li>
+        
+          
+        <span
+          class="expVariant__varName"
+        >
+          erx
+        </span>
+        
+          
+        <span
+          class="expVariant__varType "
+          data-exp-name="Z80"
+          data-var-name="erx"
+          data-var-type="boolean"
+          title="Click to edit"
+        >
+          true
+        </span>
+        
+        
+      </li>
+      <li>
+        
+          
+        <span
+          class="expVariant__varName"
+        >
+          erx-adyen
+        </span>
+        
+          
+        <span
+          class="expVariant__varType "
+          data-exp-name="Z80"
+          data-var-name="erx-adyen"
+          data-var-type="boolean"
+          title="Click to edit"
+        >
+          false
+        </span>
+        
+        
+      </li>
+      <li>
+        
+          
+        <span
+          class="expVariant__varName"
+        >
+          marketplace
+        </span>
+        
+          
+        <span
+          class="expVariant__varType "
+          data-exp-name="Z80"
+          data-var-name="marketplace"
+          data-var-type="boolean"
+          title="Click to edit"
+        >
+          true
+        </span>
+        
+        
+      </li>
+      <li>
+        
+          
+        <span
+          class="expVariant__varName"
+        >
+          mp-cross-sell
+        </span>
+        
+          
+        <span
+          class="expVariant__varType "
+          data-exp-name="Z80"
+          data-var-name="mp-cross-sell"
+          data-var-type="boolean"
+          title="Click to edit"
+        >
+          false
+        </span>
+        
+        
+      </li>
+      <li>
+        
+          
+        <span
+          class="expVariant__varName"
+        >
+          now
+        </span>
+        
+          
+        <span
+          class="expVariant__varType "
+          data-exp-name="Z80"
+          data-var-name="now"
+          data-var-type="boolean"
+          title="Click to edit"
+        >
+          true
+        </span>
+        
+        
+      </li>
+      <li>
+        
+          
+        <span
+          class="expVariant__varName"
+        >
+          sae-only
+        </span>
+        
+          
+        <span
+          class="expVariant__varType "
+          data-exp-name="Z80"
+          data-var-name="sae-only"
+          data-var-type="boolean"
+          title="Click to edit"
+        >
+          true
+        </span>
+        
+        
+      </li>
+      <li>
+        
+          
+        <span
+          class="expVariant__varName"
+        >
+          v_name
+        </span>
+        
+          
+        <span
+          class="expVariant__varType expVariant__varType--variant"
+          data-exp-name="Z80"
+          data-var-name="v_name"
+          data-var-type="variant"
+          title="Click to edit"
+        >
+          variation_2
+        </span>
+        
+        
+      </li>
+    </ul>
+     
+  </li>
+</ul>
+`;
