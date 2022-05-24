@@ -11,6 +11,13 @@ Object {
   "Z80": Object {
     "e": true,
     "v": Object {
+      "cart-cta-delayed": false,
+      "erx": true,
+      "erx-adyen": false,
+      "marketplace": true,
+      "mp-cross-sell": false,
+      "now": true,
+      "sae-only": true,
       "v_name": "variation_2",
     },
   },
@@ -28,6 +35,13 @@ Object {
   "Z80": Object {
     "e": true,
     "v": Object {
+      "cart-cta-delayed": false,
+      "erx": true,
+      "erx-adyen": false,
+      "marketplace": true,
+      "mp-cross-sell": false,
+      "now": true,
+      "sae-only": true,
       "v_name": "variation_2",
     },
   },
@@ -45,6 +59,13 @@ Object {
   "Z80": Object {
     "e": true,
     "v": Object {
+      "cart-cta-delayed": false,
+      "erx": true,
+      "erx-adyen": false,
+      "marketplace": true,
+      "mp-cross-sell": false,
+      "now": true,
+      "sae-only": true,
       "v_name": "variation_2",
     },
   },
@@ -62,6 +83,13 @@ Object {
   "Z80": Object {
     "e": true,
     "v": Object {
+      "cart-cta-delayed": false,
+      "erx": true,
+      "erx-adyen": false,
+      "marketplace": true,
+      "mp-cross-sell": false,
+      "now": true,
+      "sae-only": true,
       "v_name": "variation_2",
     },
   },
@@ -79,6 +107,13 @@ Object {
   "Z80": Object {
     "e": true,
     "v": Object {
+      "cart-cta-delayed": false,
+      "erx": true,
+      "erx-adyen": false,
+      "marketplace": true,
+      "mp-cross-sell": false,
+      "now": true,
+      "sae-only": true,
       "v_name": "variation_2",
     },
   },
