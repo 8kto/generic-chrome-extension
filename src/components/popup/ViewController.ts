@@ -304,10 +304,13 @@ export default class ViewController {
   }
 
   handleJsonUpdate(experiments: ExperimentsList): void {
-    const textarea = document.getElementById(
+    const textarea = document.querySelector<HTMLTextAreaElement>(
       'experiments-json-container'
-    ) as HTMLTextAreaElement
-    const saveJsonBtn = document.getElementById('save-json')
+    )
+    const saveJsonBtn = document.querySelector<HTMLButtonElement>('save-json')
+    if (!textarea) {
+      return
+    }
 
     textarea.innerHTML = JSON.stringify(experiments, null, '  ')
     textarea.addEventListener('input', () =>
