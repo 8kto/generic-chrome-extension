@@ -22,7 +22,7 @@ describe('view controller integration tests', () => {
       const res = [{ result: VALID_COOKIE }]
 
       return Promise.resolve(res).then(() => {
-        cb(res)
+        cb?.(res)
       })
     })
     jest.spyOn(ChromeApi, 'executeScript').mockImplementation(executeScript)
@@ -55,7 +55,12 @@ describe('view controller integration tests', () => {
   })
 
   describe('json tab', () => {
+    const reloadTabMockFn = jest.fn().mockReturnValue(Promise.resolve())
+
     beforeEach(async () => {
+      //@ts-ignore
+      jest.spyOn(ChromeApi, 'reloadTab').mockReturnValue(reloadTabMockFn)
+
       await new ViewController().init()
     })
 
@@ -93,8 +98,18 @@ describe('view controller integration tests', () => {
           view: window,
         })
       )
-      // FIXME not visible?
-      //      expect(saveJsonBtn).toBeVisible()
+
+      expect(saveJsonBtn).toBeVisible()
+      saveJsonBtn.dispatchEvent(
+        new Event('click', {
+          bubbles: true,
+          cancelable: true,
+          //@ts-ignore
+          view: window,
+        })
+      )
+      // FIXME
+      //            expect(reloadTabMockFn).toHaveBeenCalled()
     })
   })
 
