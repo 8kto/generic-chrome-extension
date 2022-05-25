@@ -252,3 +252,5 @@ exports[`view controller integration tests experiments-list tab should open tab 
   </li>
 </ul>
 `;
+
+exports[`view controller integration tests json tab should open tab and handle changes 1`] = `""`;
