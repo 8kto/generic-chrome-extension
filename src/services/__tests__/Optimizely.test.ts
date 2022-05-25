@@ -1,21 +1,6 @@
 import ChromeApi from 'services/ChromeApi'
 import Optimizely from 'services/Optimizely'
-
-const VALID_FF_STRING = JSON.stringify({
-  'MOS-6502': {
-    'e': true,
-    'v': {
-      'v_name': 'v3',
-    },
-  },
-  'Z80': {
-    'e': true,
-    'v': {
-      'v_name': 'variation_2',
-    },
-  },
-})
-const VALID_COOKIE = `my-cookie=42; feature-flag-cookie=${VALID_FF_STRING}`
+import { VALID_COOKIE, VALID_FF_STRING } from 'shared/tests/mocks'
 
 describe('optimizely service', () => {
   // Just to disable console spamming during tests
@@ -61,10 +46,7 @@ describe('optimizely service', () => {
   describe('extractExperiments', () => {
     it('returns valid experiments', () => {
       const optimizelyService = new Optimizely(VALID_COOKIE)
-      expect(optimizelyService.extractExperiments()).toMatchSnapshot(
-        {},
-        'valid'
-      )
+      expect(optimizelyService.extractExperiments()).toMatchSnapshot()
     })
 
     it('handles NA feature flags cookie', () => {
@@ -134,7 +116,7 @@ describe('optimizely service', () => {
       expect(() =>
         optimizelyService.setExperimentStatus('XXX', true)
       ).not.toThrow()
-      expect(optimizelyService.getExperiments()).toMatchSnapshot({}, 'valid')
+      expect(optimizelyService.getExperiments()).toMatchSnapshot()
     })
 
     it('returns service instance', () => {
@@ -267,13 +249,13 @@ describe('optimizely service', () => {
       expect(optimizelyService.getExperiments()).toStrictEqual({})
 
       optimizelyService.setCookies(VALID_COOKIE)
-      expect(optimizelyService.getExperiments()).toMatchSnapshot({}, 'valid')
+      expect(optimizelyService.getExperiments()).toMatchSnapshot()
     })
 
     it('overrides the experiments list', () => {
       const optimizelyService = new Optimizely(VALID_COOKIE)
       optimizelyService.extractExperiments()
-      expect(optimizelyService.getExperiments()).toMatchSnapshot({}, 'valid')
+      expect(optimizelyService.getExperiments()).toMatchSnapshot()
 
       const featureFlags = {
         'Motorola-68000': { 'e': true, 'v': { 'v_name': 'v1' } },
@@ -292,7 +274,7 @@ describe('optimizely service', () => {
       const newCookie = `three-different=ones; every-wave=has-gotta-break`
 
       optimizelyService.setCookies(newCookie)
-      expect(optimizelyService.getExperiments()).toMatchSnapshot({}, 'valid')
+      expect(optimizelyService.getExperiments()).toMatchSnapshot()
     })
   })
 })

@@ -24,7 +24,7 @@ type VariableUpdateHandlers = (
  * Binds the event handlers and dynamic layout.
  */
 export default class ViewController {
-  #tabId: number
+  #tabId = -1
   #optimizelyService: Optimizely
 
   constructor() {
@@ -268,7 +268,7 @@ export default class ViewController {
     try {
       this.#optimizelyService.checkFeatureFlags()
     } catch (err) {
-      Template.showError(err.message)
+      Template.showError((<Error>err).message)
 
       return
     }
@@ -304,10 +304,13 @@ export default class ViewController {
   }
 
   handleJsonUpdate(experiments: ExperimentsList): void {
-    const textarea = document.getElementById(
-      'experiments-json-container'
-    ) as HTMLTextAreaElement
-    const saveJsonBtn = document.getElementById('save-json')
+    const textarea = document.querySelector<HTMLTextAreaElement>(
+      '#experiments-json-container'
+    )
+    const saveJsonBtn = document.querySelector<HTMLButtonElement>('#save-json')
+    if (!textarea) {
+      return
+    }
 
     textarea.innerHTML = JSON.stringify(experiments, null, '  ')
     textarea.addEventListener('input', () =>

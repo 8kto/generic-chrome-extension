@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`optimizely service extractExperiments returns valid experiments: valid 1`] = `
+exports[`optimizely service extractExperiments returns valid experiments 1`] = `
 Object {
   "MOS-6502": Object {
     "e": true,
@@ -11,13 +11,20 @@ Object {
   "Z80": Object {
     "e": true,
     "v": Object {
+      "cart-cta-delayed": false,
+      "erx": true,
+      "erx-adyen": false,
+      "marketplace": true,
+      "mp-cross-sell": false,
+      "now": true,
+      "sae-only": true,
       "v_name": "variation_2",
     },
   },
 }
 `;
 
-exports[`optimizely service setCookies does not mutate experiments list: valid 1`] = `
+exports[`optimizely service setCookies does not mutate experiments list 1`] = `
 Object {
   "MOS-6502": Object {
     "e": true,
@@ -28,13 +35,20 @@ Object {
   "Z80": Object {
     "e": true,
     "v": Object {
+      "cart-cta-delayed": false,
+      "erx": true,
+      "erx-adyen": false,
+      "marketplace": true,
+      "mp-cross-sell": false,
+      "now": true,
+      "sae-only": true,
       "v_name": "variation_2",
     },
   },
 }
 `;
 
-exports[`optimizely service setCookies overrides the experiments list: valid 1`] = `
+exports[`optimizely service setCookies overrides the experiments list 1`] = `
 Object {
   "MOS-6502": Object {
     "e": true,
@@ -45,13 +59,20 @@ Object {
   "Z80": Object {
     "e": true,
     "v": Object {
+      "cart-cta-delayed": false,
+      "erx": true,
+      "erx-adyen": false,
+      "marketplace": true,
+      "mp-cross-sell": false,
+      "now": true,
+      "sae-only": true,
       "v_name": "variation_2",
     },
   },
 }
 `;
 
-exports[`optimizely service setCookies sets the cookies and updates experiments list: valid 1`] = `
+exports[`optimizely service setCookies sets the cookies and updates experiments list 1`] = `
 Object {
   "MOS-6502": Object {
     "e": true,
@@ -62,13 +83,20 @@ Object {
   "Z80": Object {
     "e": true,
     "v": Object {
+      "cart-cta-delayed": false,
+      "erx": true,
+      "erx-adyen": false,
+      "marketplace": true,
+      "mp-cross-sell": false,
+      "now": true,
+      "sae-only": true,
       "v_name": "variation_2",
     },
   },
 }
 `;
 
-exports[`optimizely service setExperimentStatus does not throw on unknown experiment and corrupt data: valid 1`] = `
+exports[`optimizely service setExperimentStatus does not throw on unknown experiment and corrupt data 1`] = `
 Object {
   "MOS-6502": Object {
     "e": true,
@@ -79,6 +107,13 @@ Object {
   "Z80": Object {
     "e": true,
     "v": Object {
+      "cart-cta-delayed": false,
+      "erx": true,
+      "erx-adyen": false,
+      "marketplace": true,
+      "mp-cross-sell": false,
+      "now": true,
+      "sae-only": true,
       "v_name": "variation_2",
     },
   },

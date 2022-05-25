@@ -9,7 +9,11 @@
     "moduleResolution": "node",
     "rootDirs": ["src"],
     "esModuleInterop": true,
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "strict": true
   },
-  "include": ["./src/**/*"]
+  "include": [
+    "./jest-setup.js",
+    "./src/**/*"
+  ]
 }
