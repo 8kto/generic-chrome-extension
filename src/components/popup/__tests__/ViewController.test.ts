@@ -152,7 +152,7 @@ describe('view controller integration tests', () => {
 
       const expList = document.querySelector('#expList')
       expect(expList).not.toBeFalsy()
-      expect(expList).toMatchSnapshot({}, 'experiments list tab')
+      expect(expList).toMatchSnapshot()
     })
   })
 
