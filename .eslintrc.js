@@ -86,6 +86,7 @@ module.exports = {
     'jest/prefer-expect-assertions': 'off',
     'jest/require-hook': 'off',
     'jest/no-hooks': 'off',
-    '@typescript-eslint/ban-ts-comment':'off'
+    '@typescript-eslint/ban-ts-comment':'off',
+    'jest/prefer-snapshot-hint': 'off'
   },
 }
