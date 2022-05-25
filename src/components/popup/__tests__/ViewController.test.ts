@@ -8,7 +8,9 @@ import { POPUP_LAYOUT } from './mocks'
 jest.mock('services/ChromeApi')
 
 describe('view controller integration tests', () => {
-  beforeAll(async () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+
     //@ts-ignore
     jest.spyOn(ChromeApi, 'getManifest').mockReturnValue({
       version: 'v1.1.1',
@@ -16,17 +18,26 @@ describe('view controller integration tests', () => {
 
     jest.spyOn(ChromeApi, 'getActiveTabId').mockReturnValue(Promise.resolve(99))
 
+    const executeScript = jest.fn().mockImplementation((_, cb) => {
+      const res = [{ result: VALID_COOKIE }]
+
+      return Promise.resolve(res).then(() => {
+        cb(res)
+      })
+    })
+    jest.spyOn(ChromeApi, 'executeScript').mockImplementation(executeScript)
+
     document.body.innerHTML = POPUP_LAYOUT
     document.cookie = VALID_COOKIE
     initTabs()
   })
 
   describe('basic layout', () => {
-    beforeAll(async () => {
+    beforeEach(async () => {
       await new ViewController().init()
     })
 
-    it('should not break layout', async () => {
+    it('should not break layout', () => {
       expect(
         document.querySelectorAll('.componentWrapper .tabs > .tabTitle')
       ).toHaveLength(5)
@@ -44,11 +55,11 @@ describe('view controller integration tests', () => {
   })
 
   describe('json tab', () => {
-    beforeAll(async () => {
+    beforeEach(async () => {
       await new ViewController().init()
     })
 
-    it('should open tab', function () {
+    it('should open tab and handle changes', () => {
       document
         .querySelector<HTMLButtonElement>(
           'button[data-target="experiments-json"]'
@@ -58,6 +69,32 @@ describe('view controller integration tests', () => {
       const activeTab = document.querySelectorAll('.tabContent.active')
       expect(activeTab).toHaveLength(1)
       expect(activeTab[0].id).toBe('experiments-json')
+
+      const jsonTextarea = document.querySelector<HTMLTextAreaElement>(
+        'textarea#experiments-json-container'
+      )
+      const saveJsonBtn = document.querySelector('#save-json')
+
+      // eslint-disable-next-line jest/no-conditional-in-test
+      if (!jsonTextarea || !saveJsonBtn) {
+        throw new Error('Jest and TS')
+      }
+
+      expect(jsonTextarea).toBeVisible()
+      // eslint-disable-next-line jest/prefer-snapshot-hint
+      expect(jsonTextarea.innerHTML).toMatchSnapshot()
+      expect(saveJsonBtn).not.toBeVisible()
+
+      jsonTextarea.dispatchEvent(
+        new Event('input', {
+          bubbles: true,
+          cancelable: true,
+          //@ts-ignore
+          view: window,
+        })
+      )
+      // FIXME not visible?
+      //      expect(saveJsonBtn).toBeVisible()
     })
   })
 
@@ -98,17 +135,7 @@ describe('view controller integration tests', () => {
   })
 
   describe('experiments-list tab', () => {
-    // todo clear
-    beforeAll(async () => {
-      const executeScript = jest.fn().mockImplementation((_, cb) => {
-        const res = [{ result: VALID_COOKIE }]
-
-        return Promise.resolve(res).then(() => {
-          cb(res)
-        })
-      })
-      jest.spyOn(ChromeApi, 'executeScript').mockImplementation(executeScript)
-
+    beforeEach(async () => {
       await new ViewController().init()
     })
 
@@ -125,19 +152,18 @@ describe('view controller integration tests', () => {
 
       const expList = document.querySelector('#expList')
       expect(expList).not.toBeFalsy()
-      expect(expList).toMatchSnapshot()
+      expect(expList).toMatchSnapshot({}, 'experiments list tab')
     })
   })
 
   describe('add new experiment button', () => {
-    beforeAll(async () => {
+    beforeEach(async () => {
       await new ViewController().init()
     })
 
     it('should display prompt', function () {
-      const alert = jest.fn()
+      const prompt = jest.fn()
       jest.spyOn(window, 'prompt').mockImplementation(prompt)
-      jest.spyOn(window, 'alert').mockImplementation(alert)
 
       document
         .querySelector<HTMLButtonElement>('button#button--add-new')
