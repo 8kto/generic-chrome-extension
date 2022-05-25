@@ -253,4 +253,26 @@ exports[`view controller integration tests experiments-list tab should open tab 
 </ul>
 `;
 
-exports[`view controller integration tests json tab should open tab and handle changes 1`] = `""`;
+exports[`view controller integration tests json tab should open tab and handle changes 1`] = `
+"{
+  \\"MOS-6502\\": {
+    \\"e\\": true,
+    \\"v\\": {
+      \\"v_name\\": \\"v3\\"
+    }
+  },
+  \\"Z80\\": {
+    \\"e\\": true,
+    \\"v\\": {
+      \\"cart-cta-delayed\\": false,
+      \\"erx\\": true,
+      \\"erx-adyen\\": false,
+      \\"marketplace\\": true,
+      \\"mp-cross-sell\\": false,
+      \\"now\\": true,
+      \\"sae-only\\": true,
+      \\"v_name\\": \\"variation_2\\"
+    }
+  }
+}"
+`;
