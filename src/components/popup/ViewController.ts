@@ -305,9 +305,9 @@ export default class ViewController {
 
   handleJsonUpdate(experiments: ExperimentsList): void {
     const textarea = document.querySelector<HTMLTextAreaElement>(
-      'experiments-json-container'
+      '#experiments-json-container'
     )
-    const saveJsonBtn = document.querySelector<HTMLButtonElement>('save-json')
+    const saveJsonBtn = document.querySelector<HTMLButtonElement>('#save-json')
     if (!textarea) {
       return
     }
