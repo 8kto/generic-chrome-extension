@@ -10,7 +10,7 @@ module.exports = {
       functions: 86.95,
     },
   },
-  setupFilesAfterEnv: [],
+  setupFilesAfterEnv: ['<rootDir>/jest-setup.js'],
   snapshotSerializers: ['enzyme-to-json/serializer'],
   testEnvironment: 'jsdom',
   testMatch: ['<rootDir>src/**/*.test.[jt]s'],
